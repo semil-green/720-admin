@@ -109,6 +109,7 @@ export default function StoreDataTable({ data, onDelete, openAvailablePincodesMo
     getSortedRowModel: getSortedRowModel(),
   })
 
+
   return (
     <div className="rounded border p-4 bg-white shadow">
       <Table>
