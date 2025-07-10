@@ -132,7 +132,7 @@ export default function StoreForm({ initialData = {}, onSubmit }) {
             </div>
 
             <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" disabled={loading} onClick={() => router.push("/stores")}>
+                <Button type="button" variant="outline" disabled={loading} onClick={() => router.push("/packaging-stores")}>
                     Cancel
                 </Button>
                 <Button type="submit" disabled={loading}>

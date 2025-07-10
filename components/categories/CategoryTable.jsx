@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function CategoryTable({ data, onEdit, onDelete }) {
+export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal }) {
     const router = useRouter()
 
-    const storeColumns = (onEdit, onDelete) => [
+    const storeColumns = (onEdit, onDelete, onOpenSubCategoryModal) => [
         {
             accessorKey: "Image",
             cell: ({ row }) => {
@@ -75,6 +75,10 @@ export default function CategoryTable({ data, onEdit, onDelete }) {
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
+
+                            <DropdownMenuItem onClick={() => onOpenSubCategoryModal(category.CategoryId)}>
+                                <Pencil className="mr-2 h-4 w-4" />  Sub Categories
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -86,7 +90,8 @@ export default function CategoryTable({ data, onEdit, onDelete }) {
         data,
         columns: storeColumns(
             onEdit,
-            onDelete
+            onDelete,
+            onOpenSubCategoryModal
         ),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -94,7 +99,7 @@ export default function CategoryTable({ data, onEdit, onDelete }) {
     })
 
     return (
-        <div className="rounded border p-4 bg-white shadow">
+        <div className="rounded border p-4 pt-0 shadow">
             <Table>
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (

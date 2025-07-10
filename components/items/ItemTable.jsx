@@ -11,44 +11,58 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function UserTable({ data, onDelete }) {
+export default function ItemTable({ data, onDelete }) {
     const router = useRouter()
 
     const storeColumns = (onEdit, onDelete) => [
         {
-            accessorKey: "Profile",
+            accessorKey: "Title",
+            header: "Item",
             cell: ({ row }) => {
-                const user = row.original
-                return <img
-                    src={user.Profile || "https://i.pravatar.cc/100"}
-                    alt="profile"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                />
+                const item = row.original
+                return (
+                    <div className="flex items-center gap-3">
+                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
+                        <div className="">
+                            <div className="font-semibold">{item.Title}</div>
+                            <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
+                        </div>
+                    </div>
+                )
             }
         },
         {
-            accessorKey: "FullName",
-            header: ({ column }) => (
-                <Button variant="ghost" onClick={() => column.toggleSorting()}>
-                    Name <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
-            ),
+            accessorKey: "CategoryId",
+            header: "Category",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="flex flex-col">
+                        <div className="font-semibold">Fresh Water</div>
+                        <div className="">Rohu</div>
+                    </div>
+                )
+            }
         },
         {
-            accessorKey: "MobileNo",
-            header: "Mobile No",
+            accessorKey: "ServePerson",
+            header: "ServePerson",
         },
         {
-            accessorKey: "EmailId",
-            header: "Email Id", // Can show city name if needed
+            accessorKey: "Stock",
+            header: "Stock",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="text-green-600">10 KG Available</div>
+                )
+            }
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const user = row.original
+                const item = row.original
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -57,7 +71,7 @@ export default function UserTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(user)}>
+                            <DropdownMenuItem onClick={() => onEdit(item)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -70,14 +84,14 @@ export default function UserTable({ data, onDelete }) {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete User?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(user.UserId)}>
+                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -93,7 +107,7 @@ export default function UserTable({ data, onDelete }) {
     const table = useReactTable({
         data,
         columns: storeColumns(
-            (store) => router.push(`/users/${store.StoreId}/edit`),
+            (store) => { },
             onDelete
         ),
         getCoreRowModel: getCoreRowModel(),

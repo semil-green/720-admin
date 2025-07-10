@@ -7,6 +7,7 @@ import UserForm from "@/components/users/UserForm"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
 import MainLayout from "@/components/layout/mainLayout";
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function EditUserPage() {
     const router = useRouter()
@@ -40,8 +41,16 @@ export default function EditUserPage() {
             }
 
             <div className="max-w-xl">
-                <h2 className="text-2xl font-bold mb-4">Edit User</h2>
-                <UserForm initialData={user} onSubmit={handleSubmit} />
+                <Card className='flex-1'>
+                    <CardHeader>
+                        <CardTitle>
+                            <h2 className="text-2xl font-bold">Edit User</h2>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <UserForm initialData={user} onSubmit={handleSubmit} />
+                    </CardContent>
+                </Card>
             </div>
         </MainLayout>
     )

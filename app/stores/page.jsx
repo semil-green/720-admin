@@ -106,48 +106,48 @@ export default function DarkStores() {
                             <Button type="button">Add</Button>
                         </div>
                         <div className="flex items-center justify-center gap-2 flex-wrap">
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 345464
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 565464
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 355558
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 956753
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 236344
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 958745
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 307005
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
-                            <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
+                            <Button type="button" variant="secondary" className='p-3 h-6'>
                                 360504
                                 <span className="pointer-cursor">&times;</span>
                             </Button>
 
                         </div>
                     </div>
-                    <DialogFooter className="sm:justify-start">
+                    {/* <DialogFooter className="sm:justify-start">
                         <DialogClose asChild>
                             <Button type="button" variant="secondary" onClick={() => setStoreIdForAvailablePincode(0)}>
                                 Close
                             </Button>
                         </DialogClose>
-                    </DialogFooter>
+                    </DialogFooter> */}
                 </DialogContent>
             </Dialog>
 
@@ -164,28 +164,28 @@ export default function DarkStores() {
                         <div className="flex items-center gap-2">
                             <div className="">
                                 <Label htmlFor="SlotName" className="sr-only">Slot Name</Label>
-                                <Input name="SlotName" className='border-white' value={slot.SlotName} onChange={(e) => setSlot({ ...slot, SlotName: e.target.value })} placeholder='Slot Name' />
+                                <Input name="SlotName" className='' value={slot.SlotName} onChange={(e) => setSlot({ ...slot, SlotName: e.target.value })} placeholder='Slot Name' />
                             </div>
                             <div className="">
                                 <Label htmlFor="FromTime" className="sr-only">From Time</Label>
-                                <Input type='time' className='border-white' name="FromTime" value={slot.FromTime} onChange={(e) => setSlot({ ...slot, FromTime: e.target.value })} placeholder='From Time' />
+                                <Input type='time' className='' name="FromTime" value={slot.FromTime} onChange={(e) => setSlot({ ...slot, FromTime: e.target.value })} placeholder='From Time' />
                             </div>
                             <div className="">
                                 <Label htmlFor="ToTime" className="sr-only">To Time</Label>
-                                <Input type='time' className='border-white' name="ToTime" value={slot.ToTime} onChange={(e) => setSlot({ ...slot, ToTime: e.target.value })} placeholder='To Time' />
+                                <Input type='time' className='' name="ToTime" value={slot.ToTime} onChange={(e) => setSlot({ ...slot, ToTime: e.target.value })} placeholder='To Time' />
                             </div>
                         </div>
                         <Button type="button" className='h-8'>Add</Button>
                         <div className="flex items-center justify-center gap-2 flex-wrap">
                             <table className="w-full divide-y divide-gray-200 text-sm text-left rounded overflow-hidden">
-                                <thead className="bg-orange-100">
+                                <thead className="bg-secondary">
                                     <tr>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">Slot</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">From</th>
-                                        <th className="px-4 py-2 font-semibold text-gray-700">To</th>
+                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">Slot</th>
+                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">From</th>
+                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">To</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-200 bg-white">
+                                <tbody className="divide-y divide-gray-200 ">
                                     <tr>
                                         <td className="px-4 py-2">Slot 1</td>
                                         <td className="px-4 py-2">08:00 AM</td>

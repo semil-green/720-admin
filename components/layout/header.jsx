@@ -8,10 +8,10 @@ import { menuItems } from "./sidebar"
 
 export default function Header() {
     const pathname = usePathname()
-    const activePage = menuItems.find((item) => item.href === pathname)?.label || ""
+    const activePage = menuItems.find((item) => pathname.indexOf(item.href) != -1)?.label || ""
 
     return (
-        <header className="flex h-16 items-center justify-between border-b bg-white px-6 shadow-sm">
+        <header className="flex h-16 items-center justify-between border-b bg-background px-6 shadow-sm">
             <div className="text-xl font-bold text-primary">{activePage}</div>
             <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -4,6 +4,7 @@ import MainLayout from "@/components/layout/mainLayout";
 import StoreForm from "@/components/stores/StoreForm"
 import { addStore } from "@/lib/api/store"
 import { useRouter } from "next/navigation"
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 
 export default function CreateStorePage() {
@@ -18,8 +19,16 @@ export default function CreateStorePage() {
   return (
     <MainLayout>
       <div className="max-w-xl">
-        <h2 className="text-2xl font-bold mb-4">Create Store</h2>
-        <StoreForm initialData={{}} onSubmit={handleSubmit} />
+        <Card className='flex-1'>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="text-2xl font-bold">Create Store</h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <StoreForm initialData={{}} onSubmit={handleSubmit} />
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   )

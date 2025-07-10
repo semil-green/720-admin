@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import MainLayout from "@/components/layout/mainLayout";
 import { getStoreById, updateStore } from "@/lib/api/store"
 import StoreForm from "@/components/stores/StoreForm"
+import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -37,9 +38,18 @@ export default function EditStorePage() {
                     </div>
                 </div>
             }
+
             <div className="max-w-xl">
-                <h2 className="text-2xl font-bold mb-4">Edit Store</h2>
-                <StoreForm initialData={store} onSubmit={handleSubmit} />
+                <Card className='flex-1'>
+                    <CardHeader>
+                        <CardTitle>
+                            <h2 className="text-2xl font-bold">Edit Store</h2>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <StoreForm initialData={store} onSubmit={handleSubmit} />
+                    </CardContent>
+                </Card>
             </div>
         </MainLayout>
     )

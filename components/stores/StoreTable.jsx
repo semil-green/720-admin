@@ -110,7 +110,7 @@ export default function StoreDataTable({ data, onDelete, openAvailablePincodesMo
   })
 
   return (
-    <div className="rounded border p-4 bg-white shadow">
+    <div className="rounded border p-4 pt-0 shadow">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (

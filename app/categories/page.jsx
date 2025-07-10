@@ -8,6 +8,7 @@ import CategoryForm from "@/components/categories/CategoryForm"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import Image from "next/image"
 import MainLayout from "@/components/layout/mainLayout";
 import {
     Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger
@@ -20,6 +21,8 @@ export default function Categories() {
     const [category, setCategory] = useState({})
     const [loading, setLoading] = useState(true)
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false)
+    const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false)
+    const [categoryImage, setCategoryImage] = useState(null);
 
     const router = useRouter()
 
@@ -71,6 +74,18 @@ export default function Categories() {
         setIsCategoryModalOpen(true);
     }
 
+    const onOpenSubCategoryModal = () => {
+        setIsSubCategoryModalOpen(true);
+    }
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0]
+        if (file) {
+            const imageUrl = URL.createObjectURL(file)
+            setCategoryImage(imageUrl)
+        }
+    }
+
     return (
         <MainLayout>
             {loading &&
@@ -87,7 +102,7 @@ export default function Categories() {
                     <Button onClick={() => openAddCategory()} className='cursor-pointer'>Add Category</Button>
                 </div>
 
-                <CategoryTable data={categories} onEdit={handleEdit} onDelete={handleDelete} />
+                <CategoryTable data={categories} onEdit={handleEdit} onDelete={handleDelete} onOpenSubCategoryModal={onOpenSubCategoryModal} />
             </div>
 
 
@@ -102,6 +117,67 @@ export default function Categories() {
                     </DialogHeader>
                     <div className="flex flex-col gap-2">
                         <CategoryForm initialData={category} onSubmit={handleSubmit} handleCose={() => setIsCategoryModalOpen(false)} />
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Add/Edit Category */}
+            <Dialog open={isSubCategoryModalOpen} onOpenChange={() => setIsSubCategoryModalOpen(false)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Manage Sub Category</DialogTitle>
+                        <DialogDescription>
+                            Add or update existing sub category from here.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center flex-col gap-2 w-full">
+                            <div className="w-full">
+                                <div className="flex items-center gap-2">
+                                    <Input type="file" accept="image/*" onChange={handleFileChange} />
+                                    {categoryImage && (
+                                        <div className="mt-2">
+                                            <Image src={categoryImage} alt="Category Image" width={40} height={40} className="rounded-full" />
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-2 w-full">
+                                <Input name="SubCategory" className='flex-1' defaultValue='' placeholder='Sub Category' />
+                                <Button type="button" className='h-9'>Add</Button>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-center gap-2 flex-wrap">
+                            <table className="w-full divide-y divide-gray-200 text-sm text-left rounded overflow-hidden">
+                                <thead className="bg-secondary">
+                                    <tr>
+                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">Image</th>
+                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">Sub Category</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 ">
+                                    <tr>
+                                        <td className="px-4 py-2">
+                                            <Image src={'https://picsum.photos/200'} alt="Profile" width={50} height={50} className="rounded-lg" />
+                                        </td>
+                                        <td className="px-4 py-2">Sub Cat 1</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-4 py-2">
+                                            <Image src={'https://picsum.photos/200'} alt="Profile" width={50} height={50} className="rounded-lg" />
+                                        </td>
+                                        <td className="px-4 py-2">Sub Cat 2</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-4 py-2">
+                                            <Image src={'https://picsum.photos/200'} alt="Profile" width={50} height={50} className="rounded-lg" />
+                                        </td>
+                                        <td className="px-4 py-2">Sub Cat 3</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </DialogContent>
             </Dialog>
