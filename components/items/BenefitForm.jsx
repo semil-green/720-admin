@@ -16,7 +16,7 @@ import { PlusIcon, ImageIcon } from "lucide-react"
 export default function BenefitForm({ onSubmit }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
-    const [formDatas, setFormDatas] = useState([{ Title: "", Description: '', Image: '' }])
+    const [formDatas, setFormDatas] = useState([{ Title: "", Description: '', Image: '', Id: Date.now() }])
 
     const handleChange = (index, field, value) => {
         const updated = [...formDatas]
@@ -35,7 +35,12 @@ export default function BenefitForm({ onSubmit }) {
     }
 
     const addNewBenefit = () => {
-        setFormDatas([...formDatas, { Title: "", Description: '', Image: '' }])
+        setFormDatas([...formDatas, { Title: "", Description: '', Image: '', Id: Date.now() }])
+    }
+
+    const removeBenefit = (id) => {
+        const newFormDatas = formDatas.filter((d, i) => d.Id != id)
+        setFormDatas(newFormDatas)
     }
 
     const handleSubmit = async (e) => {
@@ -49,7 +54,7 @@ export default function BenefitForm({ onSubmit }) {
         <form onSubmit={handleSubmit}>
             <div className="flex flex-wrap items-center gap-5">
                 {formDatas.map((formData, index) =>
-                    <div key={index} className="border rounded-lg p-3">
+                    <div key={formData.Id} className="border rounded-lg p-3 relative">
                         <div className="grid gap-3">
                             <Input name="Title" value={formData.Title} onChange={(e) => handleChange(index, e.target.name, e.target.value)} placeholder='Title' required />
                             <Input name="Description" value={formData.Description} onChange={(e) => handleChange(index, e.target.name, e.target.value)} required placeholder='Description' />
@@ -76,6 +81,8 @@ export default function BenefitForm({ onSubmit }) {
                                 </label>
                             }
                         </div>
+
+                        <PlusIcon className='size-4 text-secondary-foreground cursor-pointer absolute bottom-3 right-3 rotate-45' onClick={() => removeBenefit(formData.Id)} />
                     </div>
                 )}
                 <div className="border rounded-lg h-24 w-24 flex justify-center items-center bg-secondary cursor-pointer" onClick={addNewBenefit}>

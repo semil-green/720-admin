@@ -1,6 +1,6 @@
 
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -11,62 +11,22 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function ItemTable({ data, onDelete }) {
-    const router = useRouter()
+export default function WalletConfigurationTable({ data, onEdit, onDelete }) {
 
     const storeColumns = (onEdit, onDelete) => [
         {
-            accessorKey: "Title",
-            header: "Item",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="flex items-center gap-3">
-                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                        <div className="">
-                            <div className="font-semibold">{item.Title}</div>
-                            <div className="">{item.SKU}</div>
-                        </div>
-                    </div>
-                )
-            }
+            accessorKey: "MaxPointPerOrder",
+            header: "Max Point Per Order"
         },
         {
-            accessorKey: "CategoryId",
-            header: "Category",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="flex flex-col">
-                        <div className="font-semibold">Fresh Water</div>
-                        <div className="">Rohu</div>
-                    </div>
-                )
-            }
-        },
-        {
-            accessorKey: "Quantity",
-            header: "Quantity/Unit",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="">300gm</div>
-                )
-            }
-        },
-        {
-            accessorKey: "ServePerson",
-            header: "Serve Person",
-        },
-        {
-            accessorKey: "Pieces",
-            header: "Pieces",
+            accessorKey: "PerPointPrice",
+            header: "Per Point Price (In Paisa)"
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const item = row.original
+                const walletConfiguration = row.original
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -75,7 +35,7 @@ export default function ItemTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem onClick={() => onEdit(walletConfiguration.WalletConfigurationId)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -88,19 +48,20 @@ export default function ItemTable({ data, onDelete }) {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete Wallet Configuration?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => onDelete(walletConfiguration.WalletConfigurationId)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -111,7 +72,7 @@ export default function ItemTable({ data, onDelete }) {
     const table = useReactTable({
         data,
         columns: storeColumns(
-            (store) => { },
+            onEdit,
             onDelete
         ),
         getCoreRowModel: getCoreRowModel(),

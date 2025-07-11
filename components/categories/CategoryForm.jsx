@@ -77,7 +77,8 @@ const CategoryForm = ({ initialData, onSubmit, handleCose }) => {
             <div className="flex justify-end gap-4">
                 <Button type="button" variant="outline" onClick={() => handleCose()} disabled={loading}>Cancel</Button>
                 <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Add
+                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
+                    {formData.CategoryId > 0 ? 'Update Category' : 'Add Category'}
                 </Button>
             </div>
         </form>

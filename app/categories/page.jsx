@@ -110,9 +110,11 @@ export default function Categories() {
             <Dialog open={!!isCategoryModalOpen > 0} onOpenChange={() => setIsCategoryModalOpen(false)}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
-                        <DialogTitle>Add Category</DialogTitle>
+                        <DialogTitle>
+                            {category.CategoryId > 0 ? 'Update Category' : 'Add Category'}
+                        </DialogTitle>
                         <DialogDescription>
-                            Add new category from here.
+                            Add/Update category from here.
                         </DialogDescription>
                     </DialogHeader>
                     <div className="flex flex-col gap-2">

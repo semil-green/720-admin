@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import MainLayout from "@/components/layout/mainLayout";
+import { Input } from "@/components/ui/input"
 
 export default function Items() {
     const [items, setItems] = useState([])
@@ -44,7 +45,8 @@ export default function Items() {
             }
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center">
+                <div className="flex justify-between items-center gap-2">
+                    <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
                     <Button onClick={() => router.push("/items/new")} className='cursor-pointer'>Add Item</Button>
                 </div>
 

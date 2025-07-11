@@ -2,18 +2,18 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Settings, Users, SunMoon } from "lucide-react"
+import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, MoveDown, Truck, Wallet } from "lucide-react"
 
 export const menuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Users", href: "/users", icon: Users },
-  { label: "Packaging Stores", href: "/packaging-stores", icon: Settings },
-  { label: "Dark Stores", href: "/stores", icon: Settings },
-  { label: "Categories", href: "/categories", icon: Settings },
-  { label: "Items", href: "/items", icon: Settings },
-  { label: "Collections", href: "/collections", icon: Settings },
-  { label: "Inward Items", href: "/inward-items", icon: Settings },
-  { label: "Orders", href: "/orders", icon: Settings }
+  { label: "Packaging Stores", href: "/packaging-stores", icon: ShoppingBagIcon },
+  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Categories", href: "/categories", icon: ChartColumnStacked },
+  { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
+  { label: "Items", href: "/items", icon: ShoppingCartIcon },
+  { label: "Inward Items", href: "/inward-items", icon: MoveDown },
+  { label: "Orders", href: "/orders", icon: Truck }
 ]
 
 export default function Sidebar() {
@@ -29,8 +29,14 @@ export default function Sidebar() {
 
   return (
     <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative">
-      <div className='pt-4 pb-6 px-2'>
-        <img src={'/logo.png'} alt='logo' className="w-22 rounded" />
+      <div className='pt-3 pb-8 px-3'>
+        <div className="flex items-center gap-2">
+          <StoreIcon className="size-6" />
+          <div className="flex flex-col">
+            <div className="font-semibold">Surat</div>
+            <div className="text-secondary-foreground text-xs">381048</div>
+          </div>
+        </div>
       </div>
 
       <nav className="flex flex-col gap-2">

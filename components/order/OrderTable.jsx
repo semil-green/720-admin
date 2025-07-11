@@ -9,58 +9,61 @@ import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
-import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { Eye, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function ItemTable({ data, onDelete }) {
+export default function OrderTable({ data, onViewOrder, onDelete }) {
     const router = useRouter()
 
-    const storeColumns = (onEdit, onDelete) => [
+    const storeColumns = (onViewOrder, onDelete) => [
         {
-            accessorKey: "Title",
-            header: "Item",
+            accessorKey: "ItemTitle",
+            header: "Ordered Item",
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="flex items-center gap-3">
-                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                        <div className="">
-                            <div className="font-semibold">{item.Title}</div>
-                            <div className="">{item.SKU}</div>
-                        </div>
+                    <div className="grid gap-2">
+                        {item.Items.map((item, index) =>
+                            <div key={index} className="flex items-center gap-3">
+                                <img src={item.Image} alt="image" width={40} height={40} className="rounded-full" />
+                                <div className="">
+                                    <div className="font-semibold">{item.Title} <span className="text-primary">x {item.Nut}N</span></div>
+                                    <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )
             }
         },
         {
-            accessorKey: "CategoryId",
-            header: "Category",
+            accessorKey: "TotalPrice",
+            header: "Total Price"
+        },
+        {
+            accessorKey: "PaymentStatus",
+            header: "Payment Status",
             cell: ({ row }) => {
                 const item = row.original
-                return (
-                    <div className="flex flex-col">
-                        <div className="font-semibold">Fresh Water</div>
-                        <div className="">Rohu</div>
-                    </div>
+                return (<>
+                    {item.PaymentStatus == 0 && <div className="text-yellow-600">Pending</div>}
+                    {item.PaymentStatus == 1 && <div className="text-green-600">Success</div>}
+                    {item.PaymentStatus == 2 && <div className="text-red-600">Failed</div>}
+                </>
                 )
             }
-        },
+        }, ,
         {
-            accessorKey: "Quantity",
-            header: "Quantity/Unit",
+            accessorKey: "OrderStatus",
+            header: "Order Status",
             cell: ({ row }) => {
                 const item = row.original
-                return (
-                    <div className="">300gm</div>
+                return (<>
+                    {item.OrderStatus == 0 && <div className="text-yellow-600">Pending</div>}
+                    {item.OrderStatus == 1 && <div className="text-purple-600">In Progress</div>}
+                    {item.OrderStatus == 2 && <div className="text-green-600">Delivered</div>}
+                </>
                 )
             }
-        },
-        {
-            accessorKey: "ServePerson",
-            header: "Serve Person",
-        },
-        {
-            accessorKey: "Pieces",
-            header: "Pieces",
         },
         {
             id: "actions",
@@ -75,11 +78,11 @@ export default function ItemTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
-                                <Pencil className="mr-2 h-4 w-4" /> Edit
+                            <DropdownMenuItem onClick={() => onViewOrder(item)}>
+                                <Eye className="mr-2 h-4 w-4" /> View Order
                             </DropdownMenuItem>
 
-                            <AlertDialog>
+                            {/* <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -100,7 +103,7 @@ export default function ItemTable({ data, onDelete }) {
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog>
+                            </AlertDialog> */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -111,7 +114,7 @@ export default function ItemTable({ data, onDelete }) {
     const table = useReactTable({
         data,
         columns: storeColumns(
-            (store) => { },
+            onViewOrder,
             onDelete
         ),
         getCoreRowModel: getCoreRowModel(),

@@ -5,12 +5,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Switch } from "@/components/ui/switch"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
-import { roles, stores } from "@/lib/api/user"
-import { Item_Unit, Item_Unit_List } from "@/lib/constants"
+import { MultiSelect } from "@/components/shadcn/MultiSelect"
+import { Textarea } from "@/components/ui/textarea"
+import { Item_Unit_List } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
 
 export default function ItemForm({ initialData = {}, onSubmit }) {
@@ -18,6 +18,15 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({})
     const [images, setImages] = useState([])
+    const [selectedCategories, setSelectedCategories] = useState([]);
+
+    const categoriesList = [
+        { value: "1", label: "Catch of the day - Fresh Water" },
+        { value: "2", label: "Everyones fab - Fresh Water" },
+        { value: "3", label: "Marintes - Fresh Water" },
+        { value: "4", label: "Boneless & Fillers - Fresh Water" },
+        { value: "5", label: "Single bone - Marine Water" },
+    ];
 
     useEffect(() => {
         setFormData({
@@ -55,11 +64,24 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                 <div className="flex-1">
                     <Label className='pb-1'>Title</Label>
                     <Input name="Title" value={formData.Title} onChange={handleChange} placeholder='Rohu' required />
+
+                    <div className="pt-4">
+                        <Label className='pb-1'>Categories</Label>
+                        <MultiSelect
+                            options={categoriesList}
+                            onValueChange={setSelectedCategories}
+                            defaultValue={selectedCategories}
+                            placeholder="Select Category"
+                            variant="secondary"
+                            animation={0}
+                            modalPopover={true}
+                            maxCount={3} />
+                    </div>
                 </div>
 
                 <div className="flex-1">
                     <Label className='pb-1'>Description</Label>
-                    <Input name="Description" value={formData.Description} onChange={handleChange} required type='textarea' />
+                    <Textarea name="Description" className='min-h-[110px]' value={formData.Description} onChange={handleChange} required />
                 </div>
             </div>
 

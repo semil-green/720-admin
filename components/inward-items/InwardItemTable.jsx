@@ -25,7 +25,7 @@ export default function ItemTable({ data, onDelete }) {
                         <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
                         <div className="">
                             <div className="font-semibold">{item.Title}</div>
-                            <div className="">{item.SKU}</div>
+                            <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
                         </div>
                     </div>
                 )
@@ -45,22 +45,14 @@ export default function ItemTable({ data, onDelete }) {
             }
         },
         {
-            accessorKey: "Quantity",
-            header: "Quantity/Unit",
+            accessorKey: "Stock",
+            header: "Stock",
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">300gm</div>
+                    <div className="text-green-600">10 KG Available</div>
                 )
             }
-        },
-        {
-            accessorKey: "ServePerson",
-            header: "Serve Person",
-        },
-        {
-            accessorKey: "Pieces",
-            header: "Pieces",
         },
         {
             id: "actions",
