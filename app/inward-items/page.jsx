@@ -4,11 +4,13 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getItems } from "@/lib/api/inward-items"
 import InwardItemTable from "@/components/inward-items/InwardItemTable"
+import ItemWorkflowTable from "@/components/inward-items/ItemWorkflowTable"
 import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import MainLayout from "@/components/layout/mainLayout";
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function InwardItems() {
     const [items, setItems] = useState([])
@@ -44,14 +46,33 @@ export default function InwardItems() {
                 </div>
             }
 
-            <div className="space-y-4">
-                <div className="flex justify-between items-center gap-2">
-                    <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                    <Button onClick={() => router.push("/inward-items/new")} className='cursor-pointer'>Add Item to store</Button>
-                </div>
 
-                <InwardItemTable data={items} onDelete={handleDelete} />
-            </div>
+            <Tabs defaultValue="InwardItem">
+                <TabsList>
+                    <TabsTrigger value="InwardItem" onClick={() => { getItemsList() }}>Inward Item</TabsTrigger>
+                    <TabsTrigger value="ItemWorkflow" onClick={() => { getItemsList() }}>Item Workflow</TabsTrigger>
+                </TabsList>
+                <TabsContent value="InwardItem">
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center gap-2">
+                            <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
+                            <Button onClick={() => router.push("/inward-items/new")} className='cursor-pointer'>Add Item to store</Button>
+                        </div>
+
+                        <InwardItemTable data={items} onDelete={handleDelete} />
+                    </div>
+                </TabsContent>
+                <TabsContent value="ItemWorkflow">
+                    <div className="space-y-4">
+                        <div className="flex justify-between items-center gap-2">
+                            <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
+                            <Button onClick={() => router.push("/inward-items/new-workflow")} className='cursor-pointer'>Add Item Workflow</Button>
+                        </div>
+
+                        <ItemWorkflowTable data={items} onDelete={handleDelete} />
+                    </div>
+                </TabsContent>
+            </Tabs>
         </MainLayout>
     )
 }

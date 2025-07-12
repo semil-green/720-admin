@@ -30,12 +30,8 @@ export default function Sidebar() {
   return (
     <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative">
       <div className='pt-3 pb-8 px-3'>
-        <div className="flex items-center gap-2">
-          <StoreIcon className="size-6" />
-          <div className="flex flex-col">
-            <div className="font-semibold">Surat</div>
-            <div className="text-secondary-foreground text-xs">381048</div>
-          </div>
+        <div className="flex justify-center">
+          <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
         </div>
       </div>
 

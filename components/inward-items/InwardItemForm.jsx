@@ -13,24 +13,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { Item_Unit, Item_Unit_List } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
 
-export default function InwardItemForm({ initialData = {}, onSubmit }) {
+export default function InwardItemForm({ initialData = {}, onSubmit, unitId }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({})
     const [images, setImages] = useState([])
 
-    const itemsList = [
-        { value: "1", label: "Item 1", Unit: Item_Unit.KG },
-        { value: "2", label: "Item 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Item 3", Unit: Item_Unit.KG },
-        { value: "4", label: "Item 4", Unit: Item_Unit.Piece },
-        { value: "5", label: "Item 5", Unit: Item_Unit.Gram },
-    ];
-
     const unitName = useMemo(() => {
-        const unit = itemsList.find(x => x.value == formData.ItemId)?.Unit ?? 0;
-        return Item_Unit_List.find(x => x.id == unit)?.name ?? '';
-    }, [formData])
+        return Item_Unit_List.find(x => x.id == unitId)?.name ?? '';
+    }, [unitId])
 
     useEffect(() => {
         setFormData({
@@ -52,24 +43,6 @@ export default function InwardItemForm({ initialData = {}, onSubmit }) {
 
     return (
         <form onSubmit={handleSubmit} className="grid gap-4">
-
-            <div className="flex-1">
-                <Label className='pb-1'>Items</Label>
-                <Select
-                    value={formData.ItemId?.toString()}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, ItemId: parseInt(value) }))}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a Item" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {itemsList.map((item) => (
-                            <SelectItem key={item.value} value={item.value.toString()}>
-                                {item.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
 
             <div className="flex-1">
                 <Label className='pb-1'>Quantity</Label>

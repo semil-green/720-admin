@@ -192,6 +192,14 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                         <Label htmlFor="IsNoAntibiotic">Yes</Label>
                     </div>
                 </div>
+
+                <div>
+                    <Label className='pb-1'>Show on homepage?</Label>
+                    <div className="flex items-center justify-center gap-2">
+                        <Switch id="IsShowonHomepage" name="IsShowonHomepage" value={formData.IsShowonHomepage} onChange={(val) => { console.log(val) }} />
+                        <Label htmlFor="IsShowonHomepage">Yes</Label>
+                    </div>
+                </div>
             </div>
 
             <div className="flex justify-end gap-4">

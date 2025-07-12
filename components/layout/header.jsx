@@ -17,7 +17,6 @@ export default function Header() {
     return (
         <header className="flex h-16 items-center justify-between border-b bg-background px-6 shadow-sm">
             <div className="flex items-center gap-3">
-                <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
                 <div className="text-xl font-bold text-primary">{activePage}</div>
             </div>
 

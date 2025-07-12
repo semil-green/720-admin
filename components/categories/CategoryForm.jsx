@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
 import {
     Select,
     SelectTrigger,
@@ -72,6 +73,13 @@ const CategoryForm = ({ initialData, onSubmit, handleCose }) => {
                         <Image src={formData.Image} alt="Image" width={80} height={80} className="rounded-full" />
                     </div>
                 )}
+            </div>
+
+            <div>
+                <div className="flex items-center gap-2">
+                    <Switch id="IsShowonHomepage" name="IsShowonHomepage" value={formData.IsShowonHomepage} onChange={(val) => { console.log(val) }} />
+                    <Label htmlFor="IsShowonHomepage">Show on homepage?</Label>
+                </div>
             </div>
 
             <div className="flex justify-end gap-4">
