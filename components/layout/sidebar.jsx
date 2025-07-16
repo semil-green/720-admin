@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, MoveDown, UsersRound, BookText, ClockArrowUp } from "lucide-react"
+import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText, ClockArrowUp } from "lucide-react"
 
 export const menuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
@@ -18,9 +18,6 @@ export const menuItems = [
   { label: "Order Request", href: "/store-orders", icon: Truck },
   { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Items", href: "/items", icon: ShoppingCartIcon },
-  { label: "Inward Items", href: "/inward-items", icon: MoveDown },
-  { label: "Orders", href: "/orders", icon: Truck },
   { label: "Customer", href: "/customer", icon: UsersRound }
 ]
 
