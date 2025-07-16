@@ -15,7 +15,7 @@ export const menuItems = [
   { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Inward Materials", href: "/inward-items", icon: FileDown },
   { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
-  { label: "Order Request", href: "/store-orders", icon: Truck },
+  { label: "Order Request", href: "/order-request", icon: Truck },
   { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
   { label: "Customer", href: "/customer", icon: UsersRound }
