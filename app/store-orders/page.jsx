@@ -92,13 +92,9 @@ export default function StoreOrders() {
             }
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center">
-                    {/* <h2 className="text-2xl font-bold">Users</h2> */}
-                    <Button onClick={() => openAddStoreOrder()} className='cursor-pointer'>New Order</Button>
-                </div>
 
-                {/* <StoreOrderTable data={StoreOrders} onDelete={handleDelete} onEdit={handleEdit} itemsList={itemsList} /> */}
-                <StoreOrdersTable />
+
+                <StoreOrdersTable openAddStoreOrder={openAddStoreOrder} />
             </div>
 
 
