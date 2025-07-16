@@ -2,14 +2,15 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-
-import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, MoveDown, UsersRound } from "lucide-react"
+import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, MoveDown, UsersRound, BookText, ClockArrowUp } from "lucide-react"
 
 export const menuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Users", href: "/users", icon: Users },
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
   { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
+  { label: "Collections", href: "/collections", icon: BookText },
   { label: "Categories", href: "/categories", icon: ChartColumnStacked },
   { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Inward Materials", href: "/inward-items", icon: FileDown },

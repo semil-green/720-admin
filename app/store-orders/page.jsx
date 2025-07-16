@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import StoreOrdersTable from "@/components/store-orders/StoreOrdersTable"
 
 export default function StoreOrders() {
     const [StoreOrders, setStoreOrders] = useState([])
@@ -96,7 +97,8 @@ export default function StoreOrders() {
                     <Button onClick={() => openAddStoreOrder()} className='cursor-pointer'>New Order</Button>
                 </div>
 
-                <StoreOrderTable data={StoreOrders} onDelete={handleDelete} onEdit={handleEdit} itemsList={itemsList} />
+                {/* <StoreOrderTable data={StoreOrders} onDelete={handleDelete} onEdit={handleEdit} itemsList={itemsList} /> */}
+                <StoreOrdersTable />
             </div>
 
 
