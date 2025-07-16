@@ -174,13 +174,13 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                 <Card className='flex-1'>
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Output Item</h2>
+                            <h2 className="text-2xl font-bold">Output Product</h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
 
                         <div className='flex-1'>
-                            <Label className='pb-1'>Output Item</Label>
+                            <Label className='pb-1'>Output Product</Label>
                             <Select
                                 value={outputItem?.toString()}
                                 onValueChange={(value) => setOutputItem(value)}>

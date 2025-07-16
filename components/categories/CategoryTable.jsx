@@ -77,7 +77,7 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                             </AlertDialog>
 
                             <DropdownMenuItem onClick={() => onOpenSubCategoryModal(category.CategoryId)}>
-                                <Pencil className="mr-2 h-4 w-4" />  Sub Categories
+                                Sub Categories
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

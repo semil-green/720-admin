@@ -193,17 +193,10 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                     </div>
                 </div>
 
-                <div>
-                    <Label className='pb-1'>Show on homepage?</Label>
-                    <div className="flex items-center justify-center gap-2">
-                        <Switch id="IsShowonHomepage" name="IsShowonHomepage" value={formData.IsShowonHomepage} onChange={(val) => { console.log(val) }} />
-                        <Label htmlFor="IsShowonHomepage">Yes</Label>
-                    </div>
-                </div>
             </div>
 
             <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/items")} disabled={loading}>Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => router.push("/items")} disabled={loading}>Back to list</Button>
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Create
                 </Button>

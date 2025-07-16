@@ -14,10 +14,10 @@ import { cities } from "@/lib/data/storeData"
 import { LocationEdit } from "lucide-react"
 import { DivideIcon } from "lucide-react"
 
-export default function StoreDataTable({ data, onDelete, openAvailablePincodesModal, openSlotsModal }) {
+export default function StoreDataTable({ data, onDelete }) {
   const router = useRouter()
 
-  const storeColumns = (onEdit, onDelete, openAvailablePincodesModal, openSlotsModal) => [
+  const storeColumns = (onEdit, onDelete) => [
     {
       accessorKey: "StoreName",
       header: ({ column }) => (
@@ -83,14 +83,6 @@ export default function StoreDataTable({ data, onDelete, openAvailablePincodesMo
                 </AlertDialogContent>
               </AlertDialog>
 
-              <DropdownMenuItem onClick={() => openAvailablePincodesModal(store.StoreId)}>
-                <LocationEdit className="mr-2 h-4 w-4" /> Available Pincodes
-              </DropdownMenuItem>
-
-              <DropdownMenuItem onClick={() => openSlotsModal(store.StoreId)}>
-                <DivideIcon className="mr-2 h-4 w-4" /> Slots
-              </DropdownMenuItem>
-
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -102,7 +94,7 @@ export default function StoreDataTable({ data, onDelete, openAvailablePincodesMo
     data,
     columns: storeColumns(
       (store) => router.push(`/stores/${store.StoreId}/edit`),
-      onDelete, openAvailablePincodesModal, openSlotsModal
+      onDelete
     ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

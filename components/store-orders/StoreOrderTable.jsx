@@ -1,6 +1,6 @@
 
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -9,67 +9,44 @@ import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
-import { Eye, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { stores } from "@/lib/constants"
 
-export default function OrderTable({ data, onViewOrder, onDelete }) {
+export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
     const router = useRouter()
 
-    const storeColumns = (onViewOrder, onDelete) => [
+    const storeColumns = (onEdit, onDelete) => [
         {
-            accessorKey: "ItemTitle",
-            header: "Orders",
+            accessorKey: "StoreOrderId",
+            header: "Product",
             cell: ({ row }) => {
                 const item = row.original
-                return (
-                    <div className="grid gap-2">
-                        {item.Items.map((item, index) =>
-                            <div key={index} className="flex items-center gap-3">
-                                <img src={item.Image} alt="image" width={40} height={40} className="rounded-full" />
-                                <div className="">
-                                    <div className="font-semibold">{item.Title} <span className="text-primary">x {item.Nut}N</span></div>
-                                    <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
-                                </div>
-                            </div>
-                        )}
+                return <div className="flex items-center gap-3">
+                    <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
+                    <div className="">
+                        <div className="font-semibold">{itemsList.find(f => f.value == item.ItemId).label}</div>
+                        <div className="">{itemsList.find(f => f.value == item.ItemId).SKU}</div>
                     </div>
-                )
+                </div>
             }
         },
         {
-            accessorKey: "TotalPrice",
-            header: "Total Price"
+            accessorKey: "Store",
+            header: "Dark Store",
+            cell: ({ row }) => {
+                const item = row.original
+                return <div>{stores.find(f => f.value == item.ItemId).label}</div>
+            }
         },
         {
-            accessorKey: "PaymentStatus",
-            header: "Payment Status",
-            cell: ({ row }) => {
-                const item = row.original
-                return (<>
-                    {item.PaymentStatus == 0 && <div className="text-yellow-600">Pending</div>}
-                    {item.PaymentStatus == 1 && <div className="text-green-600">Success</div>}
-                    {item.PaymentStatus == 2 && <div className="text-red-600">Failed</div>}
-                </>
-                )
-            }
-        }, ,
-        {
-            accessorKey: "OrderStatus",
-            header: "Order Status",
-            cell: ({ row }) => {
-                const item = row.original
-                return (<>
-                    {item.OrderStatus == 0 && <div className="text-yellow-600">Pending</div>}
-                    {item.OrderStatus == 1 && <div className="text-purple-600">In Progress</div>}
-                    {item.OrderStatus == 2 && <div className="text-green-600">Delivered</div>}
-                </>
-                )
-            }
+            accessorKey: "Quantity",
+            header: "Quantity",
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const item = row.original
+                const storeOrder = row.original
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -78,11 +55,11 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onViewOrder(item)}>
-                                <Eye className="mr-2 h-4 w-4" /> View Order
+                            <DropdownMenuItem onClick={() => onEdit(storeOrder.StoreOrderId)}>
+                                <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
-                            {/* <AlertDialog>
+                            <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
@@ -91,19 +68,20 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete StoreOrder?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => onDelete(storeOrder.StoreOrderId)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
-                            </AlertDialog> */}
+                            </AlertDialog>
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -114,7 +92,7 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
     const table = useReactTable({
         data,
         columns: storeColumns(
-            onViewOrder,
+            onEdit,
             onDelete
         ),
         getCoreRowModel: getCoreRowModel(),

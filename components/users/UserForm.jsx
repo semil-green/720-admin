@@ -13,11 +13,14 @@ import {
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import Image from "next/image"
-import { roles, stores } from "@/lib/api/user"
+import { roles } from "@/lib/api/user"
+import { MultiSelect } from "@/components/shadcn/MultiSelect"
+import { stores } from "@/lib/constants"
 
 export default function UserForm({ initialData = {}, onSubmit }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const [selectedStores, setSelectedStores] = useState([]);
 
     const [formData, setFormData] = useState({
         RoleId: "",
@@ -82,7 +85,7 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             </div>
 
             <div>
-                <Label className='pb-1'>Role</Label>
+                <Label className='pb-1'>Select Role</Label>
                 <Select
                     value={formData.RoleId?.toString()}
                     onValueChange={(value) => setFormData((prev) => ({ ...prev, RoleId: parseInt(value) }))}
@@ -101,22 +104,16 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             </div>
 
             <div>
-                <Label className='pb-1'>Store</Label>
-                <Select
-                    value={formData.StoreId?.toString()}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, StoreId: parseInt(value) }))}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a store" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {stores.map((store) => (
-                            <SelectItem key={store.id} value={store.id.toString()}>
-                                {store.name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+                <Label className='pb-1'>Select Stores</Label>
+                <MultiSelect
+                    options={stores}
+                    onValueChange={setSelectedStores}
+                    defaultValue={selectedStores}
+                    placeholder="Select Stores"
+                    variant="secondary"
+                    animation={0}
+                    modalPopover={true}
+                    maxCount={3} />
             </div>
 
             <div>
@@ -130,7 +127,7 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             </div>
 
             <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/users")} disabled={loading}>Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => router.push("/users")} disabled={loading}>Back to list</Button>
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Submit
                 </Button>

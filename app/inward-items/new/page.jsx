@@ -8,10 +8,10 @@ import { toast } from "sonner"
 import InwardItemForm from "@/components/inward-items/InwardItemForm"
 import InwardItemPriceForm from "@/components/inward-items/InwardItemPriceForm";
 import { useMemo, useState } from "react";
-import { Item_Unit } from "@/lib/constants";
+import { Item_Unit, stores, StoreTypes } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
 
-export default function CreateItem() {
+export default function CreateInwardItem() {
     const [formData, setFormData] = useState({})
 
     const router = useRouter()
@@ -22,19 +22,11 @@ export default function CreateItem() {
     }
 
     const itemsList = [
-        { value: "1", label: "Item 1", Unit: Item_Unit.KG },
+        { value: "1", label: "Item 1", Unit: Item_Unit.Piece },
         { value: "2", label: "Item 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Item 3", Unit: Item_Unit.KG },
+        { value: "3", label: "Item 3", Unit: Item_Unit.Gram },
         { value: "4", label: "Item 4", Unit: Item_Unit.Piece },
         { value: "5", label: "Item 5", Unit: Item_Unit.Gram },
-    ];
-
-    const storesList = [
-        { value: "1", label: "Store 1", Unit: Item_Unit.KG },
-        { value: "2", label: "Store 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Store 3", Unit: Item_Unit.KG },
-        { value: "4", label: "Store 4", Unit: Item_Unit.Piece },
-        { value: "5", label: "Store 5", Unit: Item_Unit.Gram },
     ];
 
     const unitId = useMemo(() => {
@@ -48,17 +40,17 @@ export default function CreateItem() {
 
     return (
         <MainLayout>
-            <div className="flex gap-5 mb-5">
-                <div className="">
-                    <Label className='pb-1'>Store</Label>
+            <div className="flex flex-wrap gap-5 mb-5">
+                <div className="min-w-2xs">
+                    <Label className='pb-1'>Packagin Store</Label>
                     <Select
-                        value={formData.ItemId?.toString()}
-                        onValueChange={(value) => setFormData((prev) => ({ ...prev, ItemId: parseInt(value) }))}>
+                        value={formData.StoreId?.toString()}
+                        onValueChange={(value) => setFormData((prev) => ({ ...prev, StoreId: parseInt(value) }))}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Item" />
+                            <SelectValue placeholder="Select a packagin store" />
                         </SelectTrigger>
                         <SelectContent>
-                            {storesList.map((item) => (
+                            {stores.filter(f => f.type == StoreTypes.PackagingCenter).map((item) => (
                                 <SelectItem key={item.value} value={item.value.toString()}>
                                     {item.label}
                                 </SelectItem>
@@ -66,13 +58,13 @@ export default function CreateItem() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="">
-                    <Label className='pb-1'>Items</Label>
+                <div className="min-w-2xs">
+                    <Label className='pb-1'>Raw Items</Label>
                     <Select
-                        value={formData.StoreId?.toString()}
-                        onValueChange={(value) => setFormData((prev) => ({ ...prev, StoreId: parseInt(value) }))}>
+                        value={formData.ItemId?.toString()}
+                        onValueChange={(value) => setFormData((prev) => ({ ...prev, ItemId: parseInt(value) }))}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a Item" />
+                            <SelectValue placeholder="Select a raw item" />
                         </SelectTrigger>
                         <SelectContent>
                             {itemsList.map((item) => (

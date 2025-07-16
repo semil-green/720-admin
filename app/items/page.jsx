@@ -70,14 +70,14 @@ export default function Items() {
 
             <Tabs defaultValue="Item">
                 <TabsList>
-                    <TabsTrigger value="Item" onClick={() => { getItemsList() }}>Item</TabsTrigger>
+                    <TabsTrigger value="Item" onClick={() => { getItemsList() }}>Product</TabsTrigger>
                     <TabsTrigger value="RawItem" onClick={() => { getItemsList() }}>Raw Item</TabsTrigger>
                 </TabsList>
                 <TabsContent value="Item">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-2">
                             <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                            <Button onClick={() => router.push("/items/new")} className='cursor-pointer'>Add Item</Button>
+                            <Button onClick={() => router.push("/items/new")} className='cursor-pointer'>Add Product</Button>
                         </div>
 
                         <ItemTable data={items} onDelete={handleDelete} />

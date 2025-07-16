@@ -17,40 +17,34 @@ export default function ItemTable({ data, onDelete }) {
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
-            header: "Item",
+            header: "Inward Materials",
             cell: ({ row }) => {
                 const item = row.original
                 return (
                     <div className="flex items-center gap-3">
-                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                        <div className="">
-                            <div className="font-semibold">{item.Title}</div>
-                            <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
-                        </div>
+                        <div className="font-semibold">{item.Title}</div>
+                        <div className="">{item.SKU}</div>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "CategoryId",
-            header: "Category",
+            accessorKey: "Quantity",
+            header: "Quantity",
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="flex flex-col">
-                        <div className="font-semibold">Fresh Water</div>
-                        <div className="">Rohu</div>
-                    </div>
+                    <div className="">10</div>
                 )
             }
         },
         {
-            accessorKey: "Stock",
-            header: "Stock",
+            accessorKey: "Unit",
+            header: "Unit",
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="text-green-600">10 KG Available</div>
+                    <div className="">Gram</div>
                 )
             }
         },
@@ -67,15 +61,15 @@ export default function ItemTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            {/* <DropdownMenuItem onClick={() => onEdit(item)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
 
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        De-Active
                                     </div>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
