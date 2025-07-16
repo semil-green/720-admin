@@ -8,19 +8,10 @@ import { getStores, deleteStore } from "@/lib/api/store"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
-import {
-    Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger
-} from "@/components/ui/dialog"
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 
 export default function DarkStores() {
     const [stores, setStores] = useState([])
     const [loading, setLoading] = useState(true)
-    const [storeIdForAvailablePincode, setStoreIdForAvailablePincode] = useState(0);
-    const [storeIdForSlots, setStoreIdForSlots] = useState(0);
-    const [pincode, setPincode] = useState('')
-    const [slot, setSlot] = useState({})
 
     const router = useRouter()
 
@@ -48,26 +39,6 @@ export default function DarkStores() {
         getStoreList();
     }
 
-    const openAvailablePincodesModal = (storeId) => {
-        setStoreIdForAvailablePincode(storeId);
-    }
-
-    const closeAvailablePincodesModal = () => {
-        setStoreIdForAvailablePincode(0);
-    }
-
-    const openSlotsModal = (storeId) => {
-        setStoreIdForSlots(storeId);
-    }
-
-    const closeSlotsModal = () => {
-        setStoreIdForSlots(0);
-    }
-
-    const getAvalaiblePincodes = () => {
-        console.log('--------------------------- opened -------------------------------')
-    }
-
     return (
         <MainLayout>
             {loading &&
@@ -84,146 +55,8 @@ export default function DarkStores() {
                     <Button onClick={() => router.push("/stores/new")} className='cursor-pointer'>Create Store</Button>
                 </div>
 
-                {stores && <StoreTable data={stores} onDelete={handleDelete}
-                    openAvailablePincodesModal={openAvailablePincodesModal} openSlotsModal={openSlotsModal} />}
+                {stores && <StoreTable data={stores} onDelete={handleDelete} />}
             </div>
-
-            {/* Pincodes */}
-            <Dialog open={!!storeIdForAvailablePincode > 0} onOpenChange={() => closeAvailablePincodesModal()}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Available Pincodes</DialogTitle>
-                        <DialogDescription>
-                            Items will be available for express delivery for below pincodes.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                            <div className="grid flex-1 gap-2">
-                                <Label htmlFor="pincode" className="sr-only">Pincode</Label>
-                                <Input name="pincode" className='border-white' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
-                            </div>
-                            <Button type="button">Add</Button>
-                        </div>
-                        <div className="flex items-center justify-center gap-2 flex-wrap">
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                345464
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                565464
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                355558
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                956753
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                236344
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                958745
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                307005
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-                            <Button type="button" variant="secondary" className='p-3 h-6'>
-                                360504
-                                <span className="pointer-cursor">&times;</span>
-                            </Button>
-
-                        </div>
-                    </div>
-                    {/* <DialogFooter className="sm:justify-start">
-                        <DialogClose asChild>
-                            <Button type="button" variant="secondary" onClick={() => setStoreIdForAvailablePincode(0)}>
-                                Close
-                            </Button>
-                        </DialogClose>
-                    </DialogFooter> */}
-                </DialogContent>
-            </Dialog>
-
-            {/* Slotes */}
-            <Dialog open={!!storeIdForSlots > 0} onOpenChange={() => closeSlotsModal()}>
-                <DialogContent className="sm:max-w-md">
-                    <DialogHeader>
-                        <DialogTitle>Schedule Slots</DialogTitle>
-                        <DialogDescription>
-                            Schedule pre-defined slots for selected store.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                            <div className="">
-                                <Label htmlFor="SlotName" className="sr-only">Slot Name</Label>
-                                <Input name="SlotName" className='' value={slot.SlotName} onChange={(e) => setSlot({ ...slot, SlotName: e.target.value })} placeholder='Slot Name' />
-                            </div>
-                            <div className="">
-                                <Label htmlFor="FromTime" className="sr-only">From Time</Label>
-                                <Input type='time' className='' name="FromTime" value={slot.FromTime} onChange={(e) => setSlot({ ...slot, FromTime: e.target.value })} placeholder='From Time' />
-                            </div>
-                            <div className="">
-                                <Label htmlFor="ToTime" className="sr-only">To Time</Label>
-                                <Input type='time' className='' name="ToTime" value={slot.ToTime} onChange={(e) => setSlot({ ...slot, ToTime: e.target.value })} placeholder='To Time' />
-                            </div>
-                        </div>
-                        <Button type="button" className='h-8'>Add</Button>
-                        <div className="flex items-center justify-center gap-2 flex-wrap">
-                            <table className="w-full divide-y divide-gray-200 text-sm text-left rounded overflow-hidden">
-                                <thead className="bg-secondary">
-                                    <tr>
-                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">Slot</th>
-                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">From</th>
-                                        <th className="px-4 py-2 font-semibold text-secondary-foreground">To</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200 ">
-                                    <tr>
-                                        <td className="px-4 py-2">Slot 1</td>
-                                        <td className="px-4 py-2">08:00 AM</td>
-                                        <td className="px-4 py-2">09:00 AM</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-4 py-2">Slot 2</td>
-                                        <td className="px-4 py-2">10:00 AM</td>
-                                        <td className="px-4 py-2">11:00 AM</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-4 py-2">Slot 3</td>
-                                        <td className="px-4 py-2">12:00 PM</td>
-                                        <td className="px-4 py-2">01:00 PM</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-4 py-2">Slot 4</td>
-                                        <td className="px-4 py-2">02:00 PM</td>
-                                        <td className="px-4 py-2">04:00 PM</td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-4 py-2">Slot 5</td>
-                                        <td className="px-4 py-2">05:00 PM</td>
-                                        <td className="px-4 py-2">06:00 PM</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <DialogFooter className="sm:justify-start">
-                        <DialogClose asChild>
-                            <Button type="button" variant="secondary" onClick={() => closeSlotsModal(0)}>
-                                Close
-                            </Button>
-                        </DialogClose>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
 
         </MainLayout>
     )

@@ -62,12 +62,12 @@ const CategoryForm = ({ initialData, onSubmit, handleCose }) => {
             <div>
                 <input type="hidden" name="CategoryId" value={formData.CategoryId} />
                 <Label className='pb-2'>Category</Label>
-                <Input name="Category" value={formData.Category} onChange={handleChange} required className='border-white' />
+                <Input name="Category" value={formData.Category} onChange={handleChange} required className='' />
             </div>
 
             <div>
                 <Label className='pb-2'>Category Image</Label>
-                <Input type="file" accept="image/*" onChange={handleFileChange} className='border-white' />
+                <Input type="file" accept="image/*" onChange={handleFileChange} className='' />
                 {formData.Image && (
                     <div className="mt-2">
                         <Image src={formData.Image} alt="Image" width={80} height={80} className="rounded-full" />
@@ -75,12 +75,12 @@ const CategoryForm = ({ initialData, onSubmit, handleCose }) => {
                 )}
             </div>
 
-            <div>
+            {/* <div>
                 <div className="flex items-center gap-2">
                     <Switch id="IsShowonHomepage" name="IsShowonHomepage" value={formData.IsShowonHomepage} onChange={(val) => { console.log(val) }} />
                     <Label htmlFor="IsShowonHomepage">Show on homepage?</Label>
                 </div>
-            </div>
+            </div> */}
 
             <div className="flex justify-end gap-4">
                 <Button type="button" variant="outline" onClick={() => handleCose()} disabled={loading}>Cancel</Button>

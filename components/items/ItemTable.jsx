@@ -17,7 +17,7 @@ export default function ItemTable({ data, onDelete }) {
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
-            header: "Item",
+            header: "Product",
             cell: ({ row }) => {
                 const item = row.original
                 return (

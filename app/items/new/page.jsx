@@ -12,7 +12,7 @@ export default function CreateItem() {
     const router = useRouter()
 
     const handleSubmit = async (data) => {
-        toast.success("Created", { description: "Item created successfully" })
+        toast.success("Created", { description: "Product created successfully" })
         router.push("/items")
     }
 
@@ -22,7 +22,7 @@ export default function CreateItem() {
                 <Card className='flex-1'>
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Create Item</h2>
+                            <h2 className="text-2xl font-bold">Create Product</h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>

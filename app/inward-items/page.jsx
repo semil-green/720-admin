@@ -11,6 +11,8 @@ import { toast } from "sonner"
 import MainLayout from "@/components/layout/mainLayout";
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { stores, StoreTypes } from "@/lib/constants"
 
 export default function InwardItems() {
     const [items, setItems] = useState([])
@@ -32,7 +34,7 @@ export default function InwardItems() {
 
     const handleDelete = async (id) => {
         toast.success("Deleted", {
-            description: "User deleted successfully"
+            description: "Inward product deleted successfully."
         })
     }
 
@@ -49,14 +51,26 @@ export default function InwardItems() {
 
             <Tabs defaultValue="InwardItem">
                 <TabsList>
-                    <TabsTrigger value="InwardItem" onClick={() => { getItemsList() }}>Inward Item</TabsTrigger>
-                    <TabsTrigger value="ItemWorkflow" onClick={() => { getItemsList() }}>Item Workflow</TabsTrigger>
+                    <TabsTrigger value="InwardItem" onClick={() => { getItemsList() }}>Inward Materials</TabsTrigger>
+                    <TabsTrigger value="ItemWorkflow" onClick={() => { getItemsList() }}>Workflow</TabsTrigger>
                 </TabsList>
                 <TabsContent value="InwardItem">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-2">
-                            <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                            <Button onClick={() => router.push("/inward-items/new")} className='cursor-pointer'>Add Item to store</Button>
+                            <Select defaultValue={''}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a packagin store" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {stores.filter(f => f.type == StoreTypes.PackagingCenter).map((item) => (
+                                        <SelectItem key={item.value} value={item.value.toString()}>
+                                            {item.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Input defaultValue="" placeholder='Search Items' className='' />
+                            <Button onClick={() => router.push("/inward-items/new")} className='cursor-pointer'>Inward New Materials</Button>
                         </div>
 
                         <InwardItemTable data={items} onDelete={handleDelete} />
@@ -65,8 +79,20 @@ export default function InwardItems() {
                 <TabsContent value="ItemWorkflow">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-2">
-                            <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                            <Button onClick={() => router.push("/inward-items/new-workflow")} className='cursor-pointer'>Add Item Workflow</Button>
+                            <Select defaultValue={''}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a packagin store" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {stores.filter(f => f.type == StoreTypes.PackagingCenter).map((item) => (
+                                        <SelectItem key={item.value} value={item.value.toString()}>
+                                            {item.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            <Input defaultValue="" placeholder='Search Items' className='' />
+                            <Button onClick={() => router.push("/inward-items/new-workflow")} className='cursor-pointer'>Add Workflow</Button>
                         </div>
 
                         <ItemWorkflowTable data={items} onDelete={handleDelete} />

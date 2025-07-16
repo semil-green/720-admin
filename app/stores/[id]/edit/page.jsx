@@ -8,6 +8,8 @@ import StoreForm from "@/components/stores/StoreForm"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import Slots from "@/components/stores/Slots";
+import AvailablePincodes from "@/components/stores/AvailablePincodes";
 
 export default function EditStorePage() {
     const { id } = useParams()
@@ -29,6 +31,14 @@ export default function EditStorePage() {
         router.push("/stores")
     }
 
+    const handleSubmitPincodes = async (data) => {
+        toast.success("Updated", { description: "Pincode updated for this store." })
+    }
+
+    const handleSubmitSlots = async (data) => {
+        toast.success("Updated", { description: "Slots updated for this store." });
+    }
+
     return (
         <MainLayout>
             {!store &&
@@ -39,15 +49,37 @@ export default function EditStorePage() {
                 </div>
             }
 
-            <div className="max-w-xl">
+            <div className="flex flex-wrap gap-6">
                 <Card className='flex-1'>
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Edit Store</h2>
+                            <h2 className="text-2xl font-bold">Create Store</h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <StoreForm initialData={store} onSubmit={handleSubmit} />
+                        <StoreForm initialData={{}} onSubmit={handleSubmit} />
+                    </CardContent>
+                </Card>
+
+                <Card className='flex-1'>
+                    <CardHeader>
+                        <CardTitle>
+                            <h2 className="text-2xl font-bold">Available Pincodes</h2>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} />
+                    </CardContent>
+                </Card>
+
+                <Card className='flex-1'>
+                    <CardHeader>
+                        <CardTitle>
+                            <h2 className="text-2xl font-bold">Schedule Slots</h2>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <Slots initialData={{}} onSubmit={handleSubmitSlots} />
                     </CardContent>
                 </Card>
             </div>

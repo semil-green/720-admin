@@ -17,7 +17,7 @@ export default function ItemWorkflowTable({ data, onDelete }) {
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
-            header: "Output Item",
+            header: "Output Product",
             cell: ({ row }) => {
                 const item = row.original
                 return (
@@ -33,7 +33,7 @@ export default function ItemWorkflowTable({ data, onDelete }) {
         },
         {
             accessorKey: "CategoryId",
-            header: "Input Item",
+            header: "Input Raw Item",
             cell: ({ row }) => {
                 const item = row.original
                 return (
