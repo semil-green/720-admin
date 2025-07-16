@@ -4,6 +4,7 @@ import MainLayout from "@/components/layout/mainLayout";
 import { Button } from '@/components/ui/button';
 import { BookText } from "lucide-react"
 import CollectionsTable from '@/components/collections/CollectionsTable';
+import Link from 'next/link';
 
 
 export default function Collections() {
@@ -19,7 +20,9 @@ export default function Collections() {
                     <div className='flex gap-3'>
 
                         <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
-                        <Button className='cursor-pointer'>Add Collections</Button>
+                        <Link href={'/collections/new'} >
+                            <Button className='cursor-pointer'>Add Collections</Button>
+                        </Link>
                     </div>
                 </div>
 

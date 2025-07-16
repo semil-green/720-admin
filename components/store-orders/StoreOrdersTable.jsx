@@ -33,54 +33,54 @@ const data = [
     },
 ];
 
-const columns = [
-    {
-        header: 'Order No.',
-        accessorKey: 'orderNumber',
-    },
-    {
-        header: 'Order Date & Time',
-        accessorKey: 'orderDateTime',
-    },
-    {
-        header: 'Product',
-        accessorKey: 'product',
-    },
-    {
-        header: 'Store',
-        accessorKey: 'store',
-    },
-    {
-        header: 'Store Remarks',
-        accessorKey: 'storeRemarks',
-    },
-    {
-        header: 'Demanded Qty',
-        accessorKey: 'demandedQty',
-    },
-    {
-        header: 'Transferred Qty',
-        accessorKey: 'transferredQty',
-    },
-    {
-        header: 'PC Remarks',
-        accessorKey: 'pcRemarks',
-    },
-    {
-        header: 'Transfer Date & Time',
-        accessorKey: 'transferDateTime',
-    },
-    {
-        header: 'Action',
-        cell: () => (
-            <Button className=" text-sm">
-                Transfer
-            </Button>
-        ),
-    },
-];
+export default function StoreOrdersTable({ openAddStoreOrder }) {
+    const columns = [
+        {
+            header: 'Order No.',
+            accessorKey: 'orderNumber',
+        },
+        {
+            header: 'Order Date & Time',
+            accessorKey: 'orderDateTime',
+        },
+        {
+            header: 'Product',
+            accessorKey: 'product',
+        },
+        {
+            header: 'Store',
+            accessorKey: 'store',
+        },
+        {
+            header: 'Store Remarks',
+            accessorKey: 'storeRemarks',
+        },
+        {
+            header: 'Demanded Qty',
+            accessorKey: 'demandedQty',
+        },
+        {
+            header: 'Transferred Qty',
+            accessorKey: 'transferredQty',
+        },
+        {
+            header: 'PC Remarks',
+            accessorKey: 'pcRemarks',
+        },
+        {
+            header: 'Transfer Date & Time',
+            accessorKey: 'transferDateTime',
+        },
+        {
+            header: 'Action',
+            cell: () => (
+                <Button className="text-sm" onClick={openAddStoreOrder}>
+                    Transfer
+                </Button>
+            ),
+        },
+    ];
 
-export default function StoreOrdersTable() {
     const table = useReactTable({
         data,
         columns,

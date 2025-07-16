@@ -14,21 +14,21 @@ const data = [
     emailStatus: 'Not subscribed',
     location: 'Gurgaon HR, India',
     orders: '2 orders',
-    amount: '₹2,625.00',
+    amount: '₹2,220.00',
   },
   {
-    name: 'Prarthita Sengupta',
-    emailStatus: 'Subscribed',
-    location: 'West Delhi DL, India',
-    orders: '1 order',
-    amount: '₹329.00',
-  },
-  {
-    name: 'Samit Ray',
+    name: 'Dipshankar Sur',
     emailStatus: 'Not subscribed',
-    location: 'Noida UP, India',
-    orders: '6 orders',
-    amount: '₹5,800.25',
+    location: 'Gurgaon HR, India',
+    orders: '5 orders',
+    amount: '₹2,400.00',
+  },
+  {
+    name: 'Dipshankar Sur',
+    emailStatus: 'Not subscribed',
+    location: 'Gurgaon HR, India',
+    orders: '3 orders',
+    amount: '₹300.00',
   },
 ];
 
