@@ -49,11 +49,6 @@ export default function Orders() {
             }
 
             <div className="space-y-4">
-                {/* <div className="flex justify-between items-center gap-2">
-                    <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                    <Button onClick={() => router.push("/inward-items/new")} className='cursor-pointer'>Add Item to store</Button>
-                </div> */}
-
                 <OrderTable data={items} onViewOrder={onViewOrder} onDelete={handleDelete} />
             </div>
         </MainLayout>
