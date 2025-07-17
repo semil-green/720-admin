@@ -1,75 +1,120 @@
+'use client'
 
-import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import {
-    AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
-    AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
-} from "@/components/ui/alert-dialog"
-import { Eye, MoreVertical, Pencil, Trash2 } from "lucide-react"
+    useReactTable,
+    getCoreRowModel,
+    flexRender,
+    getPaginationRowModel,
+    getSortedRowModel,
+} from '@tanstack/react-table'
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Eye, MoreVertical } from 'lucide-react'
+import Link from 'next/link'
 
 export default function OrderTable({ data, onViewOrder, onDelete }) {
-    const router = useRouter()
-
     const storeColumns = (onViewOrder, onDelete) => [
         {
-            accessorKey: "ItemTitle",
-            header: "Orders",
+            accessorKey: 'orderId',
+            header: 'Order ID',
             cell: ({ row }) => {
-                const item = row.original
+                const order = row.original;
                 return (
-                    <div className="grid gap-2">
-                        {item.Items.map((item, index) =>
-                            <div key={index} className="flex items-center gap-3">
-                                <img src={item.Image} alt="image" width={40} height={40} className="rounded-full" />
-                                <div className="">
-                                    <div className="font-semibold">{item.Title} <span className="text-primary">x {item.Nut}N</span></div>
-                                    <div className="">{item.SKU} / ₹{item.Price} per 300g</div>
-                                </div>
-                            </div>
-                        )}
+                    <Link
+                        href={`/orders/${order.orderId}`}
+                    >
+                        {order.orderId}
+                    </Link>
+                );
+            },
+        },
+        {
+            accessorKey: 'name',
+            header: 'Customer Name',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+                    <Link
+                        href={`/orders/${order.orderId}`}
+                    >
+                        <div className="font-semibold">{order.name}</div>
+                    </Link>
+                )
+
+            },
+        },
+
+        {
+            accessorKey: 'TotalPrice',
+            header: 'Total Price',
+            cell: ({ row }) => (
+                <div className="text-sm font-medium">₹{row.original.TotalPrice}</div>
+            ),
+        },
+        {
+            accessorKey: 'PaymentStatus',
+            header: 'Payment Status',
+            cell: ({ row }) => {
+                const status = row.original.PaymentStatus
+                return (
+                    <div
+                        className={`text-sm font-medium ${status === 0
+                            ? 'text-yellow-600'
+                            : status === 1
+                                ? 'text-green-600'
+                                : 'text-red-600'
+                            }`}
+                    >
+                        {status === 0
+                            ? 'Pending'
+                            : status === 1
+                                ? 'Success'
+                                : 'Failed'}
                     </div>
                 )
-            }
+            },
         },
         {
-            accessorKey: "TotalPrice",
-            header: "Total Price"
-        },
-        {
-            accessorKey: "PaymentStatus",
-            header: "Payment Status",
+            accessorKey: 'OrderStatus',
+            header: 'Order Status',
             cell: ({ row }) => {
-                const item = row.original
-                return (<>
-                    {item.PaymentStatus == 0 && <div className="text-yellow-600">Pending</div>}
-                    {item.PaymentStatus == 1 && <div className="text-green-600">Success</div>}
-                    {item.PaymentStatus == 2 && <div className="text-red-600">Failed</div>}
-                </>
+                const status = row.original.OrderStatus
+                return (
+                    <div
+                        className={`text-sm font-medium ${status === 0
+                            ? 'text-yellow-600'
+                            : status === 1
+                                ? 'text-purple-600'
+                                : 'text-green-600'
+                            }`}
+                    >
+                        {status === 0
+                            ? 'Pending'
+                            : status === 1
+                                ? 'In Progress'
+                                : 'Delivered'}
+                    </div>
                 )
-            }
-        }, ,
-        {
-            accessorKey: "OrderStatus",
-            header: "Order Status",
-            cell: ({ row }) => {
-                const item = row.original
-                return (<>
-                    {item.OrderStatus == 0 && <div className="text-yellow-600">Pending</div>}
-                    {item.OrderStatus == 1 && <div className="text-purple-600">In Progress</div>}
-                    {item.OrderStatus == 2 && <div className="text-green-600">Delivered</div>}
-                </>
-                )
-            }
+            },
         },
         {
-            id: "actions",
-            header: "Actions",
+            id: 'actions',
+            header: 'Actions',
             cell: ({ row }) => {
-                const item = row.original
+                const order = row.original
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -78,32 +123,11 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onViewOrder(item)}>
-                                <Eye className="mr-2 h-4 w-4" /> View Order
+                            <DropdownMenuItem onClick={() => onViewOrder(order)}>
+                                <Eye className="mr-2 h-4 w-4" />
+                                View Order
                             </DropdownMenuItem>
-
-                            {/* <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
-                                            Confirm Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog> */}
+                            {/* Optional delete code can go here */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -113,10 +137,7 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
 
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            onViewOrder,
-            onDelete
-        ),
+        columns: storeColumns(onViewOrder, onDelete),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -130,7 +151,10 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <TableHead key={header.id}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -141,7 +165,10 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                         <TableRow key={row.id}>
                             {row.getVisibleCells().map((cell) => (
                                 <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    {flexRender(
+                                        cell.column.columnDef.cell,
+                                        cell.getContext()
+                                    )}
                                 </TableCell>
                             ))}
                         </TableRow>
@@ -158,7 +185,7 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
+                    Page {table.getState().pagination.pageIndex + 1} of{' '}
                     {table.getPageCount()}
                 </span>
                 <Button
