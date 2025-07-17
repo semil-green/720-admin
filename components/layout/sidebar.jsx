@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText, ClockArrowUp } from "lucide-react"
+import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText, ClockArrowUp, CirclePercent } from "lucide-react"
 
 
 export const menuItems = [
@@ -19,7 +19,8 @@ export const menuItems = [
   { label: "Order Request", href: "/order-request", icon: Truck },
   { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Customer", href: "/customer", icon: UsersRound }
+  { label: "Customer", href: "/customer", icon: UsersRound },
+  { label: "Discount", href: "/discount", icon: CirclePercent }
 ]
 
 export default function Sidebar() {
@@ -34,7 +35,7 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative">
+    <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative overflow-x-auto">
       <div className='pt-3 pb-8 px-3'>
         <div className="flex justify-center">
           <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
