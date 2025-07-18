@@ -110,7 +110,7 @@ export default function StoreOrders() {
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            {StoreOrder.StoreOrderId > 0 ? 'Update Order Request' : 'Order Request'}
+                            {StoreOrder.StoreOrderId > 0 ? 'Update Order Request' : 'Transfer Order '}
                         </DialogTitle>
                         <DialogDescription>
                             Add/Update Order Request from here.

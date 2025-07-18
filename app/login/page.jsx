@@ -33,29 +33,13 @@ function page() {
     const login = async (e) => {
         e.preventDefault();
         setLoading(true);
-
         await new Promise((resolve) => setTimeout(resolve, 1500));
 
         localStorage.setItem("user_email", username);
 
-        switch (username) {
-            case "admin@gmail.com":
-                router.replace("/dashboard");
-                break;
-            case "store@gmail.com":
-                router.replace("/orders");
-                break;
-            case "pc@gmail.com":
-                router.replace("/orders");
-                break;
-            default:
-                alert("Unauthorized user");
-                break;
-        }
-
+        router.replace("/dashboard");
         setLoading(false);
     };
-
 
 
     return (
