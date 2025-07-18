@@ -19,6 +19,7 @@ export default function AvailablePincodes({ initialData = {}, onSubmit }) {
 
     const [loading, setLoading] = useState(false)
     const [pincode, setPincode] = useState('')
+    const [deliveryCharge, setDeliveryCharge] = useState('')
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -30,12 +31,11 @@ export default function AvailablePincodes({ initialData = {}, onSubmit }) {
     return (
         <div className="flex flex-col gap-2 min-w-[280px]">
             <form onSubmit={handleSubmit} className="">
-                <div className="flex items-center gap-2">
-                    <div className="grid flex-1 gap-2">
-                        <Label htmlFor="pincode" className="sr-only">Pincode</Label>
-                        <Input name="pincode" className='' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
-                    </div>
-                    <Button type="submit" className='cursor-pointer'>Add</Button>
+                <div className="flex flex-col items-center gap-2">
+                    <Label htmlFor="pincode" className="sr-only">Pincode</Label>
+                    <Input name="pincode" className='' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
+                    <Input name="delivery" className='mt-2' value={deliveryCharge} onChange={(e) => setDeliveryCharge(e.target.value)} placeholder='Delivery Charge' />
+                    <Button type="submit" className='cursor-pointer mt-2'>Add</Button>
                 </div>
             </form>
             <div className="flex items-center justify-center gap-2 flex-wrap">
