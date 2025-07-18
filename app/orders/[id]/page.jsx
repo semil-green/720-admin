@@ -3,6 +3,8 @@ import UserAllTables from '@/components/user-all-orders/UserAllOrders'
 import React from 'react'
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 const page = () => {
 
@@ -185,6 +187,13 @@ const page = () => {
 
 
 
+            </div>
+            <div className="flex justify-center items-center gap-4 mt-4">
+                <Link href={'/orders'}>
+                    <Button type="button" variant="outline" >
+                        Back to list
+                    </Button>
+                </Link>
             </div>
         </MainLayout>
     )

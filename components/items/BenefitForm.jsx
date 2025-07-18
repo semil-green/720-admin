@@ -90,11 +90,7 @@ export default function BenefitForm({ onSubmit }) {
                 </div>
             </div>
 
-            <div className="flex justify-end gap-4 pt-4">
-                <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Save
-                </Button>
-            </div>
+
         </form>
     )
 }

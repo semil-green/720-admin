@@ -20,16 +20,43 @@ function page() {
         filter: 'brightness(0.8) blur(0px) invert(1)'
     }
 
+    // const login = async (e) => {
+    //     e.preventDefault();
+
+    //     setLoading(true)
+    //     await new Promise((resolve, reject) => { setTimeout(() => resolve(), 1500) });
+
+    //     router.replace('dashboard');
+    //     setLoading(false);
+
+    // }
     const login = async (e) => {
         e.preventDefault();
+        setLoading(true);
 
-        setLoading(true)
-        await new Promise((resolve, reject) => { setTimeout(() => resolve(), 1500) });
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        router.replace('dashboard');
+        localStorage.setItem("user_email", username);
+
+        switch (username) {
+            case "admin@gmail.com":
+                router.replace("/dashboard");
+                break;
+            case "store@gmail.com":
+                router.replace("/orders");
+                break;
+            case "pc@gmail.com":
+                router.replace("/orders");
+                break;
+            default:
+                alert("Unauthorized user");
+                break;
+        }
+
         setLoading(false);
+    };
 
-    }
+
 
     return (
         <div className='relative'>

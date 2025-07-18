@@ -8,6 +8,7 @@ import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader,
 import { toast } from "sonner"
 import AvailablePincodes from "@/components/stores/AvailablePincodes";
 import Slots from "@/components/stores/Slots";
+import { Button } from "@/components/ui/button";
 
 export default function CreateStorePage() {
   const router = useRouter()
@@ -62,6 +63,15 @@ export default function CreateStorePage() {
             <Slots initialData={{}} onSubmit={handleSubmitSlots} />
           </CardContent>
         </Card>
+      </div>
+      <div className="flex justify-center gap-4 mt-4">
+        <Button type="button" variant="outline" onClick={() => router.push("/stores")}>
+          Back to list
+        </Button>
+        <Button type="submit" >
+          {/* {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} */}
+          Save
+        </Button>
       </div>
     </MainLayout>
   )

@@ -1,3 +1,4 @@
+// "use client";
 import MainLayout from '@/components/layout/mainLayout'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
@@ -8,6 +9,7 @@ import Image from 'next/image';
 
 const page = async ({ params }) => {
     const { id } = await params
+
 
     const products = [
         {
@@ -149,6 +151,17 @@ const page = async ({ params }) => {
                         ))}
                     </div>
                 </div>
+            </div>
+
+            <div className="flex justify-center items-center gap-4 mt-4">
+                <Link href={'/collections'}>
+                    <Button type="button" variant="outline" >
+                        Back to list
+                    </Button>
+                </Link>
+                <Button type="submit" className='cursor-pointer'>
+                    Save
+                </Button>
             </div>
 
 

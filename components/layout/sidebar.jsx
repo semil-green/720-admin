@@ -1,11 +1,16 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText, ClockArrowUp, CirclePercent } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Home, Users, SunMoon, StoreIcon, ShoppingBagIcon,
+  ChartColumnStacked, ShoppingCartIcon, FileDown, Truck,
+  Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText,
+  ClockArrowUp, CirclePercent
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
-
-export const menuItems = [
+export const fullMenuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Users", href: "/users", icon: Users },
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
@@ -21,18 +26,50 @@ export const menuItems = [
   { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
   { label: "Discount", href: "/discount", icon: CirclePercent }
-]
+];
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const [filteredMenuItems, setFilteredMenuItems] = useState(fullMenuItems);
+
+  useEffect(() => {
+    const email = localStorage.getItem("user_email");
+
+    if (!email) return;
+
+    let allowedLabels = [];
+
+    if (email === "admin@gmail.com") {
+      setFilteredMenuItems(fullMenuItems);
+      return;
+    }
+
+    if (email === "store@gmail.com") {
+      allowedLabels = [
+        "Customer Orders",
+        "Order Request",
+        "Inventories",
+        "Customer",
+      ];
+    } else if (email === "pc@gmail.com") {
+      allowedLabels = [
+        "Customer Orders",
+        "Store Orders",
+        "Inventories",
+        "Customer",
+      ];
+    }
+
+    const filtered = fullMenuItems.filter((item) =>
+      allowedLabels.includes(item.label)
+    );
+    setFilteredMenuItems(filtered);
+  }, []);
 
   const changeTheme = () => {
-    const body = document.getElementsByTagName('body')[0];
-    if (!body.classList.contains('dark'))
-      body.classList.add("dark");
-    else
-      body.classList.remove("dark");
-  }
+    const body = document.body;
+    body.classList.toggle("dark");
+  };
 
   return (
     <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative overflow-x-auto">
@@ -43,8 +80,8 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex flex-col gap-2">
-        {menuItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname.indexOf(href) != -1
+        {filteredMenuItems.map(({ href, label, icon: Icon }) => {
+          const isActive = pathname.indexOf(href) !== -1;
           return (
             <Link
               key={href}
@@ -57,11 +94,14 @@ export default function Sidebar() {
               <Icon className="h-5 w-5" />
               <span>{label}</span>
             </Link>
-          )
+          );
         })}
       </nav>
 
-      <SunMoon className='absolute bottom-8 left-8 size-8 cursor-pointer' onClick={changeTheme} />
+      <SunMoon
+        className='absolute bottom-8 left-8 size-8 cursor-pointer'
+        onClick={changeTheme}
+      />
     </aside>
-  )
+  );
 }

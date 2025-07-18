@@ -129,7 +129,7 @@ export default function UserForm({ initialData = {}, onSubmit }) {
             <div className="flex justify-end gap-4">
                 <Button type="button" variant="outline" onClick={() => router.push("/users")} disabled={loading}>Back to list</Button>
                 <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Submit
+                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} SAve
                 </Button>
             </div>
         </form>
