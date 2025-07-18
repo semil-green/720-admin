@@ -9,6 +9,7 @@ import { Loader2, PlusIcon, MinusIcon } from "lucide-react"
 import { Item_Unit, Item_Unit_List } from "@/lib/constants"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import Link from "next/link"
 
 export default function ItemWorkFlowForm({ onSubmit }) {
     const router = useRouter()
@@ -17,17 +18,16 @@ export default function ItemWorkFlowForm({ onSubmit }) {
     const [nutrients, setNutrient] = useState([{ RawItem: 0, SKU: '', Quantity: '', Unit: 0, Id: Date.now() }])
 
     const itemsList = [
-        { value: "1", label: "Item 1", Unit: Item_Unit.KG },
-        { value: "2", label: "Item 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Item 3", Unit: Item_Unit.KG },
-        { value: "4", label: "Item 4", Unit: Item_Unit.Piece },
-        { value: "5", label: "Item 5", Unit: Item_Unit.Gram },
+        { value: "1", label: "Bhetki - 2kg", Unit: Item_Unit.KG },
+        { value: "2", label: "Rohu (Large) Curry Cut(500g*2)", Unit: Item_Unit.Gram },
+        { value: "3", label: "Tilapia boneless fillets(300g*1)", Unit: Item_Unit.KG },
+        { value: "4", label: "Baasa(Basa) Pangas", Unit: Item_Unit.Piece },
     ]
 
     const outputItemsList = [
-        { value: "1", label: "Rohu Fish" },
-        { value: "2", label: "Curry Fish" },
-        { value: "3", label: "New Fish" },
+        { value: "1", label: "Kolkata Bhetki (Sea Bass) Kali Mirch (Boneless Cubes) Nt. Wt. 300g (6-8 pcs)" },
+        { value: "2", label: "Amritsari Basa (Boneless Cubes) (Pangasius, Basa) Nt. Wt. 300g (6-8 pcs)" },
+        { value: "3", label: "Amritsari Basa (Boneless Cubes) (Pangasius, Basa) Nt. Wt. 100g (2-3 pcs)" },
     ]
 
     const handleNutrientChange = (index, field, value) => {
@@ -221,10 +221,15 @@ export default function ItemWorkFlowForm({ onSubmit }) {
             </div>
 
             {/* Submit Button */}
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex justify-center gap-4">
+                <Link href={'/inward-items'}>
+                    <Button type="button" variant="outline" >
+                        Back to list
+                    </Button>
+                </Link>
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
-                    Submit
+                    Save
                 </Button>
             </div>
         </form>

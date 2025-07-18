@@ -126,10 +126,14 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onViewOrder(order)}>
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Order
-                            </DropdownMenuItem>
+                            <Link
+                                href={`/orders/${order.orderId}`}
+                            >
+                                <DropdownMenuItem onClick={() => onViewOrder(order)}>
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Order
+                                </DropdownMenuItem>
+                            </Link>
                             {/* Optional delete code can go here */}
                         </DropdownMenuContent>
                     </DropdownMenu>

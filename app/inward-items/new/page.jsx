@@ -22,11 +22,10 @@ export default function CreateInwardItem() {
     }
 
     const itemsList = [
-        { value: "1", label: "Item 1", Unit: Item_Unit.Piece },
-        { value: "2", label: "Item 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Item 3", Unit: Item_Unit.Gram },
-        { value: "4", label: "Item 4", Unit: Item_Unit.Piece },
-        { value: "5", label: "Item 5", Unit: Item_Unit.Gram },
+        { value: "1", label: "Bhetki - 2kg", Unit: Item_Unit.Piece },
+        { value: "2", label: "Rohu (Large) Curry Cut(500g*2)", Unit: Item_Unit.Gram },
+        { value: "3", label: "Tilapia boneless fillets(300g*1)", Unit: Item_Unit.Gram },
+        { value: "4", label: "Baasa(Basa) Pangas", Unit: Item_Unit.Piece },
     ];
 
     const unitId = useMemo(() => {

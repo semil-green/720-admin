@@ -131,15 +131,7 @@ export default function StoreForm({ initialData = {}, onSubmit }) {
                 </div>
             </div>
 
-            <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" disabled={loading} onClick={() => router.push("/packaging-stores")}>
-                    Back to list
-                </Button>
-                <Button type="submit" disabled={loading} className='cursor-pointer'>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
-                    Submit
-                </Button>
-            </div>
+
         </form>
     )
 }
