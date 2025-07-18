@@ -40,8 +40,8 @@ export default function CreateInwardItem() {
 
     return (
         <MainLayout>
-            <div className="flex flex-wrap gap-5 mb-5">
-                <div className="min-w-2xs">
+            <div className="flex flex-wrap gap-5 mb-5 grid grid-cols-3">
+                <div className="min-w-2xs col-span-1">
                     <Label className='pb-1'>Packagin Store</Label>
                     <Select
                         value={formData.StoreId?.toString()}
@@ -58,7 +58,7 @@ export default function CreateInwardItem() {
                         </SelectContent>
                     </Select>
                 </div>
-                <div className="min-w-2xs">
+                <div className="min-w-2xs cols-span-1">
                     <Label className='pb-1'>Raw Items</Label>
                     <Select
                         value={formData.ItemId?.toString()}
@@ -77,28 +77,19 @@ export default function CreateInwardItem() {
                 </div>
             </div>
 
-            <div className="flex gap-5">
-                <Card className=''>
-                    <CardHeader>
-                        <CardTitle>
-                            <h2 className="text-2xl font-bold">Add Stock</h2>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <InwardItemForm initialData={{}} onSubmit={handleSubmit} unitId={unitId} />
-                    </CardContent>
-                </Card>
-
-                <Card className='flex-1'>
-                    <CardHeader>
-                        <CardTitle>
-                            <h2 className="text-2xl font-bold">Set Price</h2>
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <InwardItemPriceForm initialData={{}} onSubmit={handleSubmit} />
-                    </CardContent>
-                </Card>
+            <div className="flex gap-2 grid grid-cols-3 mt-4 gap-5">
+                <div className="cols-span-1">
+                    <Card className=''>
+                        <CardHeader>
+                            <CardTitle>
+                                <h2 className="text-2xl font-bold">Add Stock</h2>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <InwardItemForm initialData={{}} onSubmit={handleSubmit} unitId={unitId} />
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </MainLayout>
     )

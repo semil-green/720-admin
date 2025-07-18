@@ -35,6 +35,7 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                 return (
                     <Link
                         href={`/orders/${order.orderId}`}
+                        className='border-b border-black pb-[1px]'
                     >
                         {order.orderId}
                     </Link>
@@ -50,7 +51,9 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                     <Link
                         href={`/orders/${order.orderId}`}
                     >
-                        <div className="font-semibold">{order.name}</div>
+                        <span className="font-semibold border-b border-black pb-[1px] inline-block">
+                            {order.name}
+                        </span>
                     </Link>
                 )
 

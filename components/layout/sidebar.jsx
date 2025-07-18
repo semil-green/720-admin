@@ -10,16 +10,16 @@ export const menuItems = [
   { label: "Users", href: "/users", icon: Users },
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
   { label: "Dark Stores", href: "/stores", icon: StoreIcon },
-  { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
   { label: "Collections", href: "/collections", icon: BookText },
   { label: "Categories", href: "/categories", icon: ChartColumnStacked },
   { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Inward Materials", href: "/inward-items", icon: FileDown },
-  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
   { label: "Order Request", href: "/order-request", icon: Truck },
+  { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
+  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Customer", href: "/customer", icon: UsersRound },
   { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Customer", href: "/customer", icon: UsersRound },
   { label: "Discount", href: "/discount", icon: CirclePercent }
 ]
 

@@ -28,6 +28,24 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
         { value: "5", label: "Single bone - Marine Water" },
     ];
 
+    const collectionsList = [
+        {
+            name: "fish curry cut",
+            product: 17,
+            condition: "fresh"
+        },
+        {
+            name: "chicken drumstick",
+            product: 24,
+            condition: "frozen"
+        },
+        {
+            name: "organic egg",
+            product: 12,
+            condition: "new"
+        },
+    ]
+
     useEffect(() => {
         setFormData({
             ...initialData,
@@ -35,9 +53,13 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     }, [initialData])
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
-    }
+        const { name, type, checked, value } = e.target;
+        setFormData((prev) => ({
+            ...prev,
+            [name]: type === "checkbox" ? checked : value,
+        }));
+    };
+
 
     const handleItemImageChange = (e) => {
         const file = e.target.files[0]
@@ -58,6 +80,23 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
         setLoading(false)
     }
 
+    const handleAdd = (value) => {
+        const current = formData.Collections || [];
+        if (!current.includes(value)) {
+            setFormData({
+                ...formData,
+                Collections: [...current, value],
+            });
+        }
+    };
+
+    const handleRemove = (value) => {
+        const current = formData.Collections || [];
+        setFormData({
+            ...formData,
+            Collections: current.filter((item) => item !== value),
+        });
+    };
     return (
         <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="flex gap-3">
@@ -133,6 +172,86 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                     <Input name="SKU" value={formData.SKU} onChange={handleChange} placeholder='RF-KG-23' required />
                 </div>
             </div>
+
+            <div className="flex gap-3">
+                <div className="flex-1">
+                    <Label className='pb-1'>Pricing </Label>
+                    <Input name="Pricing" value={formData.Pricing} onChange={handleChange} placeholder='₹ 350' required />
+                </div>
+
+                <div className="flex-1">
+                    <Label className='pb-1'>Compare at price</Label>
+                    <Input name="ComparePrice" value={formData.ComparePrice} onChange={handleChange} placeholder='₹ 0.00' required />
+                </div>
+            </div>
+
+            <label className="flex items-center space-x-2 mt-1">
+                <input
+                    type="checkbox"
+                    name="ChargeTax"
+                    className="form-checkbox text-blue-600"
+                    checked={formData.ChargeTax || false}
+                    onChange={handleChange}
+                />
+                <span>Charge tax on this product</span>
+            </label>
+
+            <div className="flex gap-3">
+                <div className="flex-1 ">
+                    <Label className='pb-1'>Cost per item </Label>
+                    <Input name="Pieces" className="w-[50%]" value={formData.Pieces} onChange={handleChange} placeholder='₹ 0.00' required />
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+                <div className="flex-1 ">
+                    <Label className='pb-1'>Collections </Label>
+                    <Select onValueChange={handleAdd}>
+                        <SelectTrigger className="w-[50%]">
+                            <SelectValue placeholder="Select collection" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {collectionsList.map((item) => (
+                                <SelectItem key={item.name} value={item.name}>
+                                    {item.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+
+                    <div className="flex flex-wrap gap-2 mt-4">
+                        {formData.Collections?.map((name) => (
+                            <Button
+                                key={name}
+                                type="button"
+                                variant="outline"
+                                className="p-2 h-6 bg-white text-accent"
+                                onClick={() => handleRemove(name)}
+                            >
+                                {name}
+                                <span className="ml-1 cursor-pointer">&times;</span>
+                            </Button>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            <label className="flex items-center space-x-2 mt-1">
+                <input
+                    type="checkbox"
+                    name="continueSelling"
+                    value="3"
+                    checked={formData.continueSelling === "3"}
+                    onChange={(e) =>
+                        setFormData((prev) => ({
+                            ...prev,
+                            continueSelling: e.target.checked ? e.target.value : "",
+                        }))
+                    }
+                    className="form-radio text-blue-600"
+                />
+                <span>Continue selling when out of stock</span>
+            </label>
 
             <div>
                 <Label className='pb-1'>Images</Label>
