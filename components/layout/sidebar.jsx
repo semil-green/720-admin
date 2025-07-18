@@ -12,20 +12,21 @@ import { useEffect, useState } from "react";
 
 export const fullMenuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Users", href: "/users", icon: Users },
-  { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
-  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Collections", href: "/collections", icon: BookText },
   { label: "Categories", href: "/categories", icon: ChartColumnStacked },
-  { label: "Product", href: "/items", icon: ShoppingCartIcon },
+  { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Inward Materials", href: "/inward-items", icon: FileDown },
   { label: "Order Request", href: "/order-request", icon: Truck },
   { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
-  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Discount", href: "/discount", icon: CirclePercent },
   { label: "Customer", href: "/customer", icon: UsersRound },
-  { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Discount", href: "/discount", icon: CirclePercent }
+  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
+  { label: "Users", href: "/users", icon: Users },
+
 ];
 
 export default function Sidebar() {
@@ -50,6 +51,7 @@ export default function Sidebar() {
         "Order Request",
         "Inventories",
         "Customer",
+        "Dashboard"
       ];
     } else if (email === "pc@gmail.com") {
       allowedLabels = [
@@ -57,6 +59,7 @@ export default function Sidebar() {
         "Store Orders",
         "Inventories",
         "Customer",
+        "Dashboard"
       ];
     }
 
