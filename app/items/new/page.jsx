@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import BenefitForm from "@/components/items/BenefitForm";
 import NutritionalForm from "@/components/items/NutritionalForm";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 
 export default function CreateItem() {
     const router = useRouter()
@@ -51,6 +53,14 @@ export default function CreateItem() {
                         <NutritionalForm initialData={{}} onSubmit={handleSubmit} />
                     </CardContent>
                 </Card>
+
+                <div className="flex justify-center gap-4 mt-4">
+                    <Button type="button" variant="outline" onClick={() => router.push("/items")} >Back to list</Button>
+                    <Button type="submit" >
+                        {/* <Loader2 className="animate-spin h-4 w-4 mr-2" />  */}
+                        Save
+                    </Button>
+                </div>
             </div>
         </MainLayout>
     )

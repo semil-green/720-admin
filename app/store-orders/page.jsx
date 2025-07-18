@@ -81,6 +81,13 @@ export default function StoreOrders() {
         setIsStoreOrderModalOpen(true);
     }
 
+    const handleTransfer = (rowData) => {
+        setStoreOrder(rowData); // sets the selected row data in state
+        setIsStoreOrderModalOpen(true); // opens the modal
+    };
+
+
+
     return (
         <MainLayout>
             {loading &&
@@ -94,7 +101,7 @@ export default function StoreOrders() {
             <div className="space-y-4">
 
 
-                <StoreOrdersTable openAddStoreOrder={openAddStoreOrder} />
+                <StoreOrdersTable openAddStoreOrder={openAddStoreOrder} onTransferClick={handleTransfer} />
             </div>
 
 

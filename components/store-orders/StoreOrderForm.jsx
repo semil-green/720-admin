@@ -44,29 +44,9 @@ const StoreOrderForm = ({ initialData, onSubmit, handleCose, itemsList }) => {
 
     return (
         <form onSubmit={handleSubmit} className="grid gap-4">
-
-            <div>
-                <input type="hidden" name="StoreOrderId" value={formData.StoreOrderId} />
-
-                <Label className='pb-2'>Packaging Center</Label>
-                <Select value={formData.StoreId?.toString()}
-                    onValueChange={(value) => handleChange({ target: { name: 'StoreId', value: value } })}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a packagin store" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {stores.filter(f => f.type == StoreTypes.PackagingCenter).map((item) => (
-                            <SelectItem key={item.value} value={item.value.toString()}>
-                                {item.label}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
-
             <div>
                 <Label className='pb-2'>Product</Label>
-                <Select value={formData.ItemId?.toString()}
+                {/* <Select value={formData.ItemId?.toString()}
                     onValueChange={(value) => handleChange({ target: { name: 'ItemId', value: value } })}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a product" />
@@ -78,12 +58,18 @@ const StoreOrderForm = ({ initialData, onSubmit, handleCose, itemsList }) => {
                             </SelectItem>
                         ))}
                     </SelectContent>
-                </Select>
+                </Select> */}
+                <Input name="Quantity" value={initialData.product} onChange={handleChange} required className='' disabled={true} />
             </div>
 
             <div>
                 <Label className='pb-2'>Quantity</Label>
                 <Input name="Quantity" value={formData.Quantity} onChange={handleChange} required className='' />
+            </div>
+
+            <div>
+                <Label className='pb-2'>Remarks</Label>
+                <Input name="Quantity" value={formData.Remarks} onChange={handleChange} required className='' />
             </div>
 
             <div className="flex justify-end gap-4">

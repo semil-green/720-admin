@@ -53,7 +53,7 @@ export default function InwardItemForm({ initialData = {}, onSubmit, unitId }) {
             </div>
 
             <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/items")} disabled={loading}>Cancel</Button>
+                <Button type="button" variant="outline" onClick={() => router.push("/inward-items")} disabled={loading}>Cancel</Button>
                 <Button type="submit" disabled={loading}>
                     {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Add
                 </Button>

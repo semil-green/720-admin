@@ -33,7 +33,7 @@ const data = [
     },
 ];
 
-export default function StoreOrdersTable({ openAddStoreOrder }) {
+export default function StoreOrdersTable({ openAddStoreOrder, onTransferClick }) {
     const columns = [
         {
             header: 'Order No.',
@@ -73,12 +73,12 @@ export default function StoreOrdersTable({ openAddStoreOrder }) {
         },
         {
             header: 'Action',
-            cell: () => (
-                <Button className="text-sm" onClick={openAddStoreOrder}>
+            cell: ({ row }) => (
+                <Button className="text-sm" onClick={() => onTransferClick(row.original)}>
                     Transfer
                 </Button>
             ),
-        },
+        }
     ];
 
     const table = useReactTable({

@@ -1,5 +1,7 @@
 "use client";
+import Link from 'next/link';
 import React, { useState } from 'react'
+import { Button } from '../ui/button';
 
 const AddDiscountForm = () => {
 
@@ -197,6 +199,17 @@ const AddDiscountForm = () => {
                     </div>
 
                 </div>
+            </div>
+
+            <div className="flex justify-center items-center gap-4 mt-4">
+                <Link href={'/discount'}>
+                    <Button type="button" variant="outline" >
+                        Back to list
+                    </Button>
+                </Link>
+                <Button type="submit" className='cursor-pointer'>
+                    Save
+                </Button>
             </div>
         </>
     )
