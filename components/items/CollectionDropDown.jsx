@@ -14,7 +14,7 @@ import {
 import { Loader2 } from "lucide-react"
 import { cities, states } from "@/lib/data/storeData"
 
-export default function AvailablePincodes({ initialData = {}, onSubmit }) {
+export default function CollectionsDrop({ initialData = {}, onSubmit }) {
     const router = useRouter()
 
     const [loading, setLoading] = useState(false)
@@ -27,6 +27,7 @@ export default function AvailablePincodes({ initialData = {}, onSubmit }) {
         await onSubmit(pincode)
         setLoading(false)
     }
+
 
     return (
         <div className="flex flex-col gap-2 min-w-[280px]">
