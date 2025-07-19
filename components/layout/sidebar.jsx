@@ -59,7 +59,8 @@ export default function Sidebar() {
         "Store Orders",
         "Inventories",
         "Customer",
-        "Dashboard"
+        "Dashboard",
+        "Inward Materials"
       ];
     }
 
