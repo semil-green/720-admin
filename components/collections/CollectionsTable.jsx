@@ -11,19 +11,19 @@ import Image from 'next/image';
 
 const data = [
     {
-        image: '/images/seafood-bg.png',
+        image: "/images/fish-image.png",
         title: 'Fish Curry Cut',
         product: 17,
         condition: 'Fresh',
     },
     {
-        image: '/images/seafood-bg.png',
+        image: "/images/fish-image.png",
         title: 'Chicken Drumstick',
         product: 24,
         condition: 'Frozen',
     },
     {
-        image: '/images/seafood-bg.png',
+        image: "/images/fish-image.png",
         title: 'Organic Eggs',
         product: 12,
         condition: 'New',

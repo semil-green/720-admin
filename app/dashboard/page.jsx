@@ -30,28 +30,28 @@ export default function Dashboard() {
     const bestSellingList = [
         {
             Name: 'Fresh Fish',
-            Image: 'https://picsum.photos/200',
+            Image: "/images/fish-image.png",
             SKU: 'RF-BK-45',
             Price: '300',
             Units: '5',
             TotalRevenue: '1.58K'
         }, {
             Name: 'New Fish',
-            Image: 'https://picsum.photos/200',
+            Image: "/images/fish-image.png",
             SKU: 'RF-BK-23',
             Price: '250',
             Units: '3',
             TotalRevenue: '1.11K'
         }, {
             Name: 'Rohu Fish',
-            Image: 'https://picsum.photos/200',
+            Image: "/images/fish-image.png",
             SKU: 'RF-BK-13',
             Price: '159',
             Units: '2',
             TotalRevenue: '298'
         }, {
             Name: 'Delhi Fish',
-            Image: 'https://picsum.photos/200',
+            Image: "/images/fish-image.png",
             SKU: 'RF-BK-25',
             Price: '499',
             Units: '2',

@@ -69,11 +69,6 @@ export default function Sidebar() {
     setFilteredMenuItems(filtered);
   }, []);
 
-  const changeTheme = () => {
-    const body = document.body;
-    body.classList.toggle("dark");
-  };
-
   return (
     <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative overflow-x-auto">
       <div className='pt-3 pb-8 px-3'>
@@ -101,10 +96,6 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <SunMoon
-        className='absolute bottom-8 left-8 size-8 cursor-pointer'
-        onClick={changeTheme}
-      />
     </aside>
   );
 }
