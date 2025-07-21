@@ -23,7 +23,7 @@ const page = () => {
                 </Card>
 
                 <div className="flex justify-center gap-4 mt-4">
-                    <Button type="button" variant="outline" onClick={() => router.push("/items")} >Back to list</Button>
+                    <Button type="button" variant="outline" onClick={() => router.push("/vendors")} >Back to list</Button>
                     <Button type="submit" >
                         Save
                     </Button>
