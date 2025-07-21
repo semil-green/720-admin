@@ -20,16 +20,27 @@ function page() {
         filter: 'brightness(0.8) blur(0px) invert(1)'
     }
 
+    // const login = async (e) => {
+    //     e.preventDefault();
+
+    //     setLoading(true)
+    //     await new Promise((resolve, reject) => { setTimeout(() => resolve(), 1500) });
+
+    //     router.replace('dashboard');
+    //     setLoading(false);
+
+    // }
     const login = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
-        setLoading(true)
-        await new Promise((resolve, reject) => { setTimeout(() => resolve(), 1500) });
+        localStorage.setItem("user_email", username);
 
-        router.replace('dashboard');
+        router.replace("/dashboard");
         setLoading(false);
+    };
 
-    }
 
     return (
         <div className='relative'>

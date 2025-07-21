@@ -1,67 +1,155 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { Home, Users, SunMoon, StoreIcon, ShoppingBagIcon, ChartColumnStacked, ShoppingCartIcon, FileDown, Truck, Wallet, ArrowDownUp, ShoppingBasket, UsersRound, BookText, ClockArrowUp, CirclePercent } from "lucide-react"
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Home, Users, StoreIcon, ShoppingBagIcon,
+  ChartColumnStacked, ShoppingCartIcon, FileDown,
+  Truck, Wallet, ArrowDownUp, ShoppingBasket,
+  UsersRound, BookText, ClockArrowUp, CirclePercent,
+  Menu
+} from "lucide-react";
+import { useEffect, useState } from "react";
 
-
-export const menuItems = [
+export const fullMenuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Users", href: "/users", icon: Users },
-  { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
-  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Collections", href: "/collections", icon: BookText },
   { label: "Categories", href: "/categories", icon: ChartColumnStacked },
-  { label: "Product", href: "/items", icon: ShoppingCartIcon },
+  { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Inward Materials", href: "/inward-items", icon: FileDown },
   { label: "Order Request", href: "/order-request", icon: Truck },
   { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
-  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Discount", href: "/discount", icon: CirclePercent },
   { label: "Customer", href: "/customer", icon: UsersRound },
-  { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Discount", href: "/discount", icon: CirclePercent }
-]
+  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
+  { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
+  { label: "Users", href: "/users", icon: Users },
+];
 
 export default function Sidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const [filteredMenuItems, setFilteredMenuItems] = useState(fullMenuItems);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const changeTheme = () => {
-    const body = document.getElementsByTagName('body')[0];
-    if (!body.classList.contains('dark'))
-      body.classList.add("dark");
-    else
-      body.classList.remove("dark");
-  }
+  useEffect(() => {
+    const email = localStorage.getItem("user_email");
+
+    if (!email) return;
+
+    let allowedLabels = [];
+
+    if (email === "admin@gmail.com") {
+      setFilteredMenuItems(fullMenuItems);
+      return;
+    }
+
+    if (email === "store@gmail.com") {
+      allowedLabels = [
+        "Customer Orders",
+        "Order Request",
+        "Inventories",
+        "Customer",
+        "Dashboard"
+      ];
+    } else if (email === "pc@gmail.com") {
+      allowedLabels = [
+        "Customer Orders",
+        "Store Orders",
+        "Inventories",
+        "Customer",
+        "Dashboard",
+        "Inward Materials"
+      ];
+    }
+
+    const filtered = fullMenuItems.filter((item) =>
+      allowedLabels.includes(item.label)
+    );
+    setFilteredMenuItems(filtered);
+  }, []);
 
   return (
-    <aside className="w-64 h-full border-r bg-sidebar shadow-sm px-4 relative overflow-x-auto">
-      <div className='pt-3 pb-8 px-3'>
-        <div className="flex justify-center">
-          <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
-        </div>
+    <>
+      {/* Sticky Top Header */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b h-16 px-4 py-3 flex items-center justify-between lg:hidden">
+        <div className="text-xl font-bold"> <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" /></div>
+        <button onClick={() => setSidebarOpen((prev) => !prev)}>
+          <Menu className="h-6 w-6 text-gray-700" />
+        </button>
       </div>
 
-      <nav className="flex flex-col gap-2">
-        {menuItems.map(({ href, label, icon: Icon }) => {
-          const isActive = pathname.indexOf(href) != -1
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
-                ? "bg-primary text-primary-foreground"
-                : "text-sidebar-foreground hover:bg-sidebar-accent"
-                }`}
-            >
-              <Icon className="h-5 w-5" />
-              <span>{label}</span>
-            </Link>
-          )
-        })}
-      </nav>
 
-      <SunMoon className='absolute bottom-8 left-8 size-8 cursor-pointer' onClick={changeTheme} />
-    </aside>
-  )
+      {/* Sidebar for Desktop */}
+      <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 pt-4 shadow-sm">
+        <div className='pt-3 pb-8 px-3'>
+          <div className="flex justify-center">
+            <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
+          </div>
+        </div>
+
+        <nav className="flex flex-col gap-2">
+          {filteredMenuItems.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname.indexOf(href) !== -1;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                  ? "bg-primary text-primary-foreground"
+                  : "text-gray-700 hover:bg-gray-100"
+                  }`}
+              >
+                <Icon className="h-5 w-5" />
+                <span>{label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-40 flex lg:hidden">
+          {/* Overlay Background */}
+          <div className="absolute inset-0 bg-black opacity-40" onClick={() => setSidebarOpen(false)}></div>
+
+          {/* Slide-Out Sidebar */}
+          <aside
+            className="relative z-50 w-64 h-full bg-white p-4 shadow-lg overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-6">
+              <div className="text-lg font-bold">Menu</div>
+              <button onClick={() => setSidebarOpen(false)}>✕</button>
+            </div>
+
+            <nav className="flex flex-col gap-2">
+              {filteredMenuItems.map(({ href, label, icon: Icon }) => {
+                const isActive = pathname.indexOf(href) !== -1;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
+                      ? "bg-primary text-primary-foreground"
+                      : "text-gray-700 hover:bg-gray-100"
+                      }`}
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    <Icon className="h-5 w-5" />
+                    <span>{label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          </aside>
+        </div>
+      )}
+
+      <div className="lg:hidden h-16" />
+    </>
+  );
 }

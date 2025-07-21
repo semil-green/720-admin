@@ -28,51 +28,52 @@ export default function AvailablePincodes({ initialData = {}, onSubmit }) {
         setLoading(false)
     }
 
+    const data = [
+        { pincode: "345464", charge: 30 },
+        { pincode: "565464", charge: 40 },
+        { pincode: "355558", charge: 25 },
+        { pincode: "956753", charge: 35 },
+        { pincode: "236344", charge: 50 },
+        { pincode: "958745", charge: 45 },
+        { pincode: "307005", charge: 60 },
+        { pincode: "360504", charge: 55 },
+    ];
+
     return (
         <div className="flex flex-col gap-2 min-w-[280px]">
             <form onSubmit={handleSubmit} className="">
                 <div className="flex flex-col items-center gap-2">
                     <Label htmlFor="pincode" className="sr-only">Pincode</Label>
-                    <Input name="pincode" className='mt-4' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
-                    <Input name="deliveryCharge" className='' value={deliveryCharge} onChange={(e) => setDeliveryCharge(e.target.value)} placeholder='Delivery Charge' />
-                    <Button type="submit" className='cursor-pointer mt-4'>Add</Button>
+                    <Input name="pincode" className='' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
+                    <Input name="delivery" className='mt-2' value={deliveryCharge} onChange={(e) => setDeliveryCharge(e.target.value)} placeholder='Delivery Charge' />
+                    <Button type="submit" className='cursor-pointer mt-2'>Add</Button>
                 </div>
             </form>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    345464
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    565464
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    355558
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    956753
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    236344
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    958745
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    307005
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
-                <Button type="button" variant="outline" className='p-3 h-6 bg-white text-accent'>
-                    360504
-                    <span className="pointer-cursor">&times;</span>
-                </Button>
+            <table className="min-w-full table-auto border border-gray-300 rounded-md mt-2">
+                <thead className="bg-gray-100">
+                    <tr>
+                        <th className="p-2 border-b text-center">Pincode</th>
+                        <th className="p-2 border-b text-center">Delivery Charge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {data.map((item) => (
+                        <tr key={item.pincode} className="hover:bg-gray-50">
+                            <td className="p-2 border-b text-center">
+                                <div className="inline-flex items-center gap-1 px-3 py-1 h-6 bg-white text-accent">
+                                    {item.pincode}
+                                    <span className="cursor-pointer text-red-500 text-sm hover:text-red-700">
+                                        &times;
+                                    </span>
+                                </div>
+                            </td>
 
-            </div>
+                            <td className="p-2 border-b border-l border-gray-300 text-center">₹{item.charge}</td>
+                        </tr>
+                    ))}
+                </tbody>
+
+            </table>
         </div>
     )
-}
+}   

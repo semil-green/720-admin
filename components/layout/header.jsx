@@ -4,15 +4,20 @@ import { usePathname, useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { LogOut, StoreIcon } from "lucide-react"
-import { menuItems } from "./sidebar"
+import { fullMenuItems } from "./sidebar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { BellIcon } from "lucide-react"
 import { FishIcon } from "lucide-react"
-
+import { SunMoon } from "lucide-react"
 export default function Header() {
     const router = useRouter()
     const pathname = usePathname()
-    const activePage = menuItems.find((item) => pathname.indexOf(item.href) != -1)?.label || ""
+    const activePage = fullMenuItems.find((item) => pathname.indexOf(item.href) != -1)?.label || ""
+
+    const changeTheme = () => {
+        const body = document.body;
+        body.classList.toggle("dark");
+    };
 
     return (
         <header className="flex h-16 items-center justify-between border-b bg-background px-6 shadow-sm">
@@ -21,6 +26,8 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-3">
+                <SunMoon className='size-7 cursor-pointer' onClick={changeTheme} />
+
                 <Popover>
                     <PopoverTrigger variant="outline">
                         <div className="border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground p-2 rounded-full cursor-pointer relative">
@@ -54,7 +61,6 @@ export default function Header() {
                         </div>
                     </PopoverContent>
                 </Popover>
-
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

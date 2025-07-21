@@ -19,6 +19,8 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     const [formData, setFormData] = useState({})
     const [images, setImages] = useState([])
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedCollections, setSelectedCollections] = useState([]);
+
 
     const categoriesList = [
         { value: "1", label: "Catch of the day - Fresh Water" },
@@ -90,13 +92,12 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
         }
     };
 
-    const handleRemove = (value) => {
-        const current = formData.Collections || [];
-        setFormData({
-            ...formData,
-            Collections: current.filter((item) => item !== value),
-        });
+    const handleRemove = (indexToRemove) => {
+        setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
     };
+
+
+
     return (
         <form onSubmit={handleSubmit} className="grid gap-4">
             <div className="flex gap-3">
@@ -114,7 +115,8 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                             variant="secondary"
                             animation={0}
                             modalPopover={true}
-                            maxCount={3} />
+                            maxCount={3}
+                        />
                     </div>
                 </div>
 
@@ -206,35 +208,34 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
             <div className="flex flex-col gap-3">
                 <div className="flex-1 ">
                     <Label className='pb-1'>Collections </Label>
-                    <Select onValueChange={handleAdd}>
-                        <SelectTrigger className="w-[50%]">
-                            <SelectValue placeholder="Select collection" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {collectionsList.map((item) => (
-                                <SelectItem key={item.name} value={item.name}>
-                                    {item.name}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
 
-                    <div className="flex flex-wrap gap-2 mt-4">
-                        {formData.Collections?.map((name) => (
-                            <Button
-                                key={name}
-                                type="button"
-                                variant="outline"
-                                className="p-2 h-6 bg-white text-accent"
-                                onClick={() => handleRemove(name)}
-                            >
-                                {name}
-                                <span className="ml-1 cursor-pointer">&times;</span>
-                            </Button>
-                        ))}
-                    </div>
+                    <MultiSelect
+                        options={collectionsList.map((item) => ({
+                            label: item.name,
+                            value: item.name,
+                        }))}
+                        onValueChange={setSelectedCollections}
+                        defaultValue={selectedCollections}
+                        placeholder="Select Collection"
+                        variant="secondary"
+                        animation={0}
+                        modalPopover={true}
+                        maxCount={3}
+                        className="w-[50%]"
+                    />
+
                 </div>
             </div>
+
+            <div>
+                <Label className='pb-1'>GST</Label>
+                <div className="grid grid-cols-3 gap-3">
+                    <Input name="HSNCode" value={formData.HSNCode} onChange={handleChange} placeholder='HSN Code' required />
+                    <Input name="GSTPercent" value={formData.GSTPercent} onChange={handleChange} placeholder='GST %' required />
+                    <Input name="IGST" value={formData.IGST} onChange={handleChange} placeholder='IGST' required />
+                </div>
+            </div>
+
 
             <label className="flex items-center space-x-2 mt-1">
                 <input
@@ -254,8 +255,8 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
             </label>
 
             <div>
-                <Label className='pb-1'>Images</Label>
-                <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5">
+                <Label className='pb-1'>Images </Label>
+                {/* <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5">
                     {images.map((image, index) => (
                         <div key={index} className="p-1 rounded-lg w-[200px] h-[140px] bg-secondary">
                             <Image src={image} alt="Profile" width={200} height={140} className="rounded-lg w-full h-full" />
@@ -268,7 +269,42 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                             <PlusIcon className='size-18 text-secondary-foreground' />
                         </div>
                     </label>
+                </div> */}
+                <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5">
+                    {images.map((image, index) => (
+                        <div key={index} className="relative p-1 rounded-lg w-[200px] h-[140px] bg-secondary">
+                            <Image
+                                src={image}
+                                alt="Profile"
+                                width={200}
+                                height={140}
+                                className="rounded-lg w-full h-full"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => handleRemove(index)}
+                                className="absolute top-1 right-1 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-black/80"
+                                aria-la bel="Remove image"
+                            >
+                                ×
+                            </button>
+                        </div>
+                    ))}
+
+                    <label aria-label="item_images">
+                        <Input
+                            id="item_images"
+                            className="hidden"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleItemImageChange}
+                        />
+                        <div className="border rounded-lg h-24 w-24 flex justify-center items-center bg-secondary cursor-pointer">
+                            <PlusIcon className="size-18 text-secondary-foreground" />
+                        </div>
+                    </label>
                 </div>
+
             </div>
 
             <div className="flex flex-wrap justify-between gap-2">
@@ -314,12 +350,7 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
 
             </div>
 
-            <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/items")} disabled={loading}>Back to list</Button>
-                <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} Create
-                </Button>
-            </div>
+
         </form>
     )
 }
