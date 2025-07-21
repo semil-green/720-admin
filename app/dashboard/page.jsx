@@ -18,11 +18,16 @@ import BestSellingTable from '@/components/dashboard/BestSellingTable';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import WorstSellingTable from '@/components/dashboard/WorstSellingTable';
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+
 export default function Dashboard() {
     const [orderInterval, setOrderInterval] = useState(Dashboard_Order_Interval.Today);
     const [loading, setLoading] = useState(false)
     const [itemSelected, setItemSelected] = useState("bestItem")
-
+    const [startDate, setStartDate] = useState(null);
+    const [endDate, setEndDate] = useState(null);
 
     console.log("itemSelected :", itemSelected)
     useEffect(() => {
@@ -102,17 +107,57 @@ export default function Dashboard() {
 
     return (
         <MainLayout>
-
-            {/* Order Cards */}
             <div>
-                <div className='flex items-center justify-between pb-3'>
-                    <h2 className='font-semibold text-xl'>Orders</h2>
+                <div className="relative">
+                    <div className='flex items-center justify-between pb-3'>
+                        <h2 className='font-semibold text-xl'>Orders</h2>
 
-                    <ToggleGroup type="single" className='border' size='sm' value={orderInterval} onValueChange={(val) => setOrderInterval(val)}>
-                        <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.Today}>Today</ToggleGroupItem>
-                        <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisWeek}>This Week</ToggleGroupItem>
-                        <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisMonth}>This Month</ToggleGroupItem>
-                    </ToggleGroup>
+                        <div className="relative">
+                            <ToggleGroup type="single" className='border' size='sm' value={orderInterval} onValueChange={(val) => setOrderInterval(val)}>
+                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.Today}>Today</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisWeek}>This Week</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisMonth}>This Month</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.Custom}>Custom</ToggleGroupItem>
+                            </ToggleGroup>
+
+                            {orderInterval === Dashboard_Order_Interval.Custom && (
+                                <div className="absolute top-full right-0 mt-2 bg-white border rounded-lg shadow-lg p-3 z-50">
+                                    <div className="text-sm font-medium mb-2 text-center text-gray-700">
+                                        Select Date Range
+                                    </div>
+                                    <DatePicker
+                                        selected={startDate}
+                                        onChange={(dates) => {
+                                            const [start, end] = dates;
+                                            setStartDate(start);
+                                            setEndDate(end);
+                                        }}
+                                        startDate={startDate}
+                                        endDate={endDate}
+                                        selectsRange
+                                        inline
+                                        monthsShown={1}
+                                        dateFormat="MMM d, yyyy"
+                                    />
+                                    <div className="flex justify-between items-center mt-3 pt-3 border-t text-sm">
+                                        <div className="text-gray-600">
+                                            {startDate && endDate ? (
+                                                `${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`
+                                            ) : (
+                                                'Select start and end dates'
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => setOrderInterval(Dashboard_Order_Interval.Today)}
+                                            className="px-2 py-1 text-xs text-gray-500 hover:bg-gray-100 rounded"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-5'>

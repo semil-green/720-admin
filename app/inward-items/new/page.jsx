@@ -38,6 +38,24 @@ export default function CreateInwardItem() {
         router.push("/inward-items")
     }
 
+    const vendors = [
+        {
+            name: "Vendor 1",
+        },
+        {
+            name: "Vendor 2",
+        },
+        {
+            name: "Vendor 3",
+        },
+        {
+            name: "Vendor 4",
+        },
+        {
+            name: "Vendor 5",
+        },
+    ]
+
     return (
         <MainLayout>
             <div className="flex flex-wrap gap-5 mb-5 grid grid-cols-3">
@@ -75,6 +93,30 @@ export default function CreateInwardItem() {
                         </SelectContent>
                     </Select>
                 </div>
+            </div>
+
+            <div className="flex flex-wrap gap-5 mb-5 grid grid-cols-3">
+                <div className="min-w-2xs col-span-1">
+                    <Label className='pb-1'>Vendor</Label>
+                    <Select
+                        value={formData.Vendor?.toString()}
+                        onValueChange={(value) => setFormData((prev) => ({ ...prev, vendor: parseInt(value) }))}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a vendor" />
+                        </SelectTrigger>
+                        <SelectContent>
+
+                            {
+                                vendors?.map((vendor, index) => (
+                                    <SelectItem key={index} value={vendor.name.toString()}>
+                                        {vendor.name}
+                                    </SelectItem>
+                                ))
+                            }
+                        </SelectContent>
+                    </Select>
+                </div>
+
             </div>
 
             <div className="flex gap-2 grid grid-cols-3 mt-4 gap-5">
