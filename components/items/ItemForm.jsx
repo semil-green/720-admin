@@ -21,6 +21,7 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     const [selectedCategories, setSelectedCategories] = useState([]);
     const [selectedCollections, setSelectedCollections] = useState([]);
 
+    const [gstSlabSelected, setGstSlabSelected] = useState({})
 
     const categoriesList = [
         { value: "1", label: "Catch of the day - Fresh Water" },
@@ -95,6 +96,49 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     const handleRemove = (indexToRemove) => {
         setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
     };
+
+    const gstRates = [
+        {
+            hsnCode: "0101",
+            gstPercent: 10,
+            igst: 7,
+        },
+        {
+            hsnCode: "0401",
+            gstPercent: 5,
+            igst: 5,
+        },
+        {
+            hsnCode: "1006",
+            gstPercent: 5,
+            igst: 5,
+        },
+        {
+            hsnCode: "1701",
+            gstPercent: 5,
+            igst: 5,
+        },
+        {
+            hsnCode: "2106",
+            gstPercent: 18,
+            igst: 18,
+        },
+        {
+            hsnCode: "3304",
+            gstPercent: 18,
+            igst: 18,
+        },
+        {
+            hsnCode: "8528",
+            gstPercent: 28,
+            igst: 28,
+        },
+        {
+            hsnCode: "8703",
+            gstPercent: 28,
+            igst: 28,
+        },
+    ];
 
 
 
@@ -230,9 +274,30 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
             <div>
                 <Label className='pb-1'>GST</Label>
                 <div className="grid grid-cols-3 gap-3">
-                    <Input name="HSNCode" value={formData.HSNCode} onChange={handleChange} placeholder='HSN Code' required />
-                    <Input name="GSTPercent" value={formData.GSTPercent} onChange={handleChange} placeholder='GST %' required />
-                    <Input name="IGST" value={formData.IGST} onChange={handleChange} placeholder='IGST' required />
+                    <Select
+                        value={formData.Vendor?.toString()}
+                        onValueChange={(value) => {
+                            const selected = gstRates.find(vendor => vendor.hsnCode.toString() === value);
+                            if (selected) {
+                                setGstSlabSelected(selected);
+                            }
+                        }}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a vendor" />
+                        </SelectTrigger>
+                        <SelectContent>
+
+                            {
+                                gstRates?.map((vendor, index) => (
+                                    <SelectItem key={index} value={vendor.hsnCode.toString()}>
+                                        {vendor.hsnCode}
+                                    </SelectItem>
+                                ))
+                            }
+                        </SelectContent>
+                    </Select>
+                    <Input name="GSTPercent" value={`GST % : ${gstSlabSelected?.gstPercent} `} placeholder='GST %' required disabled />
+                    <Input name="IGST" value={`IGST : ${gstSlabSelected?.igst}`} placeholder='IGST' disabled />
                 </div>
             </div>
 
@@ -270,6 +335,7 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                         </div>
                     </label>
                 </div> */}
+
                 <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5">
                     {images.map((image, index) => (
                         <div key={index} className="relative p-1 rounded-lg w-[200px] h-[140px] bg-secondary">
@@ -349,8 +415,6 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
                 </div>
 
             </div>
-
-
         </form>
     )
 }
