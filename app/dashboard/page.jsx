@@ -15,11 +15,16 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Dashboard_Order_Interval } from '@/lib/constants';
 import BestSellingTable from '@/components/dashboard/BestSellingTable';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import WorstSellingTable from '@/components/dashboard/WorstSellingTable';
 
 export default function Dashboard() {
     const [orderInterval, setOrderInterval] = useState(Dashboard_Order_Interval.Today);
     const [loading, setLoading] = useState(false)
+    const [itemSelected, setItemSelected] = useState("bestItem")
 
+
+    console.log("itemSelected :", itemSelected)
     useEffect(() => {
         setLoading(true);
         setTimeout(() => {
@@ -58,6 +63,42 @@ export default function Dashboard() {
             TotalRevenue: '1K'
         },
     ]
+
+    const worstSellingList = [
+        {
+            Name: 'Dry Fish',
+            Image: 'https://picsum.photos/200?random=1',
+            SKU: 'RF-WK-12',
+            Price: '180',
+            Units: '1',
+            TotalRevenue: '180'
+        },
+        {
+            Name: 'Frozen Shrimp',
+            Image: 'https://picsum.photos/200?random=2',
+            SKU: 'RF-WK-07',
+            Price: '299',
+            Units: '1',
+            TotalRevenue: '299'
+        },
+        {
+            Name: 'Bangda Fish',
+            Image: 'https://picsum.photos/200?random=3',
+            SKU: 'RF-WK-19',
+            Price: '120',
+            Units: '2',
+            TotalRevenue: '240'
+        },
+        {
+            Name: 'Imported Fish',
+            Image: 'https://picsum.photos/200?random=4',
+            SKU: 'RF-WK-33',
+            Price: '499',
+            Units: '1',
+            TotalRevenue: '499'
+        }
+    ];
+
 
     return (
         <MainLayout>
@@ -140,7 +181,13 @@ export default function Dashboard() {
             {/* Best Selling List */}
             <div>
                 <div className='flex items-center justify-between pb-3 pt-8'>
-                    <h2 className='font-semibold text-xl'>Best Selling Items</h2>
+                    {/* <h2 className='font-semibold text-xl'>Best Selling Items</h2> */}
+                    <Tabs defaultValue="Item">
+                        <TabsList>
+                            <TabsTrigger value="bestItem" onClick={() => setItemSelected("bestItem")}>Best Selling Items</TabsTrigger>
+                            <TabsTrigger value="worstItem" onClick={() => setItemSelected("worstItem")}>Worst Selling Items</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-5'>
@@ -148,10 +195,14 @@ export default function Dashboard() {
                         <Skeleton className="h-[400px] flex-1 rounded-xl bg-secondary" />
                     }
 
-                    {!loading &&
+                    {!loading && itemSelected === "bestItem" &&
                         <BestSellingTable data={bestSellingList} />
                     }
                 </div>
+
+                {!loading && itemSelected === "worstItem" &&
+                    <WorstSellingTable data={worstSellingList} />
+                }
             </div>
         </MainLayout>
     )
