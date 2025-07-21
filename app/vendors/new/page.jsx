@@ -4,6 +4,7 @@ import VendorForm from '@/components/vendor/AddVendorForm'
 import React from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
+import Link from 'next/link';
 
 
 const page = () => {
@@ -23,7 +24,9 @@ const page = () => {
                 </Card>
 
                 <div className="flex justify-center gap-4 mt-4">
-                    <Button type="button" variant="outline" onClick={() => router.push("/vendors")} >Back to list</Button>
+                    <Link href="/vendors">
+                        <Button type="button" variant="outline"  >Back to list</Button>
+                    </Link>
                     <Button type="submit" >
                         Save
                     </Button>
