@@ -148,25 +148,25 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
             },
         },
 
-        {
-            accessorKey: 'tags',
-            header: 'Tags ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
+        // {
+        //     accessorKey: 'tags',
+        //     header: 'Tags ',
+        //     cell: ({ row }) => {
+        //         const order = row.original
+        //         return (
 
 
-                    order.tags?.map((tag, index) => (
+        //             order.tags?.map((tag, index) => (
 
-                        <span className="font-medium  inline-block mr-2" key={index}>
-                            {tag.name},
-                        </span>
-                    ))
+        //                 <span className="font-medium  inline-block mr-2" key={index}>
+        //                     {tag.name},
+        //                 </span>
+        //             ))
 
-                )
+        //         )
 
-            },
-        },
+        //     },
+        // },
 
         {
             accessorKey: 'deliveryMethod',
@@ -198,20 +198,20 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
             },
         },
 
-        {
-            accessorKey: 'Channel',
-            header: 'Channel ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
+        // {
+        //     accessorKey: 'Channel',
+        //     header: 'Channel ',
+        //     cell: ({ row }) => {
+        //         const order = row.original
+        //         return (
 
-                    <span className="font-medium  inline-block">
-                        {order.Channel}
-                    </span>
-                )
+        //             <span className="font-medium  inline-block">
+        //                 {order.Channel}
+        //             </span>
+        //         )
 
-            },
-        },
+        //     },
+        // },
 
         // {
         //     accessorKey: 'OrderStatus',

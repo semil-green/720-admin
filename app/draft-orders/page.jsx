@@ -1,11 +1,9 @@
 import MainLayout from '@/components/layout/mainLayout'
+import DraftOrderTable from '@/components/order/draft-order/DraftOrderTable'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import React from 'react'
 import { PencilLine } from 'lucide-react';
-import DraftOrderTable from '@/components/order/draft-order/DraftOrderTable';
-
-
 const page = () => {
     return (
         <MainLayout>
