@@ -12,13 +12,13 @@ import Image from 'next/image';
 const data = [
     {
         image: "/images/fish-image.png",
-        title: 'Fish Curry Cut',
+        vendorName: 'Aakash Patel',
         product: 17,
         condition: 'Fresh',
         address: '123 Coastal Street, Bay Area',
         pincode: '560001',
         phone: '+91-9876543210',
-        email: 'fishvendor@example.com',
+        email: 'akpatel@example.com',
         bankDetails: {
             name: 'State Bank of India',
             accountNo: 'XXXXXXXX1234',
@@ -28,13 +28,13 @@ const data = [
     },
     {
         image: "/images/fish-image.png",
-        title: 'Chicken Drumstick',
+        vendorName: 'Neel Sharma',
         product: 24,
         condition: 'Frozen',
         address: '456 Chicken Lane, Meat Market',
         pincode: '400011',
         phone: '+91-8765432109',
-        email: 'chickenvendor@example.com',
+        email: 'nssharma@example.com',
         bankDetails: {
             name: 'HDFC Bank',
             accountNo: 'XXXXXXXX5678',
@@ -44,13 +44,13 @@ const data = [
     },
     {
         image: "/images/fish-image.png",
-        title: 'Organic Eggs',
+        vendorName: 'Pratik shah',
         product: 12,
         condition: 'New',
         address: '789 Organic Avenue, Farm Town',
         pincode: '110022',
         phone: '+91-9988776655',
-        email: 'eggvendor@example.com',
+        email: 'prshah  @example.com',
         bankDetails: {
             name: 'ICICI Bank',
             accountNo: 'XXXXXXXX4321',
@@ -75,8 +75,8 @@ const columns = [
         ),
     },
     {
-        header: 'Title',
-        accessorKey: 'title',
+        header: 'Vendor Name',
+        accessorKey: 'vendorName',
         cell: info => {
             const value = info.getValue();
             return (
@@ -89,24 +89,6 @@ const columns = [
     {
         header: 'Products',
         accessorKey: 'product',
-    },
-    {
-        header: 'Condition',
-        accessorKey: 'condition',
-        cell: info => {
-            const value = info.getValue();
-            const color =
-                value === 'New'
-                    ? 'bg-green-100 text-green-700'
-                    : value === 'Fresh'
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'bg-yellow-100 text-yellow-700';
-            return (
-                <span className={`px-2 py-1 text-sm rounded-full font-medium ${color}`}>
-                    {value}
-                </span>
-            );
-        },
     },
     {
         header: 'Contact Info',
@@ -128,19 +110,6 @@ const columns = [
                 <div className="text-sm text-gray-800 space-y-1">
                     <div><strong>Address:</strong> {address}</div>
                     <div><strong>Pincode:</strong> {pincode}</div>
-                </div>
-            );
-        },
-    },
-    {
-        header: 'Bank Details',
-        cell: ({ row }) => {
-            const { bankDetails } = row.original;
-            return (
-                <div className="text-sm text-gray-800 space-y-1">
-                    <div><strong>Bank:</strong> {bankDetails.name}</div>
-                    <div><strong>A/C:</strong> {bankDetails.accountNo}</div>
-                    <div><strong>IFSC:</strong> {bankDetails.ifsc}</div>
                 </div>
             );
         },

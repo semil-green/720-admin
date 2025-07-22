@@ -121,3 +121,29 @@
     @apply bg-background text-foreground font-sans;
   }
 }
+
+.react-datepicker__navigation--previous,
+.react-datepicker__navigation--next {
+  background-color: #ef4723 !important; 
+  border-radius: 4px;
+  width: 30px;
+  height: 30px;
+  top: 10px;
+  color: white !important;
+}
+
+.react-datepicker__navigation--previous::before,
+.react-datepicker__navigation--next::before {
+  border-color: white !important; 
+}
+.react-datepicker__navigation-icon--previous {
+  right: auto !important;
+}
+
+.react-datepicker__navigation-icon--next{
+  left: auto !important;
+}
+.react-datepicker__day-names{
+  margin-top: 0.5rem;
+}
+
