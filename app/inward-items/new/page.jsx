@@ -10,6 +10,8 @@ import InwardItemPriceForm from "@/components/inward-items/InwardItemPriceForm";
 import { useMemo, useState } from "react";
 import { Item_Unit, stores, StoreTypes } from "@/lib/constants";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input"
+
 
 export default function CreateInwardItem() {
     const [formData, setFormData] = useState({})
@@ -114,6 +116,11 @@ export default function CreateInwardItem() {
                             }
                         </SelectContent>
                     </Select>
+                </div>
+
+                <div>
+                    <Label className='pb-2'>Batch</Label>
+                    <Input name="PerPointPrice" value={formData.PerPointPrice} onChange={handleChange} required placeholder='B1' type='text' className='' disabled />
                 </div>
 
             </div>

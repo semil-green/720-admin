@@ -227,12 +227,13 @@ export default function Dashboard() {
             <div>
                 <div className='flex items-center justify-between pb-3 pt-8'>
                     {/* <h2 className='font-semibold text-xl'>Best Selling Items</h2> */}
-                    <Tabs defaultValue="Item">
+                    <Tabs value={itemSelected} onValueChange={(val) => setItemSelected(val)}>
                         <TabsList>
-                            <TabsTrigger value="bestItem" onClick={() => setItemSelected("bestItem")}>Best Selling Items</TabsTrigger>
-                            <TabsTrigger value="worstItem" onClick={() => setItemSelected("worstItem")}>Worst Selling Items</TabsTrigger>
+                            <TabsTrigger value="bestItem">Best Selling Items</TabsTrigger>
+                            <TabsTrigger value="worstItem">Worst Selling Items</TabsTrigger>
                         </TabsList>
                     </Tabs>
+
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-5'>

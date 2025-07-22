@@ -45,6 +45,8 @@ export default function Inventory() {
         setLoading(false)
     }
 
+    const storesData = stores?.filter((item) => item?.label.includes("Packaging Center"))
+
     return (
         <MainLayout>
             {loading &&
@@ -69,13 +71,13 @@ export default function Inventory() {
                 {
                     selectedItem == "Item" && <div className="flex justify-between items-center gap-2">
                         <MultiSelect
-                            options={stores.map((item) => ({
+                            options={storesData.map((item) => ({
                                 label: item.label,
                                 value: item.value.toString(),
                             }))}
                             onValueChange={setSelectedCategories}
                             defaultValue={selectedCategories}
-                            placeholder="Select a packaging center/dark store"
+                            placeholder="Select a packaging center"
                             variant="secondary"
                             animation={0}
                             modalPopover={true}
