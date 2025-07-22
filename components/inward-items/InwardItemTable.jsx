@@ -13,7 +13,6 @@ import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
 export default function ItemTable({ data, onDelete }) {
     const router = useRouter()
-
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
@@ -35,6 +34,46 @@ export default function ItemTable({ data, onDelete }) {
                 const item = row.original
                 return (
                     <div className="">10</div>
+                )
+            }
+        },
+        {
+            accessorKey: "batch",
+            header: "Batch",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="">{item.batch}</div>
+                )
+            }
+        },
+        {
+            accessorKey: "vendor",
+            header: "Vendor",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="">{item.vendor}</div>
+                )
+            }
+        },
+        {
+            accessorKey: "date",
+            header: "Date",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="">{item.date}</div>
+                )
+            }
+        },
+        {
+            accessorKey: "time",
+            header: "Time",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="">{item.time}</div>
                 )
             }
         },
