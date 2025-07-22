@@ -42,9 +42,25 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                 );
             },
         },
+
+        {
+            accessorKey: 'Date',
+            header: 'Date ',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+
+                    <span className="font-medium  inline-block">
+                        {order.Date}
+                    </span>
+                )
+
+            },
+        },
+
         {
             accessorKey: 'name',
-            header: 'Customer Name',
+            header: 'Customer ',
             cell: ({ row }) => {
                 const order = row.original
                 return (
@@ -62,11 +78,12 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
 
         {
             accessorKey: 'TotalPrice',
-            header: 'Total Price',
+            header: 'Total',
             cell: ({ row }) => (
                 <div className="text-sm font-medium">₹{row.original.TotalPrice}</div>
             ),
         },
+
         {
             accessorKey: 'PaymentStatus',
             header: 'Payment Status',
@@ -90,56 +107,162 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                 )
             },
         },
+
         {
-            accessorKey: 'OrderStatus',
-            header: 'Order Status',
+            accessorKey: 'fulfillmentStatus',
+            header: 'Fulfillment Status',
             cell: ({ row }) => {
-                const status = row.original.OrderStatus
+                const status = row.original.fulfillmentStatus
+
                 return (
                     <div
-                        className={`text-sm font-medium ${status === 0
+                        className={`text-sm font-medium ${status === "unfulfilled"
                             ? 'text-yellow-600'
                             : status === 1
-                                ? 'text-purple-600'
-                                : 'text-green-600'
+                                ? 'text-green-600'
+                                : 'text-red-600'
                             }`}
                     >
                         {status === 0
                             ? 'Pending'
                             : status === 1
-                                ? 'In Progress'
-                                : 'Delivered'}
+                                ? 'Success'
+                                : 'unfulfilled'}
                     </div>
                 )
             },
         },
+
         {
-            id: 'actions',
-            header: 'Actions',
+            accessorKey: 'Items',
+            header: 'Items ',
             cell: ({ row }) => {
                 const order = row.original
                 return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon">
-                                <MoreVertical className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <Link
-                                href={`/orders/${order.orderId}`}
-                            >
-                                <DropdownMenuItem onClick={() => onViewOrder(order)}>
-                                    <Eye className="mr-2 h-4 w-4" />
-                                    View Order
-                                </DropdownMenuItem>
-                            </Link>
-                            {/* Optional delete code can go here */}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+
+                    <span className="font-medium  inline-block">
+                        {order.Items.length}
+                    </span>
                 )
+
             },
         },
+
+        {
+            accessorKey: 'tags',
+            header: 'Tags ',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+
+
+                    order.tags?.map((tag, index) => (
+
+                        <span className="font-medium  inline-block mr-2" key={index}>
+                            {tag.name},
+                        </span>
+                    ))
+
+                )
+
+            },
+        },
+
+        {
+            accessorKey: 'deliveryMethod',
+            header: 'Delivery Method ',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+
+                    <span className="font-medium  inline-block">
+                        {order.deliveryMethod}
+                    </span>
+                )
+
+            },
+        },
+
+        {
+            accessorKey: 'destination',
+            header: 'Destination ',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+
+                    <span className="font-medium  inline-block">
+                        {order.destination}
+                    </span>
+                )
+
+            },
+        },
+
+        {
+            accessorKey: 'Channel',
+            header: 'Channel ',
+            cell: ({ row }) => {
+                const order = row.original
+                return (
+
+                    <span className="font-medium  inline-block">
+                        {order.Channel}
+                    </span>
+                )
+
+            },
+        },
+
+        // {
+        //     accessorKey: 'OrderStatus',
+        //     header: 'Order Status',
+        //     cell: ({ row }) => {
+        //         const status = row.original.OrderStatus
+        //         return (
+        //             <div
+        //                 className={`text-sm font-medium ${status === 0
+        //                     ? 'text-yellow-600'
+        //                     : status === 1
+        //                         ? 'text-purple-600'
+        //                         : 'text-green-600'
+        //                     }`}
+        //             >
+        //                 {status === 0
+        //                     ? 'Pending'
+        //                     : status === 1
+        //                         ? 'In Progress'
+        //                         : 'Delivered'}
+        //             </div>
+        //         )
+        //     },
+        // },
+        // {
+        //     id: 'actions',
+        //     header: 'Actions',
+        //     cell: ({ row }) => {
+        //         const order = row.original
+        //         return (
+        //             <DropdownMenu>
+        //                 <DropdownMenuTrigger asChild>
+        //                     <Button variant="ghost" size="icon">
+        //                         <MoreVertical className="h-4 w-4" />
+        //                     </Button>
+        //                 </DropdownMenuTrigger>
+        //                 <DropdownMenuContent align="end">
+        //                     <Link
+        //                         href={`/orders/${order.orderId}`}
+        //                     >
+        //                         <DropdownMenuItem onClick={() => onViewOrder(order)}>
+        //                             <Eye className="mr-2 h-4 w-4" />
+        //                             View Order
+        //                         </DropdownMenuItem>
+        //                     </Link>
+        //                     {/* Optional delete code can go here */}
+        //                 </DropdownMenuContent>
+        //             </DropdownMenu>
+        //         )
+        //     },
+        // },
     ]
 
     const table = useReactTable({
