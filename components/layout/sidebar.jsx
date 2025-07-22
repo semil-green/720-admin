@@ -7,7 +7,7 @@ import {
   ChartColumnStacked, ShoppingCartIcon, FileDown,
   Truck, Wallet, ArrowDownUp, ShoppingBasket,
   UsersRound, BookText, ClockArrowUp, CirclePercent,
-  Menu
+  Menu, MapPin
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -27,6 +27,8 @@ export const fullMenuItems = [
   { label: "Dark Stores", href: "/stores", icon: StoreIcon },
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
   { label: "Users", href: "/users", icon: Users },
+  { label: "Vendor", href: "/vendors", icon: Users },
+  { label: "Pincode", href: "/pincode", icon: MapPin },
 ];
 
 export default function Sidebar() {
@@ -83,7 +85,7 @@ export default function Sidebar() {
 
 
       {/* Sidebar for Desktop */}
-      <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 pt-4 shadow-sm">
+      <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 pt-4 shadow-sm overflow-y-auto">
         <div className='pt-3 pb-8 px-3'>
           <div className="flex justify-center">
             <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
