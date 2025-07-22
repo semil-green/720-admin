@@ -13,7 +13,7 @@ const page = () => {
                 <div className="flex justify-between items-end ">
                     <div className='flex  gap-3'>
                         <BookText />
-                        <h1 className='font-semibold text-xl'>Collections</h1>
+                        <h1 className='font-semibold text-xl'>Vendors</h1>
                     </div>
                     <div className='flex gap-3'>
 

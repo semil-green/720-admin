@@ -28,7 +28,7 @@ export const fullMenuItems = [
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
   { label: "Users", href: "/users", icon: Users },
   { label: "Vendor", href: "/vendors", icon: Users },
-  { label: "Pincode", href: "/pincode", icon: MapPin },
+  { label: "Pincode wise Slot", href: "/pincodeWiseSlot", icon: MapPin },
 ];
 
 export default function Sidebar() {
