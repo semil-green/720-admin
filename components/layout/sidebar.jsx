@@ -7,13 +7,14 @@ import {
   ChartColumnStacked, ShoppingCartIcon, FileDown,
   Truck, Wallet, ArrowDownUp, ShoppingBasket,
   UsersRound, BookText, ClockArrowUp, CirclePercent,
-  Menu, MapPin
+  Menu, MapPin, PencilLine
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const fullMenuItems = [
   { label: "Dashboard", href: "/dashboard", icon: Home },
   { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
+  { label: "Draft Orders", href: "/draft-orders", icon: PencilLine },
   { label: "Product", href: "/items", icon: ShoppingCartIcon },
   { label: "Collections", href: "/collections", icon: BookText },
   { label: "Categories", href: "/categories", icon: ChartColumnStacked },

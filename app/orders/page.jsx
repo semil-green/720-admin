@@ -53,9 +53,7 @@ export default function Orders() {
 
             <div className="space-y-4">
                 <div className="flex justify-end items-center gap-2">
-                    <Link href={"/orders/draft-order"}>
-                        <Button className='cursor-pointer'>Draft Order</Button>
-                    </Link>
+
                     <Link href={"/orders/new"}>
                         <Button className='cursor-pointer'>New Order</Button>
                     </Link>
