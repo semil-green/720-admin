@@ -52,17 +52,6 @@ export default function CreateStorePage() {
             <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} />
           </CardContent>
         </Card>
-
-        <Card className='flex-1'>
-          <CardHeader>
-            <CardTitle>
-              <h2 className="text-2xl font-bold">Schedule Slots</h2>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Slots initialData={{}} onSubmit={handleSubmitSlots} />
-          </CardContent>
-        </Card>
       </div>
       <div className="flex justify-center gap-4 mt-4">
         <Button type="button" variant="outline" onClick={() => router.push("/stores")}>
