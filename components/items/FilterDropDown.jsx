@@ -9,7 +9,7 @@ import {
     DropdownMenuItem
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
-import { ArrowDown, ArrowUp } from "lucide-react"
+import { ArrowDown, ArrowUp, ListFilter } from "lucide-react"
 import { useState } from "react"
 
 const columns = [
@@ -32,7 +32,7 @@ export default function FilterDropdown({ onSortChange }) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="px-10">Filter</Button>
+                <Button variant="outline" className="px-10"><ListFilter /></Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Sort By</DropdownMenuLabel>
