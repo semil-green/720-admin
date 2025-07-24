@@ -15,12 +15,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
     Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger
 } from "@/components/ui/dialog"
+import FilterDropdown from "@/components/items/FilterDropDown"
 
 export default function Items() {
     const [items, setItems] = useState([])
     const [loading, setLoading] = useState(true)
     const [rawItem, setRawItem] = useState({})
     const [isRawItemModalOpen, setIsRawItemModalOpen] = useState(false)
+    const [sortState, setSortState] = useState()
+
 
     const router = useRouter()
 
@@ -57,6 +60,9 @@ export default function Items() {
         await getItemsList();
     }
 
+    const handleSortChange = (sort) => {
+        setSortState([sort])
+    }
 
     return (
         <MainLayout>
@@ -76,11 +82,28 @@ export default function Items() {
                 <TabsContent value="Item">
                     <div className="space-y-4">
                         <div className="flex justify-between items-center gap-2">
-                            <Input defaultValue="" placeholder='Search Items' className='max-w-2/4' />
-                            <Button onClick={() => router.push("/items/new")} className='cursor-pointer'>Add Product</Button>
+                            <div>
+
+                            </div>
+                            <div className="flex gap-4">
+                                <Button variant='secondary'>Export</Button>
+                                <Button onClick={() => router.push("/items/new")} className='cursor-pointer'>Add Product</Button>
+                            </div>
                         </div>
 
-                        <ItemTable data={items} onDelete={handleDelete} />
+                        <div className="flex justify-between">
+
+                            <div>
+
+                                <Input defaultValue="" placeholder='Search Items' className='w-2xl' />
+                            </div>
+
+                            <div className="flex justify-end">
+                                <FilterDropdown onSortChange={handleSortChange} />
+                            </div>
+                        </div>
+
+                        <ItemTable data={items} onDelete={handleDelete} sortState={sortState} />
                     </div>
                 </TabsContent>
                 <TabsContent value="RawItem">

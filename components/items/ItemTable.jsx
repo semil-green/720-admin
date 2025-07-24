@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function ItemTable({ data, onDelete }) {
+export default function ItemTable({ data, onDelete, sortState }) {
     const router = useRouter()
-
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
@@ -50,7 +49,7 @@ export default function ItemTable({ data, onDelete }) {
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">300gm</div>
+                    <div className="">{item.Quantity}</div>
                 )
             }
         },
@@ -58,10 +57,10 @@ export default function ItemTable({ data, onDelete }) {
             accessorKey: "ServePerson",
             header: "Serve Person",
         },
-        {
-            accessorKey: "Pieces",
-            header: "Pieces",
-        },
+        // {
+        //     accessorKey: "Pieces",
+        //     header: "Pieces",
+        // },
         {
             id: "actions",
             header: "Actions",
@@ -117,7 +116,14 @@ export default function ItemTable({ data, onDelete }) {
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+
+        state: {
+            sorting: sortState,
+        },
+        manualSorting: false,
+
     })
+
 
     return (
         <div className="rounded border p-4 pt-0 shadow">

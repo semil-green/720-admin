@@ -6,6 +6,7 @@ import { Button } from '../ui/button';
 const AddDiscountForm = () => {
 
     const [showExtraEndDate, setShowExtraEndDate] = useState(false);
+    const [discountType, setDiscountType] = useState("")
 
     return (
         <>
@@ -30,20 +31,29 @@ const AddDiscountForm = () => {
                     <div className="mt-4 bg-white border rounded-md shadow px-4 py-4">
                         <h5 className="text-gray-500 font-semibold">Discount Value</h5>
 
-                        <div className="grid grid-cols-3 gap-4 mt-4">
+                        <div className="grid grid-cols-4 gap-4 mt-4">
                             <select
                                 className="w-full border rounded-md px-2 py-2 focus:outline-none focus:ring-2 focus:ring-gray-300 text-gray-700 col-span-2"
                                 defaultValue="fixed"
+                                onChange={(e) => setDiscountType(e.target.value)}
                             >
                                 <option value="fixed">Fixed amount</option>
                                 <option value="percentage">Percentage</option>
                             </select>
 
                             <input
-                                className="border shadow px-2 py-2 w-full rounded-md col-span-1"
-                                placeholder="200"
+                                className="border shadow px-2 py-2 w-full rounded-md"
+                                placeholder="Amount / Percent Off"
                             />
+
+                            {discountType === "percentage" && (
+                                <input
+                                    className="border shadow px-2 py-2 w-full rounded-md"
+                                    placeholder="Max cap for discount"
+                                />
+                            )}
                         </div>
+
                     </div>
 
                     <div className="mt-4 bg-white border rounded-md shadow px-4 py-3">
