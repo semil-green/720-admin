@@ -9,9 +9,13 @@ import { toast } from "sonner"
 import AvailablePincodes from "@/components/stores/AvailablePincodes";
 import Slots from "@/components/stores/Slots";
 import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation";
+
 
 export default function CreateStorePage() {
   const router = useRouter()
+  const searchParams = useSearchParams();
+
 
   const handleSubmit = async (data) => {
     await addStore(data)
@@ -28,6 +32,9 @@ export default function CreateStorePage() {
     router.push("/stores")
   }
 
+  const editId = parseInt(searchParams.get("id"));
+
+
   return (
     <MainLayout>
       <div className="flex flex-wrap gap-6">
@@ -38,7 +45,7 @@ export default function CreateStorePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <StoreForm initialData={{}} onSubmit={handleSubmit} />
+            <StoreForm initialData={{}} onSubmit={handleSubmit} type={"dark_store"} editId={editId} />
           </CardContent>
         </Card>
 
@@ -49,19 +56,11 @@ export default function CreateStorePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} />
+            <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} editId={editId} />
           </CardContent>
         </Card>
       </div>
-      <div className="flex justify-center gap-4 mt-4">
-        <Button type="button" variant="outline" onClick={() => router.push("/stores")}>
-          Back to list
-        </Button>
-        <Button type="submit" >
-          {/* {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />} */}
-          Save
-        </Button>
-      </div>
+
     </MainLayout>
   )
 }

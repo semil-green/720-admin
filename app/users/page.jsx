@@ -8,24 +8,17 @@ import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 import MainLayout from "@/components/layout/mainLayout";
+import { getAllUsersService } from "@/service/user/user.service"
+import { useDispatch, useSelector } from "react-redux";
+import { setAllUSers } from "@/store/slices/user-slice/user.slice"
+import { getAllRoles } from "@/service/role-master/role-master.service"
 
 export default function Users() {
-    const [users, setUsers] = useState([])
     const [loading, setLoading] = useState(true)
     const router = useRouter()
 
-    useEffect(() => {
-        getUserList();
-    }, [])
-
-    const getUserList = async () => {
-        setLoading(true)
-
-        const users = await getUsers();
-        setUsers(users)
-
-        setLoading(false)
-    }
+    const dispatch = useDispatch();
+    const allUsersData = useSelector((state) => state.userSlice.users)
 
     const handleDelete = async (id) => {
         setLoading(true)
@@ -34,9 +27,21 @@ export default function Users() {
         toast.success("Deleted", {
             description: "User deleted successfully"
         })
-
-        getStoreList();
     }
+
+    useEffect(() => {
+        const fetchAllUsers = async () => {
+            try {
+                const res = await getAllUsersService();
+                dispatch(setAllUSers(res?.data));
+                setLoading(false)
+            } catch (err) {
+                console.error("Failed to fetch roles:", err);
+            }
+        };
+
+        fetchAllUsers();
+    }, [])
 
     return (
         <MainLayout>
@@ -50,11 +55,10 @@ export default function Users() {
 
             <div className="space-y-4">
                 <div className="flex justify-end items-center">
-                    {/* <h2 className="text-2xl font-bold">Users</h2> */}
                     <Button onClick={() => router.push("/users/new")} className='cursor-pointer'>Add User</Button>
                 </div>
 
-                <UserTable data={users} onDelete={handleDelete} />
+                <UserTable data={allUsersData} onDelete={handleDelete} />
             </div>
         </MainLayout>
     )

@@ -1,0 +1,18 @@
+import { configureStore } from '@reduxjs/toolkit';
+import userSliceReducer from './slices/user-slice/user.slice';
+import roleMasterReducer from "./slices/role-slice/role.slice"
+import stateReducer from "./slices/state/state.slice"
+import cityReducer from "./slices/city/city.slice"
+import darkStore_packagingCenter_sliceReducer from "./slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
+import pinCodeReducer from "./slices/pincode/pincode.slice"
+
+export const store = configureStore({
+    reducer: {
+        userSlice: userSliceReducer,
+        roleMasterSlice: roleMasterReducer,
+        stateSlice: stateReducer,
+        citySlice: cityReducer,
+        darkStorePackagingCenterSlice: darkStore_packagingCenter_sliceReducer,
+        pincodeSlice: pinCodeReducer
+    },
+});

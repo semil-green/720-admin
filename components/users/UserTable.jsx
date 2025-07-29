@@ -10,10 +10,13 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { editUserData } from "@/store/slices/user-slice/user.slice"
+import { useDispatch } from "react-redux";
 
 export default function UserTable({ data, onDelete }) {
-    const router = useRouter()
 
+    const router = useRouter()
+    const dispatch = useDispatch()
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Profile",
@@ -29,7 +32,7 @@ export default function UserTable({ data, onDelete }) {
             }
         },
         {
-            accessorKey: "FullName",
+            accessorKey: "full_name",
             header: ({ column }) => (
                 <Button variant="ghost" onClick={() => column.toggleSorting()}>
                     Name <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -37,12 +40,16 @@ export default function UserTable({ data, onDelete }) {
             ),
         },
         {
-            accessorKey: "MobileNo",
+            accessorKey: "contact_number",
             header: "Mobile No",
         },
         {
-            accessorKey: "EmailId",
-            header: "Email Id", // Can show city name if needed
+            accessorKey: "email",
+            header: "Email",
+        },
+        {
+            accessorKey: "name",
+            header: "Role",
         },
         {
             id: "actions",
@@ -57,7 +64,7 @@ export default function UserTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(user)}>
+                            <DropdownMenuItem onClick={() => { router.push(`/users/new?id=${user.id} `), dispatch(editUserData(user)) }}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -93,7 +100,7 @@ export default function UserTable({ data, onDelete }) {
     const table = useReactTable({
         data,
         columns: storeColumns(
-            (store) => router.push(`/users/${store.StoreId}/edit`),
+            // (store) => router.push(`/users?id=${store.UserId}`),
             onDelete
         ),
         getCoreRowModel: getCoreRowModel(),
