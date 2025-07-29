@@ -1,17 +1,18 @@
 "use client"
 
 import MainLayout from "@/components/layout/mainLayout";
-import StoreForm from "@/components/packagingStores/StoreForm"
 import { addStore } from "@/lib/api/packagingStore"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { toast } from "sonner"
 import AvailablePincodes from "@/components/packagingStores/AvailablePincodes";
 import Slots from "@/components/packagingStores/Slots";
 import { Button } from "@/components/ui/button";
+import PackagingForm from "@/components/packagingStores/PackagingForm";
 
 export default function CreateStorePage() {
   const router = useRouter()
+  const searchParams = useSearchParams();
 
   const handleSubmit = async (data) => {
     await addStore(data)
@@ -27,6 +28,8 @@ export default function CreateStorePage() {
     router.push("/packaging-stores")
   }
 
+  const editId = parseInt(searchParams?.get("id"));
+
   return (
     <MainLayout>
       <div className="flex flex-wrap gap-6">
@@ -37,7 +40,7 @@ export default function CreateStorePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <StoreForm initialData={{}} onSubmit={handleSubmit} />
+            <PackagingForm initialData={{}} onSubmit={handleSubmit} type={"packaging_center"} editId={editId} />
           </CardContent>
         </Card>
 
@@ -47,20 +50,10 @@ export default function CreateStorePage() {
               <h2 className="text-2xl font-bold">Available Pincodes</h2>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} />
-          </CardContent>
+          {/* <CardContent>
+            <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} editId={editId} />
+          </CardContent> */}
         </Card>
-      </div>
-
-      <div className="flex justify-center items-center gap-4 mt-6">
-        <Button type="button" variant="outline" onClick={() => router.push("/packaging-stores")}>
-          Back to list
-        </Button>
-        <Button type="submit" className='cursor-pointer'>
-          {/* <Loader2 className="animate-spin h-4 w-4 mr-2" /> */}
-          Save
-        </Button>
       </div>
     </MainLayout>
   )

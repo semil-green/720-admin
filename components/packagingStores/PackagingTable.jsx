@@ -13,13 +13,25 @@ import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { cities } from "@/lib/data/storeData"
 import { LocationEdit } from "lucide-react"
 import { DivideIcon } from "lucide-react"
+import { useDispatch } from "react-redux"
+import { deleteDarkStorePackagingCenterService } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service"
+import { deleteDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
 
-export default function StoreDataTable({ data, onDelete }) {
+export default function PackagingStoreTable({ data }) {
   const router = useRouter()
+  const dispatch = useDispatch();
 
-  const storeColumns = (onEdit, onDelete) => [
+  const handleDelete = async (id) => {
+    const res = await deleteDarkStorePackagingCenterService(id);
+    if (res?.status === 200) {
+      dispatch(deleteDarkStorePackagingCenter(id));
+    } else {
+      console.error("Failed to delete:", res);
+    }
+  };
+  const storeColumns = (onEdit) => [
     {
-      accessorKey: "StoreName",
+      accessorKey: "store_name",
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting()}>
           Name <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -27,19 +39,13 @@ export default function StoreDataTable({ data, onDelete }) {
       ),
     },
     {
-      accessorKey: "StoreCode",
+      accessorKey: "store_code",
       header: "Code",
     },
     {
-      accessorKey: "CityId",
-      header: "City ID", // Can show city name if needed
+      header: "City",
       cell: ({ row }) => {
-        const store = row.original
-        return (
-          <div>
-            {cities.find(x => x.id == store.CityId)?.name}
-          </div>
-        )
+        return row.original.city?.city_name ?? "N/A";
       }
     },
     {
@@ -76,7 +82,7 @@ export default function StoreDataTable({ data, onDelete }) {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => onDelete(store.StoreId)}>
+                    <AlertDialogAction onClick={() => handleDelete(store.id)}>
                       Confirm Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -93,14 +99,13 @@ export default function StoreDataTable({ data, onDelete }) {
   const table = useReactTable({
     data,
     columns: storeColumns(
-      (store) => router.push(`/packaging-stores/${store.StoreId}/edit`),
-      onDelete
+      (store) => router.push(`/packaging-stores/new?id=${store.id}`),
+      handleDelete
     ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
   })
-
 
   return (
     <div className="rounded border p-4 pt-0 shadow">

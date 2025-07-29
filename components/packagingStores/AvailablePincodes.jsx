@@ -13,40 +13,131 @@ import {
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
 import { cities, states } from "@/lib/data/storeData"
+import { useSelector, useDispatch } from "react-redux"
+import { addNewPincodeService, deletePincodeService, updatePincodeService } from "@/service/pincode/pincode.service"
+import { addPincodeToDarkStore, deletePincodeFromDarkStorePackagingCenter, updatePincodeInDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
+import {
+    AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
+} from "@/components/ui/alert-dialog"
 
-export default function AvailablePincodes({ initialData = {}, onSubmit }) {
-    const router = useRouter()
-
+export default function AvailablePincodes({ initialData = {}, onSubmit, editId }) {
     const [loading, setLoading] = useState(false)
     const [pincode, setPincode] = useState('')
     const [deliveryCharge, setDeliveryCharge] = useState('')
+    const [isEdit, setIsEdit] = useState(false)
+    const [pincodeId, setPincodeId] = useState('')
+    const [openAlert, setOpenAlert] = useState(false);
+    const [selectedPincodeId, setSelectedPincodeId] = useState(null);
+
+
+    const router = useRouter()
+    const dispatch = useDispatch()
+
+    const allDarkStores = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+
+    const filterDarkStoreById = allDarkStores?.data?.filter((item) => item.id == editId)
+
 
     const handleSubmit = async (e) => {
+
         e.preventDefault()
-        setLoading(true)
-        await onSubmit(pincode)
-        setLoading(false)
+        const data = {
+            packaging_store_dark_store_id: editId,
+            pincode,
+            delivery_charge: deliveryCharge
+        }
+
+        const res = await addNewPincodeService(data)
+
+        if (res?.status === 200) {
+            dispatch(addPincodeToDarkStore({
+                storeId: editId,
+                pincodeData: res.data
+            }));
+
+            setPincode('');
+            setDeliveryCharge('');
+        }
     }
 
-    const data = [
-        { pincode: "345464", charge: 30 },
-        { pincode: "565464", charge: 40 },
-        { pincode: "355558", charge: 25 },
-        { pincode: "956753", charge: 35 },
-        { pincode: "236344", charge: 50 },
-        { pincode: "958745", charge: 45 },
-        { pincode: "307005", charge: 60 },
-        { pincode: "360504", charge: 55 },
-    ];
+    const handleEdit = (item) => {
+        setPincode(item.pincode?.toString() || '');
+        setDeliveryCharge(item.delivery_charge?.toString() || '');
+        setIsEdit(true)
+        setPincodeId(item.id);
+    };
+
+    const handleUpdatePinCode = async (e) => {
+        e.preventDefault();
+        const data = {
+            packaging_store_dark_store_id: editId,
+            pincode,
+            delivery_charge: deliveryCharge
+        }
+
+        const res = await updatePincodeService(pincodeId, data)
+
+        if (res?.status === 200) {
+            dispatch(updatePincodeInDarkStorePackagingCenter({
+                storeId: editId,
+                updatedPincode: res.data
+            }));
+            setIsEdit(false);
+            setPincode('');
+            setDeliveryCharge('');
+            setPincodeId('');
+        }
+    }
+
+    const handleDelete = async (e, id) => {
+        e.preventDefault();
+
+        try {
+            const res = await deletePincodeService(id);
+
+            if (res?.status === 200) {
+                dispatch(deletePincodeFromDarkStorePackagingCenter({ storeId: editId, pincodeId: id }));
+            }
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
+    };
+
+
 
     return (
         <div className="flex flex-col gap-2 min-w-[280px]">
-            <form onSubmit={handleSubmit} className="">
+            <form className="">
                 <div className="flex flex-col items-center gap-2">
                     <Label htmlFor="pincode" className="sr-only">Pincode</Label>
                     <Input name="pincode" className='' value={pincode} onChange={(e) => setPincode(e.target.value)} placeholder='Pincode' />
-                    <Input name="delivery" className='mt-2' value={deliveryCharge} onChange={(e) => setDeliveryCharge(e.target.value)} placeholder='Delivery Charge' />
-                    <Button type="submit" className='cursor-pointer mt-2'>Add</Button>
+                    <Input name="delivery_charge" className='mt-2' value={deliveryCharge} onChange={(e) => setDeliveryCharge(e.target.value)} placeholder='Delivery Charge' />
+
+
+
+                    {
+                        !isNaN(Number(editId)) && (
+                            <>
+                                {isEdit ? (
+                                    <div className="flex gap-2">
+
+                                        <Button type="submit" className="cursor-pointer mt-2" onClick={handleUpdatePinCode}>
+                                            Update
+                                        </Button>
+                                        <Button type="submit" className="cursor-pointer mt-2" variant={"outline"} onClick={() => { setIsEdit(false), setDeliveryCharge(""), setPincode("") }}>
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                ) : (
+                                    <Button type="submit" className="cursor-pointer mt-2" onClick={handleSubmit}>
+                                        Add
+                                    </Button>
+                                )}
+                            </>
+                        )
+                    }
+
                 </div>
             </form>
             <table className="min-w-full table-auto border border-gray-300 rounded-md mt-2">
@@ -54,26 +145,65 @@ export default function AvailablePincodes({ initialData = {}, onSubmit }) {
                     <tr>
                         <th className="p-2 border-b text-center">Pincode</th>
                         <th className="p-2 border-b text-center">Delivery Charge</th>
+                        <th className="p-2 border-b text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item) => (
-                        <tr key={item.pincode} className="hover:bg-gray-50">
-                            <td className="p-2 border-b text-center">
-                                <div className="inline-flex items-center gap-1 px-3 py-1 h-6 bg-white text-accent">
-                                    {item.pincode}
-                                    <span className="cursor-pointer text-red-500 text-sm hover:text-red-700">
-                                        &times;
-                                    </span>
-                                </div>
-                            </td>
 
-                            <td className="p-2 border-b border-l border-gray-300 text-center">₹{item.charge}</td>
+                    {
+                        filterDarkStoreById?.map((item, index) => (
+                            item?.pincodes?.map((item2, index2) => (
+                                <tr key={item.pincode} className="hover:bg-gray-50">
+                                    <td className="p-2 border-b text-center" index={index2}>
+                                        <div className="inline-flex items-center gap-1 px-3 py-1 h-6 bg-white text-accent">
+                                            {item2?.pincode}
+                                        </div>
+                                    </td>
+
+                                    <td className="p-2 border-b border-l border-gray-300 text-center">₹{item2?.delivery_charge}</td>
+                                    <td className="p-2 border-b border-l border-gray-300 text-center flex justify-center  gap-2  ">
+                                        <Button size={"sm"} variant={"link"} onClick={() => handleEdit(item2)}>Edit</Button>
+                                        <Button size={"sm"} variant={"link"} onClick={() => {
+                                            setSelectedPincodeId(item2.id);
+                                            setOpenAlert(true);
+                                        }}>Delete</Button>
+                                    </td>
+                                </tr>
+                            ))
+                        ))
+                    }
+
+                    {(!Array.isArray(filterDarkStoreById) || !filterDarkStoreById[0]?.pincodes?.length) && (
+                        <tr>
+                            <td className="p-2 border-b text-center" colSpan={3}>No Pincodes Found</td>
                         </tr>
-                    ))}
+                    )}
+
                 </tbody>
 
             </table>
+            <AlertDialog open={openAlert} onOpenChange={setOpenAlert}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Pincode?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this pincode? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={(e) => {
+                                handleDelete(e, selectedPincodeId);
+                                setOpenAlert(false);
+                            }}
+                        >
+                            Confirm Delete
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
         </div>
     )
-}   
+}

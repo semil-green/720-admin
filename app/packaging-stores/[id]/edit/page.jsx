@@ -4,7 +4,7 @@ import { useRouter, useParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import MainLayout from "@/components/layout/mainLayout";
 import { getStoreById, updateStore } from "@/lib/api/packagingStore"
-import StoreForm from "@/components/packagingStores/StoreForm"
+import StoreForm from "@/components/packagingStores/PackagingForm"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { toast } from "sonner"

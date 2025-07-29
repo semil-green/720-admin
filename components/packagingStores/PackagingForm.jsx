@@ -21,14 +21,14 @@ import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
 import { addDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
 
-export default function StoreForm({ editId, type }) {
+export default function PackagingForm({ editId, type }) {
     const router = useRouter();
     const dispatch = useDispatch();
 
     const allStates = useSelector((state) => state.stateSlice.allStates);
     const allCities = useSelector((state) => state.citySlice.allCities);
 
-    const allDarkStores = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+    const allPackagingStore = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
 
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -67,11 +67,11 @@ export default function StoreForm({ editId, type }) {
     useEffect(() => {
         if (
             editId &&
-            allDarkStores?.data?.length &&
+            allPackagingStore?.data?.length &&
             allStates?.data?.length &&
             allCities?.data?.length
         ) {
-            const store = allDarkStores.data.find((s) => s.id === parseInt(editId));
+            const store = allPackagingStore.data.find((s) => s.id === parseInt(editId));
 
             if (store) {
                 setFormData({
@@ -89,7 +89,7 @@ export default function StoreForm({ editId, type }) {
         } else if (!editId) {
             setIsDataLoaded(true);
         }
-    }, [editId, allDarkStores, allStates, allCities]);
+    }, [editId, allPackagingStore, allStates, allCities]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -103,7 +103,7 @@ export default function StoreForm({ editId, type }) {
         const res = await addNewDarkStorePackagingCenter(payload);
         if (res?.status === 200) {
             dispatch(addDarkStorePackagingCenter(res.data));
-            router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
+            router.push(`/packaging-stores/new?id=${res.data.id}`, undefined, { shallow: true });
         }
         setLoading(false);
     };

@@ -8,36 +8,39 @@ import { getStores, deleteStore } from "@/lib/api/store"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
+import { useDispatch, useSelector } from "react-redux"
+import { setAllDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
 
 export default function DarkStores() {
-    const [stores, setStores] = useState([])
+
     const [loading, setLoading] = useState(true)
 
     const router = useRouter()
+    const dispatch = useDispatch()
+
+    const allDarkStore = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter)
+
+    const filteredDarkStore = allDarkStore?.data?.filter((item) => item.type == "dark_store")
 
     useEffect(() => {
-        getStoreList();
-    }, [])
+        const fetchAllDarkStoresPackagingCenter = async () => {
+            try {
+                const data = await getAllDarkStorePackagingCenter()
+                dispatch(setAllDarkStorePackagingCenter(data))
+            } catch (err) {
+                console.error("Failed to fetch:", err)
+            } finally {
+                setLoading(false)
+            }
+        }
 
-    const getStoreList = async () => {
-        setLoading(true)
-
-        const stores = await getStores();
-        setStores(stores)
-
-        setLoading(false)
-    }
-
-    const handleDelete = async (id) => {
-        setLoading(true)
-
-        await deleteStore(id)
-        toast.success("Deleted", {
-            description: "Packaging Store deleted successfully"
-        })
-
-        getStoreList();
-    }
+        if (allDarkStore.length === 0) {
+            fetchAllDarkStoresPackagingCenter()
+        } else {
+            setLoading(false)
+        }
+    }, [allDarkStore, dispatch])
 
     return (
         <MainLayout>
@@ -55,7 +58,7 @@ export default function DarkStores() {
                     <Button onClick={() => router.push("/stores/new")} className='cursor-pointer'>Create Store</Button>
                 </div>
 
-                {stores && <StoreTable data={stores} onDelete={handleDelete} />}
+                {filteredDarkStore && <StoreTable data={filteredDarkStore} />}
             </div>
 
         </MainLayout>

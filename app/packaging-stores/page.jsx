@@ -2,31 +2,27 @@
 
 import MainLayout from "@/components/layout/mainLayout";
 import { useEffect, useState } from "react"
-import PackagingStoreTable from "@/components/packagingStores/StoreTable"
+import PackagingStoreTable from "@/components/packagingStores/PackagingTable"
 import { toast } from "sonner"
 import { getStores, deleteStore } from "@/lib/api/packagingStore"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { setAllDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
+import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
+import { useDispatch, useSelector } from "react-redux"
 
 export default function PackagingStores() {
     const [stores, setStores] = useState([])
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState("")
 
     const router = useRouter()
+    const dispatch = useDispatch()
 
-    useEffect(() => {
-        getStoreList();
-    }, [])
+    const allPackagingCenter = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter)
 
-    const getStoreList = async () => {
-        setLoading(true)
+    const filteredPackagingCenter = allPackagingCenter?.data?.filter((item) => item.type == "packaging_center")
 
-        const stores = await getStores();
-        setStores(stores)
-
-        setLoading(false)
-    }
 
     const handleDelete = async (id) => {
         setLoading(true)
@@ -38,6 +34,27 @@ export default function PackagingStores() {
 
         getStoreList();
     }
+
+
+    useEffect(() => {
+        const fetchAllDarkStoresPackagingCenter = async () => {
+            try {
+                const data = await getAllDarkStorePackagingCenter()
+                dispatch(setAllDarkStorePackagingCenter(data))
+            } catch (err) {
+                console.error("Failed to fetch:", err)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        if (allPackagingCenter.length === 0) {
+            fetchAllDarkStoresPackagingCenter()
+        } else {
+            setLoading(false)
+        }
+    }, [allPackagingCenter, dispatch])
+
 
     return (
         <MainLayout>
@@ -55,7 +72,7 @@ export default function PackagingStores() {
                     <Button onClick={() => router.push("/packaging-stores/new")} className='cursor-pointer'>Create Packaging Center</Button>
                 </div>
 
-                {stores && <PackagingStoreTable data={stores} onDelete={handleDelete} />}
+                {filteredPackagingCenter && <PackagingStoreTable data={filteredPackagingCenter} onDelete={handleDelete} />}
             </div>
 
         </MainLayout>
