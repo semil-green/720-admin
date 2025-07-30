@@ -7,11 +7,13 @@ import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2 } from "lucide-react"
 import { useRouter } from 'next/navigation'
+import { userLoginService } from '@/service/user/user.service'
+import { toast } from "sonner"
 
 function page() {
     const router = useRouter()
 
-    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
 
@@ -33,11 +35,19 @@ function page() {
     const login = async (e) => {
         e.preventDefault();
         setLoading(true);
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const data = { email, password }
+        const res = await userLoginService(data)
 
-        localStorage.setItem("user_email", username);
+        if (res?.status === 200) {
+            toast.success(res?.message)
+            localStorage.setItem("role", res?.data?.role);
+            router.replace("/dashboard");
+        }
+        else if (res?.status === 401) {
+            toast.error(res?.message)
+        }
 
-        router.replace("/dashboard");
+
         setLoading(false);
     };
 
@@ -57,7 +67,7 @@ function page() {
                         <form onSubmit={login}>
                             <div className="mb-3">
                                 <Label className='pb-1'>Username</Label>
-                                <Input name="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+                                <Input name="Username" value={email} onChange={(e) => setEmail(e.target.value)} required />
                             </div>
 
                             <div className="mb-3">

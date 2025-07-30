@@ -70,7 +70,7 @@ export default function Header() {
                         </Avatar>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-32">
-                        <DropdownMenuItem onClick={() => router.replace("login")}>
+                        <DropdownMenuItem onClick={() => { localStorage.removeItem("role"); router.replace("login") }}>
                             <LogOut className="mr-2 h-4 w-4" /> Logout
                         </DropdownMenuItem>
                     </DropdownMenuContent>

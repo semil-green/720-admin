@@ -40,3 +40,31 @@ export const updateUserService = async (userId, data) => {
         throw error
     }
 }
+
+export const userLoginService = async (data) => {
+    try {
+        const response = await axios.post(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/login`,
+            data
+        );
+        return { success: true, ...response.data };
+    } catch (error) {
+        if (error.response) {
+            return {
+                success: false,
+                message: error.response.data.message || "Login failed",
+                status: error.response.status,
+            };
+        } else if (error.request) {
+            return {
+                success: false,
+                message: "No response from server",
+            };
+        } else {
+            return {
+                success: false,
+                message: "Something went wrong",
+            };
+        }
+    }
+};
