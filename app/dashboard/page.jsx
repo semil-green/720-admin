@@ -29,7 +29,6 @@ export default function Dashboard() {
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
-    console.log("itemSelected :", itemSelected)
     useEffect(() => {
         setLoading(true);
         setTimeout(() => {

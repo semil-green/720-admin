@@ -38,18 +38,18 @@ export default function Sidebar() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const email = localStorage.getItem("user_email");
+    const role = localStorage.getItem("role");
 
-    if (!email) return;
+    if (!role) return;
 
     let allowedLabels = [];
 
-    if (email === "admin@gmail.com") {
+    if (role === "1") {
       setFilteredMenuItems(fullMenuItems);
       return;
     }
 
-    if (email === "store@gmail.com") {
+    if (role === "2") {
       allowedLabels = [
         "Customer Orders",
         "Order Request",
@@ -57,7 +57,7 @@ export default function Sidebar() {
         "Customer",
         "Dashboard"
       ];
-    } else if (email === "pc@gmail.com") {
+    } else if (role === "3") {
       allowedLabels = [
         "Customer Orders",
         "Store Orders",
