@@ -1,19 +1,18 @@
 import axios from "axios"
 
-export const getAllUsersService = async () => {
-
+export const getAllUsersService = async (page, limit) => {
     try {
+        const fetchUserData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user?page=${page}&limit=${limit}`
+        );
 
-        const fetchUserData = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user`)
-
-        return fetchUserData?.data
+        return fetchUserData?.data;
+    } catch (error) {
+        console.log("Error in getting all users data");
+        throw error;
     }
-    catch (error) {
+};
 
-        console.log("Error in getting all users data ")
-        throw error
-    }
-}
 
 export const addNewUserService = async (data) => {
     try {

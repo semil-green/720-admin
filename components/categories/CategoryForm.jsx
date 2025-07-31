@@ -75,13 +75,6 @@ const CategoryForm = ({ initialData, onSubmit, handleCose }) => {
                 )}
             </div>
 
-            {/* <div>
-                <div className="flex items-center gap-2">
-                    <Switch id="IsShowonHomepage" name="IsShowonHomepage" value={formData.IsShowonHomepage} onChange={(val) => { console.log(val) }} />
-                    <Label htmlFor="IsShowonHomepage">Show on homepage?</Label>
-                </div>
-            </div> */}
-
             <div className="flex justify-end gap-4">
                 <Button type="button" variant="outline" onClick={() => handleCose()} disabled={loading}>Cancel</Button>
                 <Button type="submit" disabled={loading}>

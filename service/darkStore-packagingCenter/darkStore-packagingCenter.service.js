@@ -1,15 +1,15 @@
 import axios from "axios"
 
-export const getAllDarkStorePackagingCenter = async () => {
-    try {
-        const result = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/ds-pc`)
+export const getAllDarkStorePackagingCenter = async (queryParams) => {
+    const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/ds-pc`,
+        {
+            params: queryParams
+        }
+    );
+    return response.data;
+};
 
-        return result?.data
-    }
-    catch (error) {
-        return error
-    }
-}
 
 export const addNewDarkStorePackagingCenter = async (data) => {
     try {

@@ -15,11 +15,12 @@ import { Loader2 } from "lucide-react"
 import { cities, states } from "@/lib/data/storeData"
 import { useSelector, useDispatch } from "react-redux"
 import { addNewPincodeService, deletePincodeService, updatePincodeService } from "@/service/pincode/pincode.service"
-import { addPincodeToDarkStore, deletePincodeFromDarkStorePackagingCenter, updatePincodeInDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
+
 import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
+import { addPincodeToDarkStore, deletePincodeFromDarkStore, updatePincodeInDarkStore } from "@/store/slices/dark-store/dark-store.slice"
 
 export default function AvailablePincodes({ initialData = {}, onSubmit, editId }) {
     const [loading, setLoading] = useState(false)
@@ -34,10 +35,9 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
     const router = useRouter()
     const dispatch = useDispatch()
 
-    const allDarkStores = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+    const allDarkStores = useSelector((state) => state.darkStoreSlice.darkStores);
 
-    const filterDarkStoreById = allDarkStores?.data?.filter((item) => item.id == editId)
-
+    const filterDarkStoreById = allDarkStores?.filter((item) => item.id == editId)
 
     const handleSubmit = async (e) => {
 
@@ -79,7 +79,7 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
         const res = await updatePincodeService(pincodeId, data)
 
         if (res?.status === 200) {
-            dispatch(updatePincodeInDarkStorePackagingCenter({
+            dispatch(updatePincodeInDarkStore({
                 storeId: editId,
                 updatedPincode: res.data
             }));
@@ -95,9 +95,9 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
 
         try {
             const res = await deletePincodeService(id);
-
             if (res?.status === 200) {
-                dispatch(deletePincodeFromDarkStorePackagingCenter({ storeId: editId, pincodeId: id }));
+                dispatch(deletePincodeFromDarkStore({ storeId: editId, pincodeId: id }));
+
             }
         } catch (err) {
             console.error("Delete failed", err);
