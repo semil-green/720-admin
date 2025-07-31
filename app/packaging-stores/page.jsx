@@ -1,80 +1,115 @@
-"use client"
+"use client";
 
 import MainLayout from "@/components/layout/mainLayout";
-import { useEffect, useState } from "react"
-import PackagingStoreTable from "@/components/packagingStores/PackagingTable"
-import { toast } from "sonner"
-import { getStores, deleteStore } from "@/lib/api/packagingStore"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
-import { setAllDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
+import { useEffect, useState } from "react";
+import StoreTable from "@/components/stores/StoreTable";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { useDispatch, useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux";
+import { Button } from "@/components/ui/button";
+import { setPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
+import PackagingStoreTable from "@/components/packagingStores/PackagingTable";
 
 export default function PackagingStores() {
-    const [stores, setStores] = useState([])
-    const [loading, setLoading] = useState("")
+    const router = useRouter();
+    const dispatch = useDispatch();
 
-    const router = useRouter()
-    const dispatch = useDispatch()
+    const packagingCenters = useSelector((state) => state.packagingStoreSlice.packagingCenters);
 
-    const allPackagingCenter = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter)
-
-    const filteredPackagingCenter = allPackagingCenter?.data?.filter((item) => item.type == "packaging_center")
-
-
-    const handleDelete = async (id) => {
-        setLoading(true)
-
-        await deleteStore(id)
-        toast.success("Deleted", {
-            description: "Packaging Center deleted successfully"
-        })
-
-        getStoreList();
-    }
-
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+    const [sortBy, setSortBy] = useState("");
+    const [sortType, setSortType] = useState("ASC");
 
     useEffect(() => {
-        const fetchAllDarkStoresPackagingCenter = async () => {
+        const fetchPackagingCenters = async () => {
             try {
-                const data = await getAllDarkStorePackagingCenter()
-                dispatch(setAllDarkStorePackagingCenter(data))
-            } catch (err) {
-                console.error("Failed to fetch:", err)
+                setLoading(true);
+                const result = await getAllDarkStorePackagingCenter({
+                    type: "packaging_center",
+                    page,
+                    limit,
+                    sortBy: sortBy ? `dsp.${sortBy}` : undefined,
+                    sortType,
+                });
+
+                const storeList = result?.data?.data || [];
+                const totalCount = result?.data?.total || 0;
+
+                dispatch(setPackagingCenter(storeList));
+                setTotalPages(Math.ceil(totalCount / limit));
+            } catch (error) {
+                console.error("Error fetching dark stores:", error);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
+        };
 
-        if (allPackagingCenter.length === 0) {
-            fetchAllDarkStoresPackagingCenter()
-        } else {
-            setLoading(false)
-        }
-    }, [allPackagingCenter, dispatch])
-
+        fetchPackagingCenters();
+    }, [page, limit, sortBy, sortType, dispatch]);
 
     return (
         <MainLayout>
-            {loading &&
+            {loading && (
                 <div className="fixed flex w-full h-full top-0 left-0 z-10">
                     <div className="flex-1 flex justify-center items-center">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                     </div>
                 </div>
-            }
+            )}
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center">
-                    {/* <h2 className="text-2xl font-bold">Packaging Stores</h2> */}
-                    <Button onClick={() => router.push("/packaging-stores/new")} className='cursor-pointer'>Create Packaging Center</Button>
+                <div className="flex flex-col flex-wrap justify-end items-end gap-4">
+                    <Button onClick={() => router.push("/packaging-stores/new")} className="btn">
+                        Create Packaging Center
+                    </Button>
+
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm">Sort by:</label>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => {
+                                setSortBy(e.target.value);
+                                setPage(1);
+                            }}
+                            className="border px-2 py-1 rounded text-sm"
+                        >
+                            <option value="">Default</option>
+                            <option value="store_name">Store Name</option>
+                            <option value="store_code">Store Code</option>
+                            <option value="store_pincode">Pincode</option>
+                            <option value="address">Address</option>
+                        </select>
+
+                        <Button
+                            variant="outline"
+                            onClick={() =>
+                                setSortType((prev) => (prev === "ASC" ? "DESC" : "ASC"))
+                            }
+                        >
+                            {sortType === "DESC" ? "Descending" : "Ascending"}
+                        </Button>
+                    </div>
                 </div>
 
-                {filteredPackagingCenter && <PackagingStoreTable data={filteredPackagingCenter} onDelete={handleDelete} />}
+                {packagingCenters && (
+                    <PackagingStoreTable
+                        data={packagingCenters}
+                        page={page}
+                        limit={limit}
+                        setLimit={setLimit}
+                        setPage={setPage}
+                        totalPages={totalPages}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        sortType={sortType}
+                        setSortType={setSortType}
+                    />
+                )}
             </div>
-
         </MainLayout>
-    )
+    );
 }

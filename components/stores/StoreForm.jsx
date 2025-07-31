@@ -20,6 +20,7 @@ import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
 import { addDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
+import { addDarkStore } from "@/store/slices/dark-store/dark-store.slice";
 
 export default function StoreForm({ editId, type }) {
     const router = useRouter();
@@ -28,7 +29,8 @@ export default function StoreForm({ editId, type }) {
     const allStates = useSelector((state) => state.stateSlice.allStates);
     const allCities = useSelector((state) => state.citySlice.allCities);
 
-    const allDarkStores = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+    const allDarkStores = useSelector((state) => state.darkStoreSlice.darkStores);
+
 
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -67,11 +69,11 @@ export default function StoreForm({ editId, type }) {
     useEffect(() => {
         if (
             editId &&
-            allDarkStores?.data?.length &&
+            allDarkStores?.length &&
             allStates?.data?.length &&
             allCities?.data?.length
         ) {
-            const store = allDarkStores.data.find((s) => s.id === parseInt(editId));
+            const store = allDarkStores.find((s) => s.id === parseInt(editId));
 
             if (store) {
                 setFormData({
@@ -101,8 +103,9 @@ export default function StoreForm({ editId, type }) {
         setLoading(true);
         const payload = { ...formData, type };
         const res = await addNewDarkStorePackagingCenter(payload);
+
         if (res?.status === 200) {
-            dispatch(addDarkStorePackagingCenter(res.data));
+            dispatch(addDarkStore(res.data));
             router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
         }
         setLoading(false);

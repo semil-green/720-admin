@@ -1,66 +1,114 @@
-"use client"
+"use client";
 
 import MainLayout from "@/components/layout/mainLayout";
-import { useEffect, useState } from "react"
-import StoreTable from "@/components/stores/StoreTable"
-import { toast } from "sonner"
-import { getStores, deleteStore } from "@/lib/api/store"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react";
+import StoreTable from "@/components/stores/StoreTable";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { useDispatch, useSelector } from "react-redux"
-import { setAllDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
+import { useDispatch, useSelector } from "react-redux";
+import { setDarkStores } from "@/store/slices/dark-store/dark-store.slice";
+import { Button } from "@/components/ui/button";
 
 export default function DarkStores() {
+    const router = useRouter();
+    const dispatch = useDispatch();
 
-    const [loading, setLoading] = useState(true)
+    const darkStores = useSelector((state) => state.darkStoreSlice.darkStores);
 
-    const router = useRouter()
-    const dispatch = useDispatch()
-
-    const allDarkStore = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter)
-
-    const filteredDarkStore = allDarkStore?.data?.filter((item) => item.type == "dark_store")
+    const [loading, setLoading] = useState(true);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPages, setTotalPages] = useState(1);
+    const [sortBy, setSortBy] = useState("");
+    const [sortType, setSortType] = useState("ASC");
 
     useEffect(() => {
-        const fetchAllDarkStoresPackagingCenter = async () => {
+        const fetchDarkStores = async () => {
             try {
-                const data = await getAllDarkStorePackagingCenter()
-                dispatch(setAllDarkStorePackagingCenter(data))
-            } catch (err) {
-                console.error("Failed to fetch:", err)
-            } finally {
-                setLoading(false)
-            }
-        }
+                setLoading(true);
+                const result = await getAllDarkStorePackagingCenter({
+                    type: "dark_store",
+                    page,
+                    limit,
+                    sortBy: sortBy ? `dsp.${sortBy}` : undefined,
+                    sortType,
+                });
 
-        if (allDarkStore.length === 0) {
-            fetchAllDarkStoresPackagingCenter()
-        } else {
-            setLoading(false)
-        }
-    }, [allDarkStore, dispatch])
+                const storeList = result?.data?.data || [];
+                const totalCount = result?.data?.total || 0;
+
+                dispatch(setDarkStores(storeList));
+                setTotalPages(Math.ceil(totalCount / limit));
+            } catch (error) {
+                console.error("Error fetching dark stores:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDarkStores();
+    }, [page, limit, sortBy, sortType, dispatch]);
 
     return (
         <MainLayout>
-            {loading &&
+            {loading && (
                 <div className="fixed flex w-full h-full top-0 left-0 z-10">
                     <div className="flex-1 flex justify-center items-center">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                     </div>
                 </div>
-            }
+            )}
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center gap-3">
-                    {/* <h2 className="text-2xl font-bold">Stores</h2> */}
-                    <Button onClick={() => router.push("/stores/new")} className='cursor-pointer'>Create Store</Button>
+                <div className="flex flex-col flex-wrap justify-end items-end gap-4">
+                    <Button onClick={() => router.push("/stores/new")} className="btn">
+                        Create Store
+                    </Button>
+
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm">Sort by:</label>
+                        <select
+                            value={sortBy}
+                            onChange={(e) => {
+                                setSortBy(e.target.value);
+                                setPage(1);
+                            }}
+                            className="border px-2 py-1 rounded text-sm"
+                        >
+                            <option value="">Default</option>
+                            <option value="store_name">Store Name</option>
+                            <option value="store_code">Store Code</option>
+                            <option value="store_pincode">Pincode</option>
+                            <option value="address">Address</option>
+                        </select>
+
+                        <Button
+                            variant="outline"
+                            onClick={() =>
+                                setSortType((prev) => (prev === "ASC" ? "DESC" : "ASC"))
+                            }
+                        >
+                            {sortType === "DESC" ? "Descending" : "Ascending"}
+                        </Button>
+                    </div>
                 </div>
 
-                {filteredDarkStore && <StoreTable data={filteredDarkStore} />}
+                {darkStores && (
+                    <StoreTable
+                        data={darkStores}
+                        page={page}
+                        limit={limit}
+                        setLimit={setLimit}
+                        setPage={setPage}
+                        totalPages={totalPages}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        sortType={sortType}
+                        setSortType={setSortType}
+                    />
+                )}
             </div>
-
         </MainLayout>
-    )
+    );
 }

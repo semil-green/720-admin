@@ -12,14 +12,13 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Loader2 } from "lucide-react"
-import { cities, states } from "@/lib/data/storeData"
 import { useSelector, useDispatch } from "react-redux"
 import { addNewPincodeService, deletePincodeService, updatePincodeService } from "@/service/pincode/pincode.service"
-import { addPincodeToDarkStore, deletePincodeFromDarkStorePackagingCenter, updatePincodeInDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
 import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
+import { addPincodeToPackagingCenter, deletePincodeFromPackagingCenter, updatePincodeInPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice"
 
 export default function AvailablePincodes({ initialData = {}, onSubmit, editId }) {
     const [loading, setLoading] = useState(false)
@@ -34,10 +33,9 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
     const router = useRouter()
     const dispatch = useDispatch()
 
-    const allDarkStores = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+    const allPackagingCenters = useSelector((state) => state.packagingStoreSlice.packagingCenters);
 
-    const filterDarkStoreById = allDarkStores?.data?.filter((item) => item.id == editId)
-
+    const filterPackagingCentersById = allPackagingCenters?.filter((item) => item.id == editId)
 
     const handleSubmit = async (e) => {
 
@@ -51,7 +49,7 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
         const res = await addNewPincodeService(data)
 
         if (res?.status === 200) {
-            dispatch(addPincodeToDarkStore({
+            dispatch(addPincodeToPackagingCenter({
                 storeId: editId,
                 pincodeData: res.data
             }));
@@ -79,7 +77,7 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
         const res = await updatePincodeService(pincodeId, data)
 
         if (res?.status === 200) {
-            dispatch(updatePincodeInDarkStorePackagingCenter({
+            dispatch(updatePincodeInPackagingCenter({
                 storeId: editId,
                 updatedPincode: res.data
             }));
@@ -96,14 +94,15 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
         try {
             const res = await deletePincodeService(id);
 
+            console.log
             if (res?.status === 200) {
-                dispatch(deletePincodeFromDarkStorePackagingCenter({ storeId: editId, pincodeId: id }));
+                dispatch(deletePincodeFromPackagingCenter({ storeId: editId, pincodeId: id }));
+
             }
         } catch (err) {
             console.error("Delete failed", err);
         }
     };
-
 
 
     return (
@@ -150,30 +149,44 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
                 </thead>
                 <tbody>
 
-                    {
-                        filterDarkStoreById?.map((item, index) => (
-                            item?.pincodes?.map((item2, index2) => (
-                                <tr key={item.pincode} className="hover:bg-gray-50">
-                                    <td className="p-2 border-b text-center" index={index2}>
+                    {filterPackagingCentersById?.length > 0 &&
+                        filterPackagingCentersById.map((store) =>
+                            store?.pincodes?.map((pincodeItem) => (
+                                <tr key={pincodeItem.id} className="hover:bg-gray-50">
+                                    <td className="p-2 border-b text-center">
                                         <div className="inline-flex items-center gap-1 px-3 py-1 h-6 bg-white text-accent">
-                                            {item2?.pincode}
+                                            {pincodeItem?.pincode}
                                         </div>
                                     </td>
 
-                                    <td className="p-2 border-b border-l border-gray-300 text-center">₹{item2?.delivery_charge}</td>
-                                    <td className="p-2 border-b border-l border-gray-300 text-center flex justify-center  gap-2  ">
-                                        <Button size={"sm"} variant={"link"} onClick={() => handleEdit(item2)}>Edit</Button>
-                                        <Button size={"sm"} variant={"link"} onClick={() => {
-                                            setSelectedPincodeId(item2.id);
-                                            setOpenAlert(true);
-                                        }}>Delete</Button>
+                                    <td className="p-2 border-b border-l border-gray-300 text-center">
+                                        ₹{pincodeItem?.delivery_charge}
+                                    </td>
+
+                                    <td className="p-2 border-b border-l border-gray-300 text-center flex justify-center gap-2">
+                                        <Button
+                                            size="sm"
+                                            variant="link"
+                                            onClick={() => handleEdit(pincodeItem)}
+                                        >
+                                            Edit
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="link"
+                                            onClick={() => {
+                                                setSelectedPincodeId(pincodeItem.id);
+                                                setOpenAlert(true);
+                                            }}
+                                        >
+                                            Delete
+                                        </Button>
                                     </td>
                                 </tr>
                             ))
-                        ))
-                    }
+                        )}
 
-                    {(!Array.isArray(filterDarkStoreById) || !filterDarkStoreById[0]?.pincodes?.length) && (
+                    {(!Array.isArray(filterPackagingCentersById) || !filterPackagingCentersById[0]?.pincodes?.length) && (
                         <tr>
                             <td className="p-2 border-b text-center" colSpan={3}>No Pincodes Found</td>
                         </tr>

@@ -50,9 +50,9 @@ export default function CreateStorePage() {
               <h2 className="text-2xl font-bold">Available Pincodes</h2>
             </CardTitle>
           </CardHeader>
-          {/* <CardContent>
+          <CardContent>
             <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} editId={editId} />
-          </CardContent> */}
+          </CardContent>
         </Card>
       </div>
     </MainLayout>

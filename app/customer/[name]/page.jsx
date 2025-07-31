@@ -8,9 +8,8 @@ import Link from 'next/link';
 
 const page = async ({ params }) => {
 
-    console.log("params", params)
     const { name } = await params
-    console.log("name", name)
+
     return (
         <MainLayout>
             <div className='p-8 bg-sidebar'>

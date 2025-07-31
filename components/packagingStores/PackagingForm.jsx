@@ -19,7 +19,7 @@ import { getAllStatesService } from "@/service/state/state.service";
 import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { addDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
+import { addPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
 
 export default function PackagingForm({ editId, type }) {
     const router = useRouter();
@@ -28,7 +28,7 @@ export default function PackagingForm({ editId, type }) {
     const allStates = useSelector((state) => state.stateSlice.allStates);
     const allCities = useSelector((state) => state.citySlice.allCities);
 
-    const allPackagingStore = useSelector((state) => state.darkStorePackagingCenterSlice.allDarkStorePackagingCenter);
+    const allPackagingCenters = useSelector((state) => state.packagingStoreSlice.packagingCenters);
 
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -67,11 +67,11 @@ export default function PackagingForm({ editId, type }) {
     useEffect(() => {
         if (
             editId &&
-            allPackagingStore?.data?.length &&
+            allPackagingCenters?.length &&
             allStates?.data?.length &&
             allCities?.data?.length
         ) {
-            const store = allPackagingStore.data.find((s) => s.id === parseInt(editId));
+            const store = allPackagingCenters.find((s) => s.id === parseInt(editId));
 
             if (store) {
                 setFormData({
@@ -89,7 +89,7 @@ export default function PackagingForm({ editId, type }) {
         } else if (!editId) {
             setIsDataLoaded(true);
         }
-    }, [editId, allPackagingStore, allStates, allCities]);
+    }, [editId, allPackagingCenters, allStates, allCities]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -101,8 +101,9 @@ export default function PackagingForm({ editId, type }) {
         setLoading(true);
         const payload = { ...formData, type };
         const res = await addNewDarkStorePackagingCenter(payload);
+
         if (res?.status === 200) {
-            dispatch(addDarkStorePackagingCenter(res.data));
+            dispatch(addPackagingCenter(res.data));
             router.push(`/packaging-stores/new?id=${res.data.id}`, undefined, { shallow: true });
         }
         setLoading(false);
@@ -198,7 +199,7 @@ export default function PackagingForm({ editId, type }) {
                 </div>
             </div>
             <div className="flex justify-center gap-4 mt-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/stores")}>
+                <Button type="button" variant="outline" onClick={() => router.push("/packaging-stores")}>
                     Back to list
                 </Button>
                 {editId ? <Button type="button" onClick={(e) => handleUpdate(editId, formData, e)}>
