@@ -21,6 +21,7 @@ import { setRoles } from "@/store/slices/role-slice/role.slice";
 import { useSelector } from "react-redux";
 import { addNewUserService, updateUserService } from "@/service/user/user.service";
 import { addUser, updatedUserData } from "@/store/slices/user-slice/user.slice";
+import { toast } from "sonner";
 
 export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
     const router = useRouter();
@@ -108,8 +109,16 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
         e.preventDefault();
 
         const response = await updateUserService(userEditId, formData)
-        dispatch(updatedUserData(response))
-        router.push("/users");
+
+        if (response?.status === 200) {
+            dispatch(updatedUserData(response?.data))
+            router.push("/users");
+        }
+        else {
+            toast.error("Error updating user", {
+                description: response?.data?.message || "Something went wrong",
+            });
+        }
     }
 
     return (

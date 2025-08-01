@@ -2,17 +2,20 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getUsers, deleteUser } from "@/lib/api/user";
 import UserTable from "@/components/users/UserTable";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import MainLayout from "@/components/layout/mainLayout";
-import { getAllUsersService } from "@/service/user/user.service";
+import {
+    deleteUseService,
+    getAllUsersService,
+} from "@/service/user/user.service";
 import { useDispatch, useSelector } from "react-redux";
-import { setAllUSers } from "@/store/slices/user-slice/user.slice";
-import { getAllRoles } from "@/service/role-master/role-master.service";
-import { all } from "axios";
+import {
+    deleteUserData,
+    setAllUSers,
+} from "@/store/slices/user-slice/user.slice";
 
 export default function Users() {
     const [loading, setLoading] = useState(true);
@@ -28,33 +31,51 @@ export default function Users() {
     const handleDelete = async (id) => {
         setLoading(true);
 
-        await deleteUser(id);
-        toast.success("Deleted", {
-            description: "User deleted successfully",
-        });
-    };
+        const res = await deleteUseService(id);
 
+        if (res?.status == 200) {
+            dispatch(deleteUserData(id));
+            toast.success("Deleted", {
+                description: "User deleted successfully",
+            });
+        }
+        else {
+            toast.error("Error deleting user", {
+                description: res?.data?.message || "Something went wrong",
+            });
+        }
+        setLoading(false);
+    };
     const fetchAllUsers = async () => {
         try {
             setLoading(true);
             const res = await getAllUsersService(page, limit);
 
-
             const result = res.data;
-
             const usersArray = result.data || [];
             const totalCount = result.total || 0;
 
-            dispatch(setAllUSers(usersArray));
-            setTotalPages(Math.ceil(totalCount / limit));
+            if (res?.status === 200) {
+                dispatch(setAllUSers(usersArray));
+                setTotalPages(Math.ceil(totalCount / limit));
+            }
         } catch (err) {
-            console.error("Failed to fetch users:", err);
+            const status = err?.response?.status;
+            const message = err?.response?.data?.message || "Something went wrong";
+
+            if (status === 401 || status === 403) {
+                toast.error("Access Denied", {
+                    description: message,
+                });
+            } else {
+                toast.error("Error fetching users", {
+                    description: message,
+                });
+            }
         } finally {
             setLoading(false);
         }
     };
-
-
 
     useEffect(() => {
         fetchAllUsers();

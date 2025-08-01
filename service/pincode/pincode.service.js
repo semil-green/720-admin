@@ -2,7 +2,15 @@ import axios from "axios"
 
 export const addNewPincodeService = async (data) => {
     try {
-        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/add`, data)
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/add`, data,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
 
         return result?.data
     } catch (error) {
@@ -12,7 +20,15 @@ export const addNewPincodeService = async (data) => {
 
 export const updatePincodeService = async (pincodeId, data) => {
     try {
-        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/update/${pincodeId}`, data)
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/update/${pincodeId}`, data,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
 
         return result?.data
     } catch (error) {
@@ -22,7 +38,15 @@ export const updatePincodeService = async (pincodeId, data) => {
 
 export const deletePincodeService = async (pincodeId) => {
     try {
-        const result = await axios.delete(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/delete/${pincodeId}`)
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.delete(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/pincode/delete/${pincodeId}`,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
 
         return result?.data
     }

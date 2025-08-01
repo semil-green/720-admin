@@ -10,13 +10,10 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
-import { cities } from "@/lib/data/storeData"
-import { LocationEdit } from "lucide-react"
-import { DivideIcon } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { deleteDarkStorePackagingCenterService } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service"
-import { deleteDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice"
 import { deleteDarkStore, deletePincodeFromDarkStore } from "@/store/slices/dark-store/dark-store.slice"
+import { toast } from "sonner";
 
 export default function StoreDataTable({
   data,
@@ -38,8 +35,9 @@ export default function StoreDataTable({
 
     if (res?.status === 200) {
       dispatch(deleteDarkStore(id));
+      toast.success("Deleted", { description: "Store deleted successfully" });
     } else {
-      console.error("Failed to delete:", res);
+      toast.error("Failed to delete store");
     }
   };
 

@@ -44,7 +44,7 @@ export default function Sidebar() {
 
     let allowedLabels = [];
 
-    if (role === "1") {
+    if (role === "admin") {
       setFilteredMenuItems(fullMenuItems);
       return;
     }
