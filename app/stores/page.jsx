@@ -9,6 +9,7 @@ import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCen
 import { useDispatch, useSelector } from "react-redux";
 import { setDarkStores } from "@/store/slices/dark-store/dark-store.slice";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
 
 export default function DarkStores() {
     const router = useRouter();
@@ -35,13 +36,23 @@ export default function DarkStores() {
                     sortType,
                 });
 
+
                 const storeList = result?.data?.data || [];
                 const totalCount = result?.data?.total || 0;
 
-                dispatch(setDarkStores(storeList));
-                setTotalPages(Math.ceil(totalCount / limit));
+                if (result?.status === 200) {
+
+                    dispatch(setDarkStores(storeList));
+                    setTotalPages(Math.ceil(totalCount / limit));
+                }
+                else {
+                    toast.error("Error fetching dark stores", {
+                        description: result?.data?.message || "Something went wrong",
+                    });
+                }
+
             } catch (error) {
-                console.error("Error fetching dark stores:", error);
+                console.error("Error fetching dark stores:");
             } finally {
                 setLoading(false);
             }

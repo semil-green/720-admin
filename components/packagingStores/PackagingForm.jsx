@@ -20,7 +20,7 @@ import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
 import { addPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
-
+import { toast } from "sonner";
 export default function PackagingForm({ editId, type }) {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -48,7 +48,14 @@ export default function PackagingForm({ editId, type }) {
         const fetchStates = async () => {
             if (!allStates?.data?.length) {
                 const data = await getAllStatesService();
-                dispatch(setAllStates(data));
+
+                if (data?.status === 200) {
+                    dispatch(setAllStates(data));
+                }
+                else {
+                    toast.error("Failed to get all states");
+                }
+
             }
         };
         fetchStates();
@@ -58,7 +65,14 @@ export default function PackagingForm({ editId, type }) {
         const fetchCities = async () => {
             if (!allCities?.data?.length) {
                 const data = await getALlCitiesService();
-                dispatch(setAllCities(data));
+
+                if (data?.status === 200) {
+
+                    dispatch(setAllCities(data));
+                }
+                else {
+                    toast.error("Failed to get all cities");
+                }
             }
         };
         fetchCities();
@@ -105,6 +119,10 @@ export default function PackagingForm({ editId, type }) {
         if (res?.status === 200) {
             dispatch(addPackagingCenter(res.data));
             router.push(`/packaging-stores/new?id=${res.data.id}`, undefined, { shallow: true });
+            toast.success("Added", { description: "Packaging center added successfully" });
+        }
+        else {
+            toast.error("Failed to add new packaging center");
         }
         setLoading(false);
     };
@@ -114,6 +132,15 @@ export default function PackagingForm({ editId, type }) {
         e.preventDefault();
         const payload = { ...formData, type };
         const res = await updateDarkStorePackagingCenter(editId, payload)
+
+        if (res?.status === 200) {
+            dispatch(addPackagingCenter(res.data));
+            router.push(`/packaging-stores/new?id=${res.data.id}`, undefined, { shallow: true });
+            toast.success("Updated", { description: "Packaging center updated successfully" })
+        }
+        else {
+            toast.error("Failed to update packaging center")
+        }
     };
 
     const filteredCities = allCities?.data || [];

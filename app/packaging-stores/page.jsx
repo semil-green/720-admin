@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { setPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
 import PackagingStoreTable from "@/components/packagingStores/PackagingTable";
-
+import { toast } from "sonner";
 export default function PackagingStores() {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -39,10 +39,18 @@ export default function PackagingStores() {
                 const storeList = result?.data?.data || [];
                 const totalCount = result?.data?.total || 0;
 
-                dispatch(setPackagingCenter(storeList));
-                setTotalPages(Math.ceil(totalCount / limit));
+                if (result?.status === 200) {
+                    dispatch(setPackagingCenter(storeList));
+                    setTotalPages(Math.ceil(totalCount / limit));
+                }
+                else {
+                    toast.error("Error fetching Pcakaging Centers", {
+                        description: result?.data?.message || "Something went wrong",
+                    });
+                }
+
             } catch (error) {
-                console.error("Error fetching dark stores:", error);
+                console.error("Error fetching dark stores:");
             } finally {
                 setLoading(false);
             }

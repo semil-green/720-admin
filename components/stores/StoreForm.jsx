@@ -19,8 +19,8 @@ import { getAllStatesService } from "@/service/state/state.service";
 import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { addDarkStorePackagingCenter } from "@/store/slices/darkStore-packagingCenter/darkStore-packagingCenter.slice";
 import { addDarkStore } from "@/store/slices/dark-store/dark-store.slice";
+import { toast } from "sonner";
 
 export default function StoreForm({ editId, type }) {
     const router = useRouter();
@@ -50,7 +50,13 @@ export default function StoreForm({ editId, type }) {
         const fetchStates = async () => {
             if (!allStates?.data?.length) {
                 const data = await getAllStatesService();
-                dispatch(setAllStates(data));
+                if (data?.status === 200) {
+
+                    dispatch(setAllStates(data));
+                }
+                else {
+                    toast.error("Failed to get all states");
+                }
             }
         };
         fetchStates();
@@ -60,7 +66,13 @@ export default function StoreForm({ editId, type }) {
         const fetchCities = async () => {
             if (!allCities?.data?.length) {
                 const data = await getALlCitiesService();
-                dispatch(setAllCities(data));
+                if (data?.status === 200) {
+
+                    dispatch(setAllCities(data));
+                }
+                else {
+                    toast.error("Failed to get all cities");
+                }
             }
         };
         fetchCities();
@@ -108,6 +120,9 @@ export default function StoreForm({ editId, type }) {
             dispatch(addDarkStore(res.data));
             router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
         }
+        else {
+            toast.error("Failed to add new store");
+        }
         setLoading(false);
     };
 
@@ -116,6 +131,15 @@ export default function StoreForm({ editId, type }) {
         e.preventDefault();
         const payload = { ...formData, type };
         const res = await updateDarkStorePackagingCenter(editId, payload)
+
+        if (res?.status === 200) {
+            dispatch(addDarkStore(res.data));
+            router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
+            toast.success("Updated", { description: "Store updated successfully" })
+        }
+        else {
+            toast.error("Failed to update store")
+        }
     };
 
     const filteredCities = allCities?.data || [];

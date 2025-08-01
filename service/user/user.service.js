@@ -2,14 +2,21 @@ import axios from "axios"
 
 export const getAllUsersService = async (page, limit) => {
     try {
+
+        const auth_token = localStorage.getItem("token")
+
         const fetchUserData = await axios.get(
-            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user?page=${page}&limit=${limit}`
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user?page=${page}&limit=${limit}`,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
         );
 
         return fetchUserData?.data;
     } catch (error) {
-        console.log("Error in getting all users data");
-        throw error;
+        return error;
     }
 };
 
@@ -17,26 +24,40 @@ export const getAllUsersService = async (page, limit) => {
 export const addNewUserService = async (data) => {
     try {
 
-        const addUser = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/add`, data)
+        const auth_token = localStorage.getItem("token")
+
+        const addUser = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/add`, data,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
 
         return addUser
     }
     catch (error) {
-        console.log("Error in adding new user ")
-        throw error
+        return error
     }
 }
 
 export const updateUserService = async (userId, data) => {
 
     try {
-        const updateUser = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/update/${userId}`, data)
+        const auth_token = localStorage.getItem("token")
+
+        const updateUser = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/update/${userId}`, data,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
 
         return updateUser?.data
     }
     catch (error) {
-        console.log("Failed to update user data")
-        throw error
+        return error
     }
 }
 
@@ -44,7 +65,8 @@ export const userLoginService = async (data) => {
     try {
         const response = await axios.post(
             `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/login`,
-            data
+            data,
+
         );
         return { success: true, ...response.data };
     } catch (error) {
@@ -67,3 +89,22 @@ export const userLoginService = async (data) => {
         }
     }
 };
+
+export const deleteUseService = async (id) => {
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.delete(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/delete/${id}`,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
+        return result?.data
+    }
+    catch (error) {
+        console.log("Failed to delete user")
+        throw error
+    }
+} 

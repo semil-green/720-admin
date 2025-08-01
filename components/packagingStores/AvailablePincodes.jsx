@@ -11,7 +11,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { Loader2 } from "lucide-react"
 import { useSelector, useDispatch } from "react-redux"
 import { addNewPincodeService, deletePincodeService, updatePincodeService } from "@/service/pincode/pincode.service"
 import {
@@ -19,7 +18,7 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { addPincodeToPackagingCenter, deletePincodeFromPackagingCenter, updatePincodeInPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice"
-
+import { toast } from "sonner";
 export default function AvailablePincodes({ initialData = {}, onSubmit, editId }) {
     const [loading, setLoading] = useState(false)
     const [pincode, setPincode] = useState('')
@@ -56,6 +55,10 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
 
             setPincode('');
             setDeliveryCharge('');
+            toast.success("Added", { description: "Pincode added successfully" });
+        }
+        else {
+            toast.error("Failed to add pincode");
         }
     }
 
@@ -85,6 +88,11 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
             setPincode('');
             setDeliveryCharge('');
             setPincodeId('');
+
+            toast.success("Updated", { description: "Pincode updated successfully" });
+        }
+        else {
+            toast.error("Failed to update pincode");
         }
     }
 
@@ -94,13 +102,15 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
         try {
             const res = await deletePincodeService(id);
 
-            console.log
             if (res?.status === 200) {
                 dispatch(deletePincodeFromPackagingCenter({ storeId: editId, pincodeId: id }));
-
+                toast.success("Deleted", { description: "Pincode deleted successfully" });
+            }
+            else {
+                toast.error("Failed to delete pincode");
             }
         } catch (err) {
-            console.error("Delete failed", err);
+            console.error("Delete failed");
         }
     };
 

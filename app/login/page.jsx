@@ -13,25 +13,14 @@ import { toast } from "sonner"
 function page() {
     const router = useRouter()
 
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
+    const [email, setEmail] = useState("admin1@example.com")
+    const [password, setPassword] = useState("adminpass1")
     const [loading, setLoading] = useState(false)
 
     const styles = {
         background: "url('images/seafood-bg2.png')",
         filter: 'brightness(0.8) blur(0px) invert(1)'
     }
-
-    // const login = async (e) => {
-    //     e.preventDefault();
-
-    //     setLoading(true)
-    //     await new Promise((resolve, reject) => { setTimeout(() => resolve(), 1500) });
-
-    //     router.replace('dashboard');
-    //     setLoading(false);
-
-    // }
     const login = async (e) => {
         e.preventDefault();
         setLoading(true);
@@ -40,7 +29,8 @@ function page() {
 
         if (res?.status === 200) {
             toast.success(res?.message)
-            localStorage.setItem("role", res?.data?.role);
+            localStorage.setItem("role", res?.data?.user?.role);
+            localStorage.setItem("token", res?.data?.token);
             router.replace("/dashboard");
         }
         else if (res?.status === 401) {

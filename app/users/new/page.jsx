@@ -6,7 +6,6 @@ import { addUser } from "@/lib/api/user"
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
-import { use } from "react"
 
 export default function CreateUserPage() {
     const router = useRouter()
@@ -26,7 +25,7 @@ export default function CreateUserPage() {
                 <Card className='flex-1'>
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Create User</h2>
+                            <h2 className="text-2xl font-bold">{editId ? "Edit User" : "Create User"}</h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
