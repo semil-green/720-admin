@@ -7,6 +7,7 @@ import darkStore_packagingCenter_sliceReducer from "./slices/darkStore-packaging
 import pinCodeReducer from "./slices/pincode/pincode.slice"
 import darkStoreReducer from "./slices/dark-store/dark-store.slice"
 import packagingCenterReducer from "./slices/packaging-center/packaging-center.slice"
+import pincodeWiseSlotReducer from "./slices/picode-wise-slot/picode-wise-slot.service"
 
 export const store = configureStore({
     reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
         darkStorePackagingCenterSlice: darkStore_packagingCenter_sliceReducer,
         pincodeSlice: pinCodeReducer,
         darkStoreSlice: darkStoreReducer,
-        packagingStoreSlice: packagingCenterReducer
+        packagingStoreSlice: packagingCenterReducer,
+        pincodeWiseSlotSlice: pincodeWiseSlotReducer
     },
 });
