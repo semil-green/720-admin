@@ -4,56 +4,53 @@ import { useRouter } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { Loader2 } from "lucide-react"
-import Image from "next/image"
-import { MultiSelect } from "@/components/shadcn/MultiSelect"
 import { Textarea } from "@/components/ui/textarea"
-import { Item_Unit_List } from "@/lib/constants"
-import { PlusIcon } from "lucide-react"
+import Link from "next/link";
+import { toast } from "sonner"
+import { addNewVendorService, updateVendorService } from "@/service/vendor-master/vendor-master.service";
+import { useSelector } from "react-redux";
 
-export default function VendorForm({ initialData = {}, onSubmit }) {
+export default function VendorForm({ editId }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
-    const [formData, setFormData] = useState({})
+    const [formData, setFormData] = useState({
+        vendor_name: "",
+        gst: "",
+        address: "",
+        contact_number: "",
+        account_name: "",
+        account_number: "",
+        ifsc_code: "",
+        branch_name: "",
+        gpay_number: "",
+        upi_id: "",
+        payment_mode: "",
+    })
     const [images, setImages] = useState([])
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [selectedCollections, setSelectedCollections] = useState([]);
 
-    const [gstSlabSelected, setGstSlabSelected] = useState({})
+    const allVendorsData = useSelector((state) => state.vendorMasterSlice.allVendors)
 
-    const categoriesList = [
-        { value: "1", label: "Catch of the day - Fresh Water" },
-        { value: "2", label: "Everyones fab - Fresh Water" },
-        { value: "3", label: "Marintes - Fresh Water" },
-        { value: "4", label: "Boneless & Fillers - Fresh Water" },
-        { value: "5", label: "Single bone - Marine Water" },
-    ];
-
-    const collectionsList = [
-        {
-            name: "fish curry cut",
-            product: 17,
-            condition: "fresh"
-        },
-        {
-            name: "chicken drumstick",
-            product: 24,
-            condition: "frozen"
-        },
-        {
-            name: "organic egg",
-            product: 12,
-            condition: "new"
-        },
-    ]
 
     useEffect(() => {
-        setFormData({
-            ...initialData,
-        })
-    }, [initialData])
+        if (editId && allVendorsData?.data?.length) {
+            const vendor = allVendorsData.data.find((item) => item.id === editId);
+            if (vendor) {
+                setFormData({
+                    vendor_name: vendor.vendor_name || "",
+                    gst: vendor.gst || "",
+                    address: vendor.address || "",
+                    contact_number: vendor.contact_number || "",
+                    account_name: vendor.account_name || "",
+                    account_number: vendor.account_number || "",
+                    ifsc_code: vendor.ifsc_code || "",
+                    branch_name: vendor.branch_name || "",
+                    gpay_number: vendor.gpay_number || "",
+                    upi_id: vendor.upi_id || "",
+                    payment_mode: vendor.payment_mode || "",
+                });
+            }
+        }
+    }, [editId, allVendorsData]);
 
     const handleChange = (e) => {
         const { name, type, checked, value } = e.target;
@@ -63,7 +60,6 @@ export default function VendorForm({ initialData = {}, onSubmit }) {
         }));
     };
 
-
     const handleItemImageChange = (e) => {
         const file = e.target.files[0]
         if (file) {
@@ -72,176 +68,172 @@ export default function VendorForm({ initialData = {}, onSubmit }) {
         }
     }
 
-    const handleToggle = (checked) => {
-        setFormData((prev) => ({ ...prev }))
-    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         setLoading(true)
-        await onSubmit(formData)
-        setLoading(false)
+
+        try {
+            const res = await addNewVendorService(formData)
+
+            if (res?.status === 200) {
+                toast.success("Vendor added successfully")
+                setFormData({
+                    vendor_name: "",
+                    gst: "",
+                    address: "",
+                    contact_number: "",
+                    account_name: "",
+                    account_number: "",
+                    ifsc_code: "",
+                    branch_name: "",
+                    gpay_number: "",
+                    upi_id: "",
+                    payment_mode: "",
+                })
+            } else {
+                toast.error("Failed to add vendor")
+            }
+        } catch (error) {
+            console.error("Error adding vendor:", error)
+            toast.error("Failed to add vendor")
+        } finally {
+            setLoading(false)
+        }
     }
 
-    const handleAdd = (value) => {
-        const current = formData.Collections || [];
-        if (!current.includes(value)) {
-            setFormData({
-                ...formData,
-                Collections: [...current, value],
-            });
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        try {
+            const res = await updateVendorService(editId, formData);
+            if (res?.status === 200) {
+                toast.success("Vendor updated successfully");
+                router.push("/vendors");
+            } else {
+                toast.error("Failed to update vendor");
+            }
+        } catch (error) {
+            console.error("Error updating vendor:", error);
+            toast.error("Error updating vendor");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleRemove = (indexToRemove) => {
-        setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
-    };
 
-    const gstRates = [
-        {
-            hsnCode: "0101",
-            gstPercent: 10,
-            igst: 7,
-        },
-        {
-            hsnCode: "0401",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "1006",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "1701",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "2106",
-            gstPercent: 18,
-            igst: 18,
-        },
-        {
-            hsnCode: "3304",
-            gstPercent: 18,
-            igst: 18,
-        },
-        {
-            hsnCode: "8528",
-            gstPercent: 28,
-            igst: 28,
-        },
-        {
-            hsnCode: "8703",
-            gstPercent: 28,
-            igst: 28,
-        },
+    const unitOptions = [
+        { label: "Cash", value: "cash" },
+        { label: "UPI", value: "upi" },
+        { label: "Bank Transfer", value: "banktransfer" },
     ];
 
-
-
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4">
-
-
+        <form className="grid gap-4">
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>Name</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor Name' type='number' required />
+                    <Input name="vendor_name" value={formData.vendor_name} onChange={handleChange} placeholder='Vendor Name' type='text' required />
                 </div>
 
                 <div className="flex-1">
                     <Label className='pb-1'>GST</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='GST Number' type='number' required />
+                    <Input name="gst" value={formData.gst} onChange={handleChange} placeholder='GST Number' type='text' required />
                 </div>
             </div>
 
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>Address</Label>
-                    <Textarea name="Description" placeholder="Vendor Address" className='min-h-[110px]' value={formData.Description} onChange={handleChange} required />
+                    <Textarea name="address" placeholder="Vendor Address" className='min-h-[110px]' value={formData.address} onChange={handleChange} required />
                 </div>
             </div>
-
-
 
             <div className="flex gap-3 max-w-[50%]">
                 <div className="flex-1">
                     <Label className='pb-1'>Contact Details</Label>
-                    <Input name="Pieces" value={formData.Pieces} onChange={handleChange} placeholder='Enter Contact number' required />
+                    <Input name="contact_number" value={formData.contact_number} onChange={handleChange} placeholder='Enter Contact number' type="number" required />
                 </div>
             </div>
 
             <h4 className=" font-semibold mt-4">Bank Details</h4>
 
-
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>Account Name</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor account name' type='text' required />
+                    <Input name="account_name" value={formData.account_name} onChange={handleChange} placeholder='Vendor account name' type='text' required />
                 </div>
 
                 <div className="flex-1">
                     <Label className='pb-1'>Account number</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor account number' type='text' required />
+                    <Input name="account_number" value={formData.account_number} onChange={handleChange} placeholder='Vendor account number' type='text' required />
                 </div>
             </div>
 
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>IFSC Code</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor IFSC Code' type='text' required />
+                    <Input name="ifsc_code" value={formData.ifsc_code} onChange={handleChange} placeholder='Vendor IFSC Code' type='text' required />
                 </div>
 
                 <div className="flex-1">
                     <Label className='pb-1'>Branch name</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='enter branch name' type='text' required />
+                    <Input name="branch_name" value={formData.branch_name} onChange={handleChange} placeholder='enter branch name' type='text' required />
                 </div>
             </div>
 
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>Gpay Number</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor Gpay number' type='text' required />
+                    <Input name="gpay_number" value={formData.gpay_number} onChange={handleChange} placeholder='Vendor Gpay number' type='text' required />
                 </div>
 
                 <div className="flex-1">
                     <Label className='pb-1'>Upi id</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='enter upi id' type='text' required />
+                    <Input name="upi_id" value={formData.upi_id} onChange={handleChange} placeholder='enter upi id' type='text' required />
                 </div>
             </div>
 
-            <div className="flex-1 max-w-[50%]">
-                <Label className='pb-1'>mode of Payment</Label>
-                <Select
-                    value={formData.Unit?.toString()}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, Unit: parseInt(value) }))}>
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a Unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem>Cash</SelectItem>
-                        <SelectItem>Upi</SelectItem>
-                        <SelectItem>Bank transfer</SelectItem>
-                    </SelectContent>
-                </Select>
+            <div className="flex-1 max-w-[50%] rounded-lg">
+                <Label className="pb-1">Mode of Payment</Label>
+                <select
+                    name="payment_mode"
+                    value={formData.payment_mode}
+                    onChange={handleChange}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none"
+                    required
+                >
+                    <option value="">Select a payment mode</option>
+                    {unitOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
             </div>
-
 
             <div className="flex gap-3">
                 <div className="flex-1">
                     <Label className='pb-1'>Attachment</Label>
-                    <Input name="Quantity" value={formData.Quantity} onChange={handleChange} placeholder='Vendor Gpay number' type='file' required />
+                    <Input name="attachment" onChange={handleItemImageChange} placeholder='Vendor attachment' type='file' />
                 </div>
-
-                <div className="flex-1">
-
-                </div>
+                <div className="flex-1"></div>
             </div>
 
+            <div className="flex justify-center gap-4 mt-4">
+                <Link href="/vendors">
+                    <Button type="button" variant="outline">Back to list</Button>
+                </Link>
 
+                {
+                    editId ? <Button type="submit" onClick={handleUpdate} disabled={loading}>
+                        {loading ? "Updating..." : "Update"}
+                    </Button> : <Button type="submit" onClick={handleSubmit} disabled={loading}>
+                        {loading ? "Saving..." : "Save"}
+                    </Button>
+                }
+            </div>
         </form>
     )
 }
