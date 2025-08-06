@@ -253,7 +253,7 @@ const PincodeSlotForm = () => {
             {
                 !isEdit ? (<div className="flex justify-center mt-4">
                     <Button className="cursor-pointer " onClick={handleAddSlot}>
-                        Add
+                        Save
                     </Button>
                 </div>) : (
                     <div className="flex justify-center mt-4 gap-4">

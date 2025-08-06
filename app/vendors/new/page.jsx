@@ -5,10 +5,12 @@ import React from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from '@/components/ui/button'
 import Link from 'next/link';
-
+import { useSearchParams } from "next/navigation";
 
 const page = () => {
-    const handleSubmit = () => { }
+    const searchParams = useSearchParams();
+    const editId = parseInt(searchParams.get("id"));
+
     return (
         <MainLayout>
             <div className="grid gap-5">
@@ -19,18 +21,11 @@ const page = () => {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <VendorForm initialData={{}} onSubmit={handleSubmit} />
+                        <VendorForm editId={editId} />
                     </CardContent>
                 </Card>
 
-                <div className="flex justify-center gap-4 mt-4">
-                    <Link href="/vendors">
-                        <Button type="button" variant="outline"  >Back to list</Button>
-                    </Link>
-                    <Button type="submit" >
-                        Save
-                    </Button>
-                </div>
+
             </div>
         </MainLayout>
     )
