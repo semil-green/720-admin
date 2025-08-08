@@ -1,32 +1,12 @@
 "use client"
 
 import MainLayout from "@/components/layout/mainLayout";
-import { addStore } from "@/lib/api/packagingStore"
-import { useRouter, useSearchParams } from "next/navigation"
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { toast } from "sonner"
-import AvailablePincodes from "@/components/packagingStores/AvailablePincodes";
-import Slots from "@/components/packagingStores/Slots";
-import { Button } from "@/components/ui/button";
+import { useSearchParams } from "next/navigation"
+import { Suspense } from "react";
 import PackagingForm from "@/components/packagingStores/PackagingForm";
 
-export default function CreateStorePage() {
-  const router = useRouter()
+function CreateStorePageContent() {
   const searchParams = useSearchParams();
-
-  const handleSubmit = async (data) => {
-    await addStore(data)
-    toast.success("Created", { description: "Packaging Center created successfully. Please set avalaible pincodes now." })
-  }
-
-  const handleSubmitPincodes = async (data) => {
-    toast.success("Set", { description: "Pincode set for this packagin center. Please set slots and finish it." })
-  }
-
-  const handleSubmitSlots = async (data) => {
-    toast.success("Set", { description: "You have successfully finished packaging center configuration." });
-    router.push("/packaging-stores")
-  }
 
   const editId = parseInt(searchParams?.get("id"));
 
@@ -40,7 +20,7 @@ export default function CreateStorePage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <PackagingForm initialData={{}} onSubmit={handleSubmit} type={"packaging_center"} editId={editId} />
+            <PackagingForm type={"packaging_center"} editId={editId} />
           </CardContent>
         </Card>
 
@@ -57,4 +37,12 @@ export default function CreateStorePage() {
       </div>
     </MainLayout>
   )
+}
+
+export default function CreateStorePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateStorePageContent />
+    </Suspense>
+  );
 }
