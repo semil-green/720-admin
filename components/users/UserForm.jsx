@@ -22,24 +22,31 @@ import { useSelector } from "react-redux";
 import { addNewUserService, updateUserService } from "@/service/user/user.service";
 import { addUser, updatedUserData } from "@/store/slices/user-slice/user.slice";
 import { toast } from "sonner";
+import { allDarkStorePackagingCenter } from "@/store/slices/picode-wise-slot/picode-wise-slot.service";
+import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
 
 export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
-    const [selectedStores, setSelectedStores] = useState([]);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10000);
 
     const roles = useSelector((state) => state.roleMasterSlice.value);
     const editData = useSelector((state) => state.userSlice.editUserData);
+    const alPackagingCenterDarkStore = useSelector(
+        (state) => state.pincodeWiseSlotSlice.allDarkStorePackagingCenter
+    );
 
     const dispatch = useDispatch();
 
     const [formData, setFormData] = useState({
         role: "",
-        StoreId: "",
+        StoreId: [],
         full_name: "",
         contact_number: "",
         email: "",
-        Profile: "",
+        profile_image: "",
+        profile_image_preview: ""
     });
 
     useEffect(() => {
@@ -48,7 +55,7 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
                 const res = await getAllRoles();
                 dispatch(setRoles(res.data));
             } catch (err) {
-                console.error("Failed to fetch roles:", err);
+                toast.error("Failed to fetch roles");
             }
         };
 
@@ -56,14 +63,46 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
     }, [dispatch]);
 
     useEffect(() => {
-        if (userEditId && editData && roles.length > 0) {
+        const fetchDarkStores = async () => {
+            try {
+                setLoading(true);
+                const result = await getAllDarkStorePackagingCenter({
+                    page,
+                    limit,
+                });
+
+                const list = result?.data?.data || [];
+
+                if (result?.status === 200) {
+                    dispatch(allDarkStorePackagingCenter(list));
+                } else {
+                    toast.error("Error fetching dark stores", {
+                        description: result?.data?.message || "Something went wrong",
+                    });
+                }
+            } catch (error) {
+                toast.error("Error fetching dark stores & packaging center");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDarkStores();
+    }, [page, dispatch]);
+
+    useEffect(() => {
+        if (userEditId && editData && roles.length > 0 && alPackagingCenterDarkStore.length > 0) {
+            const storeIdsAsStrings = editData.store_ids ?
+                editData.store_ids.map(id => id.toString()) : [];
+
             setFormData({
                 full_name: editData.full_name || "",
                 contact_number: editData.contact_number || "",
                 email: editData.email || "",
                 role: editData.role?.toString() || "",
-                StoreId: editData.StoreId || "",
-                Profile: editData.profile_image || "",
+                StoreId: storeIdsAsStrings,
+                profile_image: editData.profile_image || "",
+                profile_image_preview: editData.profile_image || "",
             });
         } else if (!userEditId) {
             setFormData({
@@ -71,11 +110,12 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
                 contact_number: "",
                 email: "",
                 role: "",
-                StoreId: "",
-                Profile: "",
+                StoreId: [],
+                profile_image: "",
+                profile_image_preview: ""
             });
         }
-    }, [editData, userEditId, roles]);
+    }, [editData, userEditId, roles, alPackagingCenterDarkStore]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -86,7 +126,11 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
         const file = e.target.files[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
-            setFormData((prev) => ({ ...prev, Profile: imageUrl }));
+            setFormData((prev) => ({
+                ...prev,
+                profile_image: file,
+                profile_image_preview: imageUrl
+            }));
         }
     };
 
@@ -94,12 +138,34 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
         e.preventDefault();
         setLoading(true);
         try {
-            const newUser = await addNewUserService(formData);
+            const formDataToSend = new FormData();
 
-            dispatch(addUser(newUser?.data));
-            router.push("/users");
+            formDataToSend.append("full_name", formData.full_name);
+            formDataToSend.append("contact_number", formData.contact_number);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("role", formData.role);
+
+
+            formData.StoreId.forEach((storeId) => {
+                formDataToSend.append("StoreId", storeId);
+            });
+
+            if (formData.profile_image) {
+                formDataToSend.append("profile_image", formData.profile_image);
+            }
+
+            const newUser = await addNewUserService(formDataToSend);
+
+            if (newUser?.status === 200) {
+                toast.success("Created", {
+                    description: "User created successfully",
+                })
+                router.push("/users");
+            }
         } catch (error) {
-            console.error("Submit Error:", error);
+            toast.error("User creation failed", {
+                description: error?.message || "An error occurred",
+            });
         } finally {
             setLoading(false);
         }
@@ -107,19 +173,41 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+        setLoading(true);
+        try {
+            const formDataToSend = new FormData();
 
-        const response = await updateUserService(userEditId, formData)
+            formDataToSend.append("full_name", formData.full_name);
+            formDataToSend.append("contact_number", formData.contact_number);
+            formDataToSend.append("email", formData.email);
+            formDataToSend.append("role", formData.role);
 
-        if (response?.status === 200) {
-            dispatch(updatedUserData(response?.data))
-            router.push("/users");
-        }
-        else {
-            toast.error("Error updating user", {
-                description: response?.data?.message || "Something went wrong",
+            formData.StoreId.forEach((storeId) => {
+                formDataToSend.append("StoreId", storeId);
             });
+
+            if (formData.profile_image instanceof File) {
+                formDataToSend.append("profile_image", formData.profile_image);
+            }
+
+            const response = await updateUserService(userEditId, formDataToSend);
+
+
+            if (response?.status === 200) {
+                toast.success("Updated", {
+                    description: "User updated successfully",
+                })
+                router.push("/users");
+            }
+
+        } catch (error) {
+            toast.error("Update failed", {
+                description: error?.message || "An error occurred",
+            });
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     return (
         <form className="grid gap-4">
@@ -177,9 +265,17 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
             <div>
                 <Label className="pb-1">Select Stores</Label>
                 <MultiSelect
-                    options={stores}
-                    onValueChange={setSelectedStores}
-                    defaultValue={selectedStores}
+                    options={alPackagingCenterDarkStore.map(store => ({
+                        label: store.store_name,
+                        value: store.id.toString(),
+                    }))}
+                    onValueChange={(values) => {
+                        setFormData(prev => ({
+                            ...prev,
+                            StoreId: values,
+                        }));
+                    }}
+                    defaultValue={formData.StoreId}
                     placeholder="Select Stores"
                     variant="secondary"
                     animation={0}
@@ -191,14 +287,14 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
             <div>
                 <Label className="pb-1">Profile Picture</Label>
                 <Input type="file" accept="image/*" onChange={handleFileChange} />
-                {formData.Profile && (
+                {formData?.profile_image_preview && (
                     <div className="mt-2">
                         <Image
-                            src={formData.Profile}
+                            src={formData?.profile_image_preview}
                             alt="Profile"
                             width={80}
                             height={80}
-                            className="rounded-full"
+                            className=""
                         />
                     </div>
                 )}

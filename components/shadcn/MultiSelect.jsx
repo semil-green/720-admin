@@ -68,6 +68,11 @@ export const MultiSelect = React.forwardRef(
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
     const [isAnimating, setIsAnimating] = React.useState(false);
 
+    React.useEffect(() => {
+      console.log("MultiSelect defaultValue changed:", defaultValue);
+      setSelectedValues(defaultValue);
+    }, [defaultValue]);
+
     const handleInputKeyDown = (event) => {
       if (event.key === "Enter") {
         setIsPopoverOpen(true);

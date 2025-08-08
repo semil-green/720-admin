@@ -3,11 +3,10 @@ import MainLayout from '@/components/layout/mainLayout'
 import VendorForm from '@/components/vendor/AddVendorForm'
 import React from 'react'
 import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from '@/components/ui/button'
-import Link from 'next/link';
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-const page = () => {
+function VendorPageContent() {
     const searchParams = useSearchParams();
     const editId = parseInt(searchParams.get("id"));
 
@@ -24,11 +23,15 @@ const page = () => {
                         <VendorForm editId={editId} />
                     </CardContent>
                 </Card>
-
-
             </div>
         </MainLayout>
     )
 }
 
-export default page
+export default function VendorPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VendorPageContent />
+        </Suspense>
+    );
+}

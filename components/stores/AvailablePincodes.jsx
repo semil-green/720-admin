@@ -36,8 +36,6 @@ import {
 } from "@/store/slices/dark-store/dark-store.slice";
 
 export default function AvailablePincodes({
-    initialData = {},
-    onSubmit,
     editId,
 }) {
     const [loading, setLoading] = useState(false);
