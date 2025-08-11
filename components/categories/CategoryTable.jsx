@@ -1,8 +1,6 @@
 
 import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
-import { useEffect, useState } from "react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import {
@@ -12,24 +10,26 @@ import {
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
 export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal }) {
-    const router = useRouter()
 
     const storeColumns = (onEdit, onDelete, onOpenSubCategoryModal) => [
         {
-            accessorKey: "Image",
+            accessorKey: "category_image",
+            header: "Image",
             cell: ({ row }) => {
-                const user = row.original
-                return <img
-                    src={user.Image || "https://i.pravatar.cc/100"}
-                    alt="Image"
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                />
-            }
+                const category = row.original;
+                return (
+                    <img
+                        src={category?.category_image || "https://i.pravatar.cc/100"}
+                        alt="Image"
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                    />
+                );
+            },
         },
         {
-            accessorKey: "Category",
+            accessorKey: "category_name",
             header: ({ column }) => (
                 <Button variant="ghost" onClick={() => column.toggleSorting()}>
                     Category <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -40,7 +40,7 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const category = row.original
+                const category = row.original;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -49,7 +49,7 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(category.CategoryId)}>
+                            <DropdownMenuItem onClick={() => onEdit(category)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -62,29 +62,27 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete cCategory?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete Category?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(category.CategoryId)}>
+                                        <AlertDialogAction onClick={() => onDelete(category.category_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-
-                            <DropdownMenuItem onClick={() => onOpenSubCategoryModal(category.CategoryId)}>
-                                Sub Categories
-                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                )
+                );
             },
         },
-    ]
+    ];
+
+
 
     const table = useReactTable({
         data,

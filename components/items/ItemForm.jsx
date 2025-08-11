@@ -1,3 +1,4 @@
+"use client";
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
@@ -12,9 +13,12 @@ import { MultiSelect } from "@/components/shadcn/MultiSelect"
 import { Textarea } from "@/components/ui/textarea"
 import { Item_Unit_List } from "@/lib/constants"
 import { PlusIcon } from "lucide-react"
+import { useSelector } from "react-redux"
+import { getAllHSNCodeService } from "@/service/hsn-code/hsn-code.service";
+import { setHsnCodes } from "@/store/slices/hsn-code/hsn-code.slice";
+import { useDispatch } from "react-redux";
 
 export default function ItemForm({ initialData = {}, onSubmit }) {
-    const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({})
     const [images, setImages] = useState([])
@@ -22,6 +26,9 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
     const [selectedCollections, setSelectedCollections] = useState([]);
 
     const [gstSlabSelected, setGstSlabSelected] = useState({})
+    const router = useRouter()
+
+    const dispatch = useDispatch()
 
     const categoriesList = [
         { value: "1", label: "Catch of the day - Fresh Water" },
@@ -97,49 +104,21 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
         setImages((prevImages) => prevImages.filter((_, index) => index !== indexToRemove));
     };
 
-    const gstRates = [
-        {
-            hsnCode: "0101",
-            gstPercent: 10,
-            igst: 7,
-        },
-        {
-            hsnCode: "0401",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "1006",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "1701",
-            gstPercent: 5,
-            igst: 5,
-        },
-        {
-            hsnCode: "2106",
-            gstPercent: 18,
-            igst: 18,
-        },
-        {
-            hsnCode: "3304",
-            gstPercent: 18,
-            igst: 18,
-        },
-        {
-            hsnCode: "8528",
-            gstPercent: 28,
-            igst: 28,
-        },
-        {
-            hsnCode: "8703",
-            gstPercent: 28,
-            igst: 28,
-        },
-    ];
+    const allHsnCodes = useSelector((state) => state.hsnCodeSlice.allHsnCodes)
 
+    useEffect(() => {
+        const fetchHsnCode = async () => {
+            const res = await getAllHSNCodeService();
+
+            if (res?.status === 200) {
+                dispatch(setHsnCodes(res?.data));
+            }
+        };
+
+        if (!allHsnCodes || allHsnCodes.length === 0) {
+            fetchHsnCode();
+        }
+    }, [allHsnCodes]);
 
 
     return (
@@ -272,32 +251,24 @@ export default function ItemForm({ initialData = {}, onSubmit }) {
             </div>
 
             <div>
-                <Label className='pb-1'>GST</Label>
+                <Label className='pb-1'>HSN</Label>
                 <div className="grid grid-cols-3 gap-3">
                     <Select
-                        value={formData.Vendor?.toString()}
-                        onValueChange={(value) => {
-                            const selected = gstRates.find(vendor => vendor.hsnCode.toString() === value);
-                            if (selected) {
-                                setGstSlabSelected(selected);
-                            }
-                        }}>
+                        value={formData.Vendor?.toString()}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select a vendor" />
+                            <SelectValue placeholder="Select HSN code" />
                         </SelectTrigger>
                         <SelectContent>
 
                             {
-                                gstRates?.map((vendor, index) => (
-                                    <SelectItem key={index} value={vendor.hsnCode.toString()}>
-                                        {vendor.hsnCode}
+                                allHsnCodes?.map((vendor, index) => (
+                                    <SelectItem key={index} value={vendor.hsn_id.toString()}>
+                                        {vendor?.hsn_code} - {vendor?.gst_percentage} % - {vendor?.hsn_no}
                                     </SelectItem>
                                 ))
                             }
                         </SelectContent>
                     </Select>
-                    <Input name="GSTPercent" value={`GST % : ${gstSlabSelected?.gstPercent} `} placeholder='GST %' required disabled />
-                    <Input name="IGST" value={`IGST : ${gstSlabSelected?.igst}`} placeholder='IGST' disabled />
                 </div>
             </div>
 
