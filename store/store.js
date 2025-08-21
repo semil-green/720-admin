@@ -9,22 +9,26 @@ import darkStoreReducer from "./slices/dark-store/dark-store.slice"
 import packagingCenterReducer from "./slices/packaging-center/packaging-center.slice"
 import pincodeWiseSlotReducer from "./slices/picode-wise-slot/picode-wise-slot.service"
 import vendorMasterReducer from "./slices/vendor-master/vendor-master.slice"
+import itemsReducer from "./slices/items/items.slice"
 import categoryReducer from "./slices/category/category.slice"
 import hsnCodeReducer from "./slices/hsn-code/hsn-code.slice"
+import collectionsReducer from "./slices/collections/collections.slice"
 
 export const store = configureStore({
-    reducer: {
-        userSlice: userSliceReducer,
-        roleMasterSlice: roleMasterReducer,
-        stateSlice: stateReducer,
-        citySlice: cityReducer,
-        darkStorePackagingCenterSlice: darkStore_packagingCenter_sliceReducer,
-        pincodeSlice: pinCodeReducer,
-        darkStoreSlice: darkStoreReducer,
-        packagingStoreSlice: packagingCenterReducer,
-        pincodeWiseSlotSlice: pincodeWiseSlotReducer,
-        vendorMasterSlice: vendorMasterReducer,
-        categoeySlice: categoryReducer,
-        hsnCodeSlice: hsnCodeReducer
-    },
+        reducer: {
+                userSlice: userSliceReducer,
+                roleMasterSlice: roleMasterReducer,
+                stateSlice: stateReducer,
+                citySlice: cityReducer,
+                darkStorePackagingCenterSlice: darkStore_packagingCenter_sliceReducer,
+                pincodeSlice: pinCodeReducer,
+                darkStoreSlice: darkStoreReducer,
+                packagingStoreSlice: packagingCenterReducer,
+                pincodeWiseSlotSlice: pincodeWiseSlotReducer,
+                vendorMasterSlice: vendorMasterReducer,
+                allItemsSlice: itemsReducer,
+                categoeySlice: categoryReducer,
+                hsnCodeSlice: hsnCodeReducer,
+                collectionsSlice: collectionsReducer
+        },
 });
