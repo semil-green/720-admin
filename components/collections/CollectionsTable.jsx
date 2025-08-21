@@ -6,88 +6,119 @@ import {
     getCoreRowModel,
     flexRender,
 } from '@tanstack/react-table';
-import Link from 'next/link';
 import Image from 'next/image';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
+    AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
+} from "@/components/ui/alert-dialog";
+import { Button } from '../ui/button';
+import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { deleteCollectionService } from '@/service/collections/collections.service';
+import { toast } from "sonner";
+import { deleteCollection } from '@/store/slices/collections/collections.slice';
+import { useDispatch } from "react-redux";
 
-const data = [
-    {
-        image: "/images/fish-image.png",
-        title: 'Fish Curry Cut',
-        product: 17,
-        condition: 'Fresh',
-    },
-    {
-        image: "/images/fish-image.png",
-        title: 'Chicken Drumstick',
-        product: 24,
-        condition: 'Frozen',
-    },
-    {
-        image: "/images/fish-image.png",
-        title: 'Organic Eggs',
-        product: 12,
-        condition: 'New',
-    },
-];
+export default function CollectionsTable({ allCollectionsData }) {
+    const [page, setPage] = React.useState(1);
+    const pageSize = 3;
 
-const columns = [
-    {
-        id: 'select',
-        header: () => <input type="checkbox" />,
-        cell: () => <input type="checkbox" />,
-    },
-    {
-        header: '',
-        accessorKey: 'image',
-        cell: info => (
-            <Image
-                src={info.getValue()}
-                alt="Product Image"
-                width={40}
-                height={40}
-                className="rounded object-cover"
-            />
-        ),
-    },
-    {
-        header: 'Title',
-        accessorKey: 'title',
-        cell: info => {
-            const value = info.getValue();
-            return (
-                <Link href={`/collections/${value.replace(/\s+/g, '-').toLowerCase()}`}>
-                    {value}
-                </Link>
-            );
+    const paginatedData = React.useMemo(() => {
+        const start = (page - 1) * pageSize;
+        return allCollectionsData.slice(start, start + pageSize);
+    }, [page, allCollectionsData]);
+
+    const router = useRouter();
+    const dispatch = useDispatch();
+
+    const handleDelete = async (collectionId) => {
+
+        const res = await deleteCollectionService(collectionId);
+
+        if (res?.status === 200) {
+            dispatch(deleteCollection(collectionId))
+            toast.success("Deleted", { description: "Collection deleted successfully" });
+        }
+    }
+    const columns = [
+        {
+            header: 'Product',
+            accessorKey: 'title',
+            cell: ({ row }) => {
+                const { image, title } = row.original;
+                return (
+                    <div className="flex items-center gap-3">
+                        <Image
+                            src={image}
+                            alt={"image"}
+                            width={40}
+                            height={40}
+                            className="rounded object-cover"
+                        />
+                        <span>{title}</span>
+                    </div>
+                );
+            },
         },
-    },
-    {
-        header: 'Products',
-        accessorKey: 'product',
-    },
-    {
-        header: 'Product conditions',
-        accessorKey: 'condition',
-        cell: info => {
-            const value = info.getValue();
-            const color = value === 'New' ? 'bg-green-100 text-green-700' :
-                value === 'Fresh' ? 'bg-blue-100 text-blue-700' :
-                    'bg-yellow-100 text-yellow-700';
-            return (
-                <span className={`px-2 py-1 text-sm rounded-full font-medium ${color}`}>
-                    {value}
-                </span>
-            );
+        {
+            header: 'Products',
+            accessorKey: 'no_of_products',
         },
-    },
-];
+        {
+            id: "actions",
+            header: "Actions",
+            cell: ({ row }) => {
+                const collection = row.original;
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon">
+                                <MoreVertical className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                onClick={() => router.push(`/collections/new?id=${collection.collection_id}`)}
+                            >
+                                <Pencil className="mr-2 h-4 w-4" /> Edit
+                            </DropdownMenuItem>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
+                                        <Trash2 className="mr-2 h-4 w-4" />
+                                        Delete
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Delete Collection?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to delete? This action cannot be undone.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(collection.collection_id)}>
+                                            Confirm Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
 
-export default function CollectionsTable() {
     const table = useReactTable({
-        data,
+        data: paginatedData,
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
+
+    const totalPages = Math.ceil(allCollectionsData.length / pageSize);
 
     return (
         <div className="p-4">
@@ -119,6 +150,27 @@ export default function CollectionsTable() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Pagination Controls */}
+            <div className="flex justify-between items-center mt-4">
+                <Button
+                    variant="outline"
+                    onClick={() => setPage(p => Math.max(p - 1, 1))}
+                    disabled={page === 1}
+                >
+                    Previous
+                </Button>
+                <span className="text-sm">
+                    Page {page} of {totalPages}
+                </span>
+                <Button
+                    variant="outline"
+                    onClick={() => setPage(p => Math.min(p + 1, totalPages))}
+                    disabled={page === totalPages}
+                >
+                    Next
+                </Button>
             </div>
         </div>
     );

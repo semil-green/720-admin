@@ -1,18 +1,33 @@
-
-import { useReactTable, getCoreRowModel, flexRender, getPaginationRowModel, getSortedRowModel } from "@tanstack/react-table"
-import { useState } from "react"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, } from "@/components/ui/dropdown-menu"
 import {
-    AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
-    AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
+    useReactTable,
+    getCoreRowModel,
+    getSortedRowModel,
+    flexRender,
+} from "@tanstack/react-table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { useRouter } from "next/navigation";
 
-export default function ItemTable({ data, onDelete, sortState }) {
-    const router = useRouter()
+
+export default function ItemTable({ data, onDelete, sortState, page, limit, setPage, totalItems }) {
+
+    const router = useRouter();
+    const handleEdit = (item) => {
+        router.push(`/items/new?id=${item}`);
+    };
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
@@ -21,46 +36,40 @@ export default function ItemTable({ data, onDelete, sortState }) {
                 const item = row.original
                 return (
                     <div className="flex items-center gap-3">
-                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                        <div className="">
-                            <div className="font-semibold">{item.Title}</div>
-                            <div className="">{item.SKU}</div>
+                        <img
+                            src={item.thumbnail_image ?? "https://i.pravatar.cc/100"}
+                            alt="image"
+                            width={50}
+                            height={50}
+                            className="rounded-full"
+                        />
+                        <div>
+                            <div className="font-semibold">{item?.title}</div>
+                            <div>{item?.sku}</div>
                         </div>
                     </div>
                 )
-            }
+            },
         },
         {
             accessorKey: "CategoryId",
             header: "Category",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="flex flex-col">
-                        <div className="font-semibold">Fresh Water</div>
-                        <div className="">Rohu</div>
-                    </div>
-                )
-            }
+            cell: () => (
+                <div className="flex flex-col">
+                    <div className="font-semibold">Fresh Water</div>
+                    <div>Rohu</div>
+                </div>
+            ),
         },
         {
             accessorKey: "Quantity",
             header: "Quantity/Unit",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="">{item.Quantity}</div>
-                )
-            }
+            cell: ({ row }) => <div>{row.original?.quantity} in stock</div>,
         },
         {
-            accessorKey: "ServePerson",
+            accessorKey: "serve_person",
             header: "Serve Person",
         },
-        // {
-        //     accessorKey: "Pieces",
-        //     header: "Pieces",
-        // },
         {
             id: "actions",
             header: "Actions",
@@ -74,10 +83,9 @@ export default function ItemTable({ data, onDelete, sortState }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem onClick={() => handleEdit?.(item.product_id)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
-
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
@@ -94,7 +102,7 @@ export default function ItemTable({ data, onDelete, sortState }) {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => onDelete(item.product_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -107,23 +115,23 @@ export default function ItemTable({ data, onDelete, sortState }) {
         },
     ]
 
+    const totalPages = Math.max(1, Math.ceil(totalItems / limit))
+
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            (store) => { },
-            onDelete
-        ),
+        columns: storeColumns(() => { }, onDelete),
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-
         state: {
             sorting: sortState,
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: limit,
+            },
         },
-        manualSorting: false,
-
+        manualPagination: true,
+        pageCount: totalPages,
     })
-
 
     return (
         <div className="rounded border p-4 pt-0 shadow">
@@ -155,19 +163,18 @@ export default function ItemTable({ data, onDelete, sortState }) {
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
                 >
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {page} of {totalPages}
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
                 >
                     Next
                 </Button>

@@ -1,13 +1,44 @@
+"use client";
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import MainLayout from "@/components/layout/mainLayout";
 import { Button } from '@/components/ui/button';
-import { BookText } from "lucide-react"
+import { BookText, Loader2 } from "lucide-react"
 import CollectionsTable from '@/components/collections/CollectionsTable';
 import Link from 'next/link';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { toast } from "sonner"
+import { getAllCollectionsService } from '@/service/collections/collections.service';
+import { setCollections } from '@/store/slices/collections/collections.slice';
 
 export default function Collections() {
+
+    const [loading, setLoading] = useState(false);
+
+    const dispatch = useDispatch();
+
+
+    const allCollectionsData = useSelector((state) => state.collectionsSlice.allCollections)
+
+    useEffect(() => {
+        const fetchCollectionData = async () => {
+            setLoading(true)
+            try {
+                const res = await getAllCollectionsService()
+
+                if (res?.data) {
+                    dispatch(setCollections(res?.data))
+                    setLoading(false)
+                }
+            }
+            catch (error) {
+                toast.error("Error in fetching collections");
+            }
+        }
+
+        fetchCollectionData()
+    }, [])
+
     return (
         <MainLayout>
 
@@ -26,7 +57,14 @@ export default function Collections() {
                     </div>
                 </div>
 
-                <CollectionsTable />
+                {loading && (
+                    <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                        <div className="flex-1 flex justify-center items-center">
+                            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                        </div>
+                    </div>
+                )}
+                <CollectionsTable allCollectionsData={allCollectionsData} />
             </div>
         </MainLayout>
     )

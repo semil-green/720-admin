@@ -69,7 +69,6 @@ export const MultiSelect = React.forwardRef(
     const [isAnimating, setIsAnimating] = React.useState(false);
 
     React.useEffect(() => {
-      console.log("MultiSelect defaultValue changed:", defaultValue);
       setSelectedValues(defaultValue);
     }, [defaultValue]);
 
