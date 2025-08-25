@@ -10,27 +10,39 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { deleteRawItemService } from "@/service/raw-item/raw-item.service"
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
+import { deleteRawItem } from "@/store/slices/raw-ittem/raw-item.store"
 
-export default function RawItemTable({ data, onDelete }) {
+export default function RawItemTable({ data, onDelete, page, limit, setPage, totalPages, setEditRawItem, openEditModal }) {
     const router = useRouter()
+    const dispatch = useDispatch()
+    const handleDelete = async (id) => {
+
+        const res = await deleteRawItemService(id);
+
+        if (res?.status == 200 || res?.status == 201) {
+            toast.success("Deleted", { description: "Raw Item deleted successfully" });
+
+            dispatch(deleteRawItem(id));
+        }
+        else {
+            toast.error("Failed to delete raw item");
+        }
+    }
 
     const storeColumns = (onEdit, onDelete) => [
         {
-            accessorKey: "Title",
+            accessorKey: "raw_item",
             header: "Raw Item"
         },
         {
-            accessorKey: "Unit",
+            accessorKey: "unit",
             header: "Unit",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="">Gram</div>
-                )
-            }
         },
         {
-            accessorKey: "SKU",
+            accessorKey: "sku",
             header: "SKU",
         },
         {
@@ -46,7 +58,7 @@ export default function RawItemTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem onClick={() => { setEditRawItem(item), openEditModal() }}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -66,7 +78,7 @@ export default function RawItemTable({ data, onDelete }) {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => handleDelete(item.raw_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -88,6 +100,8 @@ export default function RawItemTable({ data, onDelete }) {
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        manualPagination: true,
+        pageCount: -1
     })
 
     return (
@@ -105,37 +119,48 @@ export default function RawItemTable({ data, onDelete }) {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={table.getAllColumns().length} className="h-24 text-center">
+                                No records found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
+
             </Table>
 
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                    disabled={page === 1}
                 >
                     Previous
                 </Button>
+
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {page} of {totalPages}
                 </span>
+
                 <Button
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                    disabled={page === totalPages || totalPages === 0}
                 >
                     Next
                 </Button>
+
             </div>
         </div>
     )

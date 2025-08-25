@@ -13,6 +13,7 @@ import itemsReducer from "./slices/items/items.slice"
 import categoryReducer from "./slices/category/category.slice"
 import hsnCodeReducer from "./slices/hsn-code/hsn-code.slice"
 import collectionsReducer from "./slices/collections/collections.slice"
+import rawItemRedcuer from "./slices/raw-ittem/raw-item.store"
 
 export const store = configureStore({
         reducer: {
@@ -29,6 +30,7 @@ export const store = configureStore({
                 allItemsSlice: itemsReducer,
                 categoeySlice: categoryReducer,
                 hsnCodeSlice: hsnCodeReducer,
-                collectionsSlice: collectionsReducer
+                collectionsSlice: collectionsReducer,
+                rawItemSlice: rawItemRedcuer
         },
 });

@@ -12,21 +12,15 @@ import { Button } from "@/components/ui/button"
 import { ArrowDown, ArrowUp, ListFilter } from "lucide-react"
 import { useState } from "react"
 
-const columns = [
-    { label: "Product", value: "Title" },
-    { label: "Category", value: "CategoryId" },
-    { label: "Serve Person", value: "ServePerson" },
-    { label: "Pieces", value: "Pieces" },
-    { label: "Quantity", value: "Quantity" }
-]
 
-export default function FilterDropdown({ onSortChange }) {
-    const [sortDirection, setSortDirection] = useState("asc")
+
+export default function FilterDropdown({ onSortChange, columns }) {
+    const [sortDirection, setSortDirection] = useState("ASC")
 
     const handleSort = (column) => {
-        const direction = sortDirection === "asc" ? "desc" : "asc"
+        const direction = sortDirection === "ASC" ? "DESC" : "ASC"
         setSortDirection(direction)
-        onSortChange({ id: column, desc: direction === "desc" })
+        onSortChange({ sortBy: column, sortOrder: direction })
     }
 
     return (
@@ -37,10 +31,10 @@ export default function FilterDropdown({ onSortChange }) {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>Sort By</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {columns.map((col) => (
+                {columns?.map((col) => (
                     <DropdownMenuItem key={col.value} onClick={() => handleSort(col.value)}>
                         {col.label}
-                        {sortDirection === "asc" ? (
+                        {sortDirection === "ASC" ? (
                             <ArrowUp className="ml-auto h-4 w-4" />
                         ) : (
                             <ArrowDown className="ml-auto h-4 w-4" />

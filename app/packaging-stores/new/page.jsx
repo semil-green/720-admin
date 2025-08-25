@@ -1,9 +1,19 @@
 "use client";
 
 import MainLayout from "@/components/layout/mainLayout";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { useSearchParams } from "next/navigation"
 import { Suspense } from "react";
 import PackagingForm from "@/components/packagingStores/PackagingForm";
+import AvailablePincodes from "@/components/packagingStores/AvailablePincodes";
 
 function CreateStorePageContent() {
   const searchParams = useSearchParams();
@@ -31,7 +41,7 @@ function CreateStorePageContent() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <AvailablePincodes initialData={{}} onSubmit={handleSubmitPincodes} editId={editId} />
+            <AvailablePincodes initialData={{}} editId={editId} />
           </CardContent>
         </Card>
       </div>

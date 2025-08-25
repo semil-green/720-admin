@@ -32,7 +32,6 @@ function CreateStorePageContent() {
           <CardContent>
             <StoreForm
               initialData={{}}
-              onSubmit={handleSubmit}
               type={"dark_store"}
               editId={editId}
             />
