@@ -12,7 +12,9 @@ import { addNewCollectionService, getCollectionsById, searchProductsService, upd
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
-const page = () => {
+import { Suspense } from "react";
+
+const Page = () => {
     const editId = useSearchParams().get("id");
     const router = useRouter();
 
@@ -346,4 +348,10 @@ const page = () => {
     )
 }
 
-export default page
+export default function AddColectionPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <Page />
+        </Suspense>
+    );
+}

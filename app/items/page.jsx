@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { getItems } from "@/lib/api/items";
 import ItemTable from "@/components/items/ItemTable";
 import RawItemTable from "@/components/items/RawItemTable";
 import RawItemForm from "@/components/items/RawItemForm";
@@ -12,29 +11,63 @@ import { toast } from "sonner";
 import MainLayout from "@/components/layout/mainLayout";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog";
 import FilterDropdown from "@/components/items/FilterDropDown";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteItem, getAllItems } from "@/store/slices/items/items.slice";
-import { deleteItemService, getAllItemsService } from "@/service/items/items.service";
+import {
+    deleteItemService,
+    getAllItemsService,
+} from "@/service/items/items.service";
+import { getAllRawItemsService } from "@/service/raw-item/raw-item.service";
+import { setRawItems } from "@/store/slices/raw-ittem/raw-item.store";
+import { getAllUnitsService } from "@/service/unit/unit.service";
 
 export default function Items() {
-    const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [rawItem, setRawItem] = useState({});
     const [isRawItemModalOpen, setIsRawItemModalOpen] = useState(false);
-    const [sortState, setSortState] = useState();
+
+    const [productSortState, setProductSortState] = useState();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);
     const [totalItems, setTotalItems] = useState(0);
+    const [searchProduct, setSearchProduct] = useState("");
+
+    const [rawItemSortState, setRawItemSortState] = useState();
+    const [rawItemPage, setRawItemPage] = useState(1);
+    const [rawItemLimit, setRawItemLimit] = useState(10);
+    const [totalRawItems, settotalRawItems] = useState(0);
+    const [units, setUnits] = useState([]);
+    const [editRawItem, setEditRawItem] = useState({});
+    const [searchRawItem, setSearchRawItem] = useState("");
 
     const router = useRouter();
     const dispatch = useDispatch();
-    const allItemsData = useSelector((state) => state.allItemsSlice?.allItems ?? []);
 
-    const fetchItems = async () => {
+    const allItemsData = useSelector(
+        (state) => state.allItemsSlice?.allItems ?? []
+    );
+    const allRawItemsData = useSelector(
+        (state) => state.rawItemSlice.allRawItems
+    );
+
+
+    const fetchItems = async (
+        page = 1,
+        limit = 5,
+        search = searchProduct,
+        sortBy = productSortState?.sortBy,
+        sortOrder = productSortState?.sortOrder
+    ) => {
         try {
-            const res = await getAllItemsService(page, limit);
+            setLoading(true);
+            const res = await getAllItemsService(page, limit, search, sortBy, sortOrder);
             if (res && res.data) {
                 dispatch(getAllItems(res.data.data || []));
                 setTotalItems(res.data.total ?? 0);
@@ -46,57 +79,92 @@ export default function Items() {
             toast.error("Failed to fetch product list");
             dispatch(getAllItems([]));
             setTotalItems(0);
-        }
-    };
-
-    const getItemsList = async () => {
-        try {
-            const res = await getItems();
-            const arr = res?.data?.data ?? res?.data ?? res ?? [];
-            setItems(Array.isArray(arr) ? arr : []);
-        } catch (err) {
-            toast.error("Failed to fetch raw items");
-            setItems([]);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        const load = async () => {
+        fetchItems(page, limit, searchProduct);
+    }, [page, limit, productSortState]);
+
+
+    const fetchALlRawItems = async (
+        page = rawItemPage,
+        limit = rawItemLimit,
+        search = searchRawItem,
+        sortBy = rawItemSortState?.sortBy,
+        sortOrder = rawItemSortState?.sortOrder
+    ) => {
+        try {
             setLoading(true);
-            await Promise.all([fetchItems(), getItemsList()]);
+            const res = await getAllRawItemsService(page, limit, search, sortBy, sortOrder);
+            if (res) {
+                settotalRawItems(res?.total);
+                dispatch(setRawItems(res?.items));
+            }
+        } catch (error) {
+            toast.error("Error in fetching raw items");
+        } finally {
             setLoading(false);
-        };
-        load();
-    }, [page, limit, sortState]);
-
-    const openAddRawItem = () => {
-        setRawItem({});
-        setIsRawItemModalOpen(true);
-    };
-
-    const handleSubmit = async (data) => {
-        setIsRawItemModalOpen(false);
-        setLoading(true);
-        await Promise.all([getItemsList(), fetchItems()]);
-        setLoading(false);
-        toast.success("Created", { description: "Raw Item created successfully" });
-    };
-
-    const handleDelete = async (itemId) => {
-
-
-        const res = await deleteItemService(itemId)
-
-        if (res?.status == 200 || res?.status == 200) {
-
-            dispatch(deleteItem(itemId))
-            toast.success("Deleted", { description: "Raw Item deleted successfully" });
         }
     };
 
-    const handleSortChange = (sort) => {
-        setSortState([sort]);
+    useEffect(() => {
+        fetchALlRawItems();
+    }, [rawItemPage, rawItemLimit, rawItemSortState]);
+
+
+    useEffect(() => {
+        if (units.length === 0) {
+            const fetchUnitsData = async () => {
+                try {
+                    const res = await getAllUnitsService();
+                    setUnits(res?.data || []);
+                } catch (error) {
+                    toast.error("Failed to fetch units");
+                }
+            };
+            fetchUnitsData();
+        }
+    }, []);
+
+
+    const openAddRawItem = () => {
+        setIsRawItemModalOpen(true);
     };
+
+    const handleDelete = async (itemId) => {
+        const res = await deleteItemService(itemId);
+        if (res?.status == 200 || res?.status == 201) {
+            dispatch(deleteItem(itemId));
+            toast.success("Deleted", {
+                description: "Item deleted successfully",
+            });
+        }
+    };
+
+    const handleProductSortChange = (sort) => {
+        setProductSortState(sort);
+    };
+
+    const handleRawItemSortChange = (sort) => {
+        setRawItemSortState(sort);
+    };
+
+    const productColumns = [
+        { label: "Product", value: "p.title" },
+        { label: "Serve Person", value: "p.serve_person" },
+        { label: "Price", value: "p.price" },
+        { label: "Pieces", value: "p.pieces" },
+        { label: "Created At", value: "p.created_date" },
+    ];
+
+    const rawItemColumns = [
+        { label: "raw item", value: "raw_item" },
+        { label: "sku", value: "sku" },
+        { label: "unit", value: "unit" },
+    ];
 
     return (
         <MainLayout>
@@ -109,9 +177,7 @@ export default function Items() {
             <Tabs defaultValue="Item">
                 <TabsList>
                     <TabsTrigger value="Item">Product</TabsTrigger>
-                    <TabsTrigger value="RawItem" onClick={() => getItemsList()}>
-                        Raw Item
-                    </TabsTrigger>
+                    <TabsTrigger value="RawItem">Raw Item</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="Item">
@@ -120,49 +186,126 @@ export default function Items() {
                             <div />
                             <div className="flex gap-4">
                                 <Button variant="secondary">Export</Button>
-                                <Button onClick={() => router.push("/items/new")}>Add Product</Button>
+                                <Button onClick={() => router.push("/items/new")}>
+                                    Add Product
+                                </Button>
                             </div>
                         </div>
 
                         <div className="flex justify-between">
-                            <Input placeholder="Search Items" className="w-2xl" />
+                            <div className="flex gap-4">
+                                <Input
+                                    placeholder="Search Items"
+                                    className="w-2xl"
+                                    onChange={(e) => setSearchProduct(e.target.value)}
+                                    value={searchProduct}
+                                />
+                                <Button onClick={() => fetchItems(page, limit, searchProduct)}>
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setSearchProduct("");
+                                        setPage(1);
+                                        fetchItems(1, limit, "");
+                                    }}
+                                    variant={"link"}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
                             <div className="flex justify-end">
-                                <FilterDropdown onSortChange={handleSortChange} />
+                                <FilterDropdown
+                                    columns={productColumns}
+                                    onSortChange={handleProductSortChange}
+                                />
                             </div>
                         </div>
 
                         <ItemTable
                             data={allItemsData}
                             onDelete={handleDelete}
-                            sortState={sortState}
+                            productSortState={productSortState}
                             page={page}
                             limit={limit}
                             setPage={setPage}
                             totalItems={totalItems}
+                            openEditModal={openAddRawItem}
                         />
                     </div>
                 </TabsContent>
 
                 <TabsContent value="RawItem">
                     <div className="space-y-4">
-                        <div className="flex justify-between items-center gap-2">
-                            <Input defaultValue="" placeholder="Search Raw Items" className="max-w-2/4" />
+                        <div className="flex justify-end items-center gap-2">
                             <Button onClick={() => openAddRawItem()}>Add Raw Item</Button>
                         </div>
-                        <RawItemTable data={items} onDelete={handleDelete} />
+
+                        <div className="flex justify-between">
+                            <div className="flex gap-4">
+                                <Input
+                                    placeholder="Search Raw Items"
+                                    className="w-2xl"
+                                    onChange={(e) => setSearchRawItem(e.target.value)}
+                                    value={searchRawItem}
+                                />
+                                <Button onClick={() => fetchALlRawItems()}>
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setSearchRawItem("");
+                                        setRawItemPage(1);
+                                        fetchALlRawItems(1, rawItemLimit, "");
+                                    }}
+                                    variant={"link"}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
+                            <div className="flex justify-end">
+                                <FilterDropdown
+                                    columns={rawItemColumns}
+                                    onSortChange={handleRawItemSortChange}
+                                />
+                            </div>
+                        </div>
+
+                        <RawItemTable
+                            data={allRawItemsData}
+                            onDelete={handleDelete}
+                            page={rawItemPage}
+                            limit={rawItemLimit}
+                            setPage={setRawItemPage}
+                            totalPages={Math.ceil(totalRawItems / rawItemLimit)}
+                            setEditRawItem={setEditRawItem}
+                            openEditModal={openAddRawItem}
+                        />
                     </div>
                 </TabsContent>
             </Tabs>
 
-            <Dialog open={isRawItemModalOpen} onOpenChange={(open) => setIsRawItemModalOpen(open)}>
+            <Dialog
+                open={isRawItemModalOpen}
+                onOpenChange={(open) => setIsRawItemModalOpen(open)}
+            >
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>Add Raw Item</DialogTitle>
-                        <DialogDescription>Add/Update Raw Item from here.</DialogDescription>
+                        <DialogDescription>
+                            Add/Update Raw Item from here.
+                        </DialogDescription>
                     </DialogHeader>
 
                     <div className="flex flex-col gap-2">
-                        <RawItemForm initialData={rawItem} onSubmit={handleSubmit} handleClose={() => setIsRawItemModalOpen(false)} />
+                        <RawItemForm
+                            handleClose={() => {
+                                setIsRawItemModalOpen(false);
+                                setEditRawItem({});
+                            }}
+                            units={units}
+                            setEditRawItem={editRawItem}
+                        />
                     </div>
                 </DialogContent>
             </Dialog>

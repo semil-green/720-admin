@@ -22,7 +22,7 @@ import { MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 
 
-export default function ItemTable({ data, onDelete, sortState, page, limit, setPage, totalItems }) {
+export default function ItemTable({ data, onDelete, sortState, page, limit, setPage, totalItems, openEditModal }) {
 
     const router = useRouter();
     const handleEdit = (item) => {
@@ -83,7 +83,7 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => handleEdit?.(item.product_id)}>
+                            <DropdownMenuItem onClick={() => { handleEdit?.(item.product_id), openEditModal() }}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
                             <AlertDialog>

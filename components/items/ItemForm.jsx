@@ -26,14 +26,14 @@ import { setHsnCodes } from "@/store/slices/hsn-code/hsn-code.slice";
 import { addNewItemService, allCollectionsService, getitemById, updateItemService } from "@/service/items/items.service";
 import { toast } from "sonner";
 import Link from "next/link";
+import { getAllUnitsService } from "@/service/unit/unit.service";
 
 export default function ItemForm({ editItemId }) {
     const router = useRouter();
     const dispatch = useDispatch();
 
     const [loading, setLoading] = useState(false);
-
-
+    const [units, setUnits] = useState([]);
 
     // ------------------------------------ ItemForm state ------------------------------------
 
@@ -64,6 +64,23 @@ export default function ItemForm({ editItemId }) {
     const [productDisplayImageFile, setProductDisplayImageFile] = useState(null);
     const [productDisplayImagePreview, setProductDisplayImagePreview] = useState("");
     const [allCollections, setAllCollections] = useState([]);
+
+    useEffect(() => {
+
+        if (units.length === 0) {
+            const fetchUnitsData = async () => {
+                try {
+                    const res = await getAllUnitsService();
+
+                    setUnits(res?.data || []);
+                } catch (error) {
+                    toast.error("Failed to fetch units");
+                }
+            }
+
+            fetchUnitsData();
+        }
+    }, [])
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -367,7 +384,6 @@ export default function ItemForm({ editItemId }) {
                 toast.error("Failed to add item");
             }
         } catch (error) {
-            console.error("Error submitting product:", error);
             toast.error("Something went wrong");
         } finally {
             setLoading(false);
@@ -488,140 +504,20 @@ export default function ItemForm({ editItemId }) {
         fetchData();
     }, [editItemId]);
 
-    // const handleUpdate = async (e) => {
-    //     e.preventDefault();
-    //     setLoading(true);
-
-    //     try {
-    //         const categoriesPayload = selectedCategories.map((cat) => ({
-    //             category_id: Number(cat.value ?? cat),
-    //         }));
-
-    //         const collectionsPayload = selectedCollections.map((col) => ({
-    //             collection_id: Number(col.value ?? col),
-    //         }));
-
-    //         const nutritionalFactsPayload = [...nutrients, ...vitamins, ...minerals]
-    //             .filter(({ label, value }) => label.trim() !== "" && value.trim() !== "")
-    //             .map(({ label, value, nutritional_type_id }) => ({
-    //                 nutritional_type_id,
-    //                 label,
-    //                 value,
-    //             }));
-
-    //         const benefitsPayload = benefits.map((b) => ({
-    //             benefit_id: b.Id || null,
-    //             title: b.title,
-    //             description: b.description,
-    //             image: b.image?.file ? b.image.file.name : b.image || "",
-    //         }));
-
-    //         const imagesPayload = images
-    //             .filter((img) => !img.file && img.preview)
-    //             .map((img) => ({
-    //                 image: img.preview.split("/").pop(),
-    //             }));
-
-    //         const payload = {
-    //             product: {
-    //                 product_id: editItemId,
-    //                 title: formData.title,
-    //                 description: formData.description,
-    //                 unit_id: Number(formData.unit_id),
-    //                 quantity: Number(formData.quantity),
-    //                 pieces: Number(formData.pieces),
-    //                 serve_person: Number(formData.serve_person),
-    //                 suitable_for: formData.suitable_for,
-    //                 sku: formData.sku,
-    //                 price: Number(formData.price),
-    //                 compare_price: Number(formData.compare_price),
-    //                 charge_tax: Boolean(formData.charge_tax),
-    //                 hsn_id: Number(formData.hsn_id),
-    //                 sell_out_of_stock: Boolean(formData.sell_out_of_stock),
-    //                 show_badge: Boolean(formData.show_badge),
-    //                 fresh: Boolean(formData.fresh),
-    //                 chemical_free: Boolean(formData.chemical_free),
-    //                 natural: Boolean(formData.natural),
-    //                 no_antibiotic: Boolean(formData.no_antibiotic),
-    //                 product_display_image: productDisplayImageFile
-    //                     ? productDisplayImageFile.name
-    //                     : productDisplayImagePreview?.split("/").pop() || "",
-    //             },
-    //             categories: categoriesPayload,
-    //             collections: collectionsPayload,
-    //             images: imagesPayload,
-    //             benefits: benefitsPayload,
-    //             nutritionalFacts: nutritionalFactsPayload,
-    //         };
-
-
-    //         const formDataToSend = new FormData();
-    //         formDataToSend.append("productData", JSON.stringify(payload));
-
-    //         // product_display_image (only if updated)
-    //         if (productDisplayImageFile) {
-    //             formDataToSend.append("product_display_image", productDisplayImageFile);
-    //         }
-
-    //         // product_images (new uploads only)
-    //         images.forEach((img) => {
-    //             if (img.file) {
-    //                 formDataToSend.append("product_images", img.file);
-    //             }
-    //         });
-
-    //         // benefits_images (new uploads only)
-    //         benefits.forEach((b) => {
-    //             if (b.image?.file) {
-    //                 formDataToSend.append("benefits_images", b.image.file);
-    //             }
-    //         });
-
-    //         const res = await updateItemService(editItemId, formDataToSend);
-
-    //         if (res?.status === 200 || res?.data?.status === 200) {
-    //             toast.success("Item updated successfully");
-    //             router.push("/items");
-    //         } else {
-    //             toast.error("Failed to update item");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error updating product:", error);
-    //         toast.error("Something went wrong");
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            // --------------------------
-            // Categories
-            // --------------------------
+
             const categoriesPayload = selectedCategories.map((cat) => ({
                 category_id: Number(cat.value ?? cat),
             }));
 
-            // --------------------------
-            // Collections
-            // --------------------------
             const collectionsPayload = selectedCollections.map((col) => ({
                 collection_id: Number(col.value ?? col),
             }));
-
-            // --------------------------
-            // Nutritional Facts (dynamic)
-            // --------------------------
-            // const nutritionalFactsPayload = [...nutrients, ...vitamins, ...minerals]
-            //     .filter(({ label, value }) => label?.trim() !== "" && value?.trim() !== "")
-            //     .map(({ label, value, nutritional_type_id }) => ({
-            //         nutritional_type_id,
-            //         label,
-            //         value,
-            //     }));
 
             const nutritionalFactsPayload = [...nutrients, ...vitamins, ...minerals]
                 .filter(({ label, value }) => label.trim() !== "" && value.trim() !== "")
@@ -632,31 +528,13 @@ export default function ItemForm({ editItemId }) {
                 }));
 
 
-            // --------------------------
-            // Benefits
-            // --------------------------
-            // const benefitsPayload = benefits.map((b) => ({
-            //     benefit_id: b.Id || null,
-            //     title: b.title,
-            //     description: b.description,
-            //     image: b.image?.file ? b.image.file.name : b.image || "",
-            // }));
-
-            // const benefitsPayload = benefits.map((b) => ({
-            //     benefit_id: typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647 ? b.Id : null,
-            //     title: b.title,
-            //     description: b.description,
-            //     image: b.image?.file ? b.image.file.name : b.image || "",
-            // }));
 
             const benefitsPayload = benefits.map((b) => {
                 let imageName = "";
 
                 if (b.image?.file) {
-                    // New upload → use file name
                     imageName = b.image.file.name;
                 } else if (typeof b.image === "string") {
-                    // Always take only the last segment after the last slash
                     imageName = b.image.substring(b.image.lastIndexOf("/") + 1);
                 }
 
@@ -669,21 +547,12 @@ export default function ItemForm({ editItemId }) {
                 };
             });
 
-
-
-
-            // --------------------------
-            // Existing images (keep unchanged)
-            // --------------------------
             const imagesPayload = images
                 .filter((img) => !img.file && img.preview)
                 .map((img) => ({
                     image: img.preview.split("/").pop(),
                 }));
 
-            // --------------------------
-            // Build payload object
-            // --------------------------
             const payload = {
                 product: {
                     product_id: editItemId,
@@ -716,9 +585,6 @@ export default function ItemForm({ editItemId }) {
                 nutritionalFacts: nutritionalFactsPayload,
             };
 
-            // --------------------------
-            // Build FormData
-            // --------------------------
             const formDataToSend = new FormData();
             formDataToSend.append("productData", JSON.stringify(payload));
 
@@ -741,11 +607,6 @@ export default function ItemForm({ editItemId }) {
                 }
             });
 
-            // --------------------------
-            // API call
-            // --------------------------
-
-            console.log("zxcv123", JSON.stringify(payload, null, 2));
             const res = await updateItemService(editItemId, formDataToSend);
 
             if (res?.status === 200 || res?.data?.status === 200) {
@@ -755,7 +616,6 @@ export default function ItemForm({ editItemId }) {
                 toast.error("Failed to update item");
             }
         } catch (error) {
-            console.error("Error updating product:", error);
             toast.error("Something went wrong");
         } finally {
             setLoading(false);
@@ -816,13 +676,15 @@ export default function ItemForm({ editItemId }) {
                         <SelectTrigger className="w-full">
                             <SelectValue placeholder="Select a Unit" />
                         </SelectTrigger>
+
                         <SelectContent>
-                            {Item_Unit_List.map((unit) => (
-                                <SelectItem key={unit.id} value={unit.id.toString()}>
-                                    {unit.name}
+                            {units.map((unit) => (
+                                <SelectItem key={unit.unit_id} value={unit.unit_id.toString()}>
+                                    {unit.unit}
                                 </SelectItem>
                             ))}
                         </SelectContent>
+
                     </Select>
                 </div>
 
@@ -1324,7 +1186,7 @@ export default function ItemForm({ editItemId }) {
                 </Link>
                 {!editItemId ? (
                     <Button type="submit" disabled={loading} onClick={handleSubmit}>
-                        {loading ? "Saving..." : "Submit"}
+                        {loading ? "Saving..." : "Save"}
                     </Button>
                 ) : (
                     <Button type="submit" disabled={loading} onClick={handleUpdate}>

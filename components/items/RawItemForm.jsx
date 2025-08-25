@@ -1,75 +1,117 @@
-
-import React, { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Loader2 } from "lucide-react"
-import Image from "next/image"
-import { roles, stores } from "@/lib/api/user"
-import { Item_Unit, Item_Unit_List } from "@/lib/constants"
-
-const RawItemForm = ({ initialData, onSubmit, handleCose }) => {
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
-
+"use client";
+import React, { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
+import { Loader2 } from "lucide-react";
+import {
+    addNewRawItemService,
+    getAllRawItemsService,
+    updateRawItemService,
+} from "@/service/raw-item/raw-item.service";
+import { toast } from "sonner";
+import { useDispatch } from "react-redux";
+import { addNewRawItem, setRawItems, updateRawItem } from "@/store/slices/raw-ittem/raw-item.store";
+const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        ItemId: 0,
-        Title: "",
-        SKU: "",
-        Unit: "",
-    })
+        raw_item: setEditRawItem ? setEditRawItem.raw_item : "",
+        sku: setEditRawItem ? setEditRawItem.sku : "",
+        unit_id: setEditRawItem ? setEditRawItem.unit_id : "",
+    });
 
-    useEffect(() => {
-        setFormData({
-            ItemId: 0,
-            Title: "",
-            SKU: "",
-            Unit: "",
-            ...initialData,
-        })
-    }, [initialData])
+    const dispatch = useDispatch();
 
     const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData((prev) => ({ ...prev, [name]: value }))
-    }
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-        await onSubmit(formData)
-        setLoading(false)
+        e.preventDefault();
+
+        const res = await addNewRawItemService(formData);
+
+        if (res?.status == 200 || res?.status == 201) {
+            toast.success("Created", {
+                description: "Raw Item created successfully",
+            });
+            const newRawItem = { ...formData, raw_id: res.data.raw_id };
+
+            dispatch(addNewRawItem(newRawItem));
+            handleClose();
+        }
+    };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        const res = await updateRawItemService(setEditRawItem?.raw_id, formData)
+
+        if (res?.status == 200 || res?.status == 200) {
+            toast.success("Updated", {
+                description: "Raw Item updated successfully",
+            });
+            handleClose();
+            const newRawItem = { ...formData, raw_id: res.data.raw_id };
+            dispatch(updateRawItem(newRawItem));
+
+            const allRawItems = await getAllRawItemsService(1, 10);
+            dispatch(setRawItems(allRawItems?.items || []));
+
+            handleClose();
+        }
     }
 
     return (
-        <form onSubmit={handleSubmit} className="grid gap-4">
+        <form className="grid gap-4">
             <div>
                 <input type="hidden" name="ItemId" value={formData.ItemId} />
-                <Label className='pb-2'>Raw Item</Label>
-                <Input name="Item" value={formData.Item} onChange={handleChange} required className='border-white' />
+                <Label className="pb-2">Raw Item</Label>
+                <Input
+                    name="raw_item"
+                    value={formData.raw_item}
+                    onChange={handleChange}
+                    required
+                />
+
             </div>
 
             <div>
                 <input type="hidden" name="ItemId" value={formData.ItemId} />
-                <Label className='pb-2'>SKU</Label>
-                <Input name="SKU" value={formData.SKU} onChange={handleChange} required className='border-white' />
+                <Label className="pb-2">SKU</Label>
+                <Input
+                    name="sku"
+                    value={formData.sku}
+                    onChange={handleChange}
+                    required
+                />
             </div>
 
             <div>
                 <input type="hidden" name="ItemId" value={formData.ItemId} />
-                <Label className='pb-1'>Unit</Label>
+                <Label className="pb-1">Unit</Label>
                 <Select
-                    value={formData.Unit?.toString()}
-                    onValueChange={(value) => setFormData((prev) => ({ ...prev, Unit: parseInt(value) }))}>
+                    value={formData.unit_id?.toString() || ""}
+                    onValueChange={(value) =>
+                        setFormData((prev) => ({ ...prev, unit_id: parseInt(value) }))
+                    }
+                >
+
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a Unit" />
                     </SelectTrigger>
                     <SelectContent>
-                        {Item_Unit_List.filter(d => d.id != Item_Unit.KG).map((unit) => (
-                            <SelectItem key={unit.id} value={unit.id.toString()}>
-                                {unit.name}
+                        {units.map((unit) => (
+                            <SelectItem key={unit.unit_id} value={unit.unit_id.toString()}>
+                                {unit.unit}
                             </SelectItem>
                         ))}
                     </SelectContent>
@@ -77,14 +119,28 @@ const RawItemForm = ({ initialData, onSubmit, handleCose }) => {
             </div>
 
             <div className="flex justify-end gap-4">
-                <Button type="button" variant="outline" onClick={() => handleCose()} disabled={loading}>Cancel</Button>
-                <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
-                    Add
+                <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleClose()}
+                    disabled={loading}
+                >
+                    Cancel
                 </Button>
+
+                {
+                    !setEditRawItem?.raw_id ? (<Button type="submit" disabled={loading} onClick={handleSubmit}>
+                        {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
+                        Save
+                    </Button>) : (<Button type="submit" disabled={loading} onClick={handleUpdate}>
+                        {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
+                        Update
+                    </Button>)
+                }
+
             </div>
         </form>
-    )
-}
+    );
+};
 
-export default React.memo(RawItemForm)
+export default React.memo(RawItemForm);

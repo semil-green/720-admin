@@ -1,14 +1,15 @@
 import axios from "axios"
 
-export const getAllItemsService = async (page, limit) => {
+export const getAllItemsService = async (page, limit, search, sortBy, sortOrder) => {
     try {
         const auth_token = localStorage.getItem("token")
 
-        const data = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/product?page=${page}&limit=${limit}`, {
-            headers: {
-                Authorization: auth_token
-            }
-        })
+        const data = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/product?search=${search}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}`
+            , {
+                headers: {
+                    Authorization: auth_token
+                }
+            })
         return data?.data
     } catch (err) {
         return err
