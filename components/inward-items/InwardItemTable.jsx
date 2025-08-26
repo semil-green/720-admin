@@ -10,25 +10,38 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
-
-export default function ItemTable({ data, onDelete }) {
+import { deleteInwardMaterialService } from "@/service/inward-material/inward-material.service"
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
+import { deleteInwardMaterial } from "@/store/slices/inward-material/inward-material.slice"
+export default function ItemTable({ data, totalPages, page, setPage, limit }) {
     const router = useRouter()
-    const storeColumns = (onEdit, onDelete) => [
+    const dispatch = useDispatch()
+    const handleDeleteInwardItem = async (id) => {
+        const result = await deleteInwardMaterialService(id);
+
+        if (result?.status === 200 || result?.status === 201) {
+            dispatch(deleteInwardMaterial(id))
+            toast.success("Deleted", { description: "Inward product deleted successfully." });
+        }
+
+    }
+    const storeColumns = (onEdit) => [
         {
-            accessorKey: "Title",
+            accessorKey: "raw_item",
             header: "Inward Materials",
             cell: ({ row }) => {
                 const item = row.original
                 return (
                     <div className="flex items-center gap-3">
-                        <div className="font-semibold">{item.Title}</div>
-                        <div className="">{item.SKU}</div>
+                        <div className="font-semibold">{item?.raw_item}</div>
+                        <div className="">{item?.sku}</div>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "Quantity",
+            accessorKey: "quantity",
             header: "Quantity",
             cell: ({ row }) => {
                 const item = row.original
@@ -48,12 +61,12 @@ export default function ItemTable({ data, onDelete }) {
             }
         },
         {
-            accessorKey: "vendor",
+            accessorKey: "vendor_name",
             header: "Vendor",
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">{item.vendor}</div>
+                    <div className="">{item.vendor_name}</div>
                 )
             }
         },
@@ -78,7 +91,7 @@ export default function ItemTable({ data, onDelete }) {
             }
         },
         {
-            accessorKey: "Unit",
+            accessorKey: "unit",
             header: "Unit",
             cell: ({ row }) => {
                 const item = row.original
@@ -100,15 +113,15 @@ export default function ItemTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {/* <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem onClick={() => router.push(`/inward-items/new?id=${item.inwardmaterial_id}`)}>
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
-                            </DropdownMenuItem> */}
+                            </DropdownMenuItem>
 
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        De-Active
+                                        delete
                                     </div>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -120,7 +133,7 @@ export default function ItemTable({ data, onDelete }) {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => handleDeleteInwardItem(item.inwardmaterial_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -135,14 +148,28 @@ export default function ItemTable({ data, onDelete }) {
 
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            (store) => { },
-            onDelete
-        ),
+        columns: storeColumns(),
+        pageCount: totalPages,
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: limit,
+            },
+        },
+        manualPagination: true,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-    })
+
+        onPaginationChange: (updater) => {
+            const newPagination =
+                typeof updater === "function"
+                    ? updater({ pageIndex: page - 1, pageSize: limit })
+                    : updater;
+
+            setPage(newPagination.pageIndex + 1);
+        },
+    });
+
 
     return (
         <div className="rounded border p-4 pt-0 shadow">
@@ -159,16 +186,25 @@ export default function ItemTable({ data, onDelete }) {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length > 0 ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={storeColumns().length} className="text-center py-6">
+                                No records found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
+
             </Table>
 
             <div className="flex items-center justify-between mt-4">
@@ -180,8 +216,7 @@ export default function ItemTable({ data, onDelete }) {
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
                 </span>
                 <Button
                     variant="outline"
