@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     allVendors: [],
+    allVendorsData: [],
 };
 
 const vendorMasterSlice = createSlice({
@@ -10,6 +11,9 @@ const vendorMasterSlice = createSlice({
     reducers: {
         setVendors: (state, action) => {
             state.allVendors = action.payload;
+        },
+        setAllVendorsData: (state, action) => {
+            state.allVendorsData = action.payload
         },
         deleteVendor: (state, action) => {
             const idToDelete = action.payload;
@@ -24,5 +28,5 @@ const vendorMasterSlice = createSlice({
     },
 });
 
-export const { setVendors, deleteVendor } = vendorMasterSlice.actions;
+export const { setVendors, setAllVendorsData, deleteVendor } = vendorMasterSlice.actions;
 export default vendorMasterSlice.reducer;

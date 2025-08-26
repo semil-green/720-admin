@@ -1,7 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-    packagingCenters: []
+    packagingCenters: [],
+    allPackagingCenters: []
 };
 
 const packagingCenterSlice = createSlice({
@@ -10,6 +11,9 @@ const packagingCenterSlice = createSlice({
     reducers: {
         setPackagingCenter: (state, action) => {
             state.packagingCenters = action.payload;
+        },
+        setAllPackagingCenter: (state, action) => {
+            state.allPackagingCenters = action.payload;
         },
         addPackagingCenter: (state, action) => {
             state.packagingCenters.push(action.payload);
@@ -53,6 +57,7 @@ const packagingCenterSlice = createSlice({
 
 export const {
     setPackagingCenter,
+    setAllPackagingCenter,
     addPackagingCenter,
     deletePackagingCenter,
     addPincodeToPackagingCenter,

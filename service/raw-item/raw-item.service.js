@@ -4,16 +4,15 @@ export const getAllRawItemsService = async (page, limit, searchRawItem, sortBy, 
     try {
         const auth_token = localStorage.getItem("token");
 
-        const result = await axios.get(
-            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?search=${searchRawItem}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}`,
-            {
-                headers: {
-                    Authorization: auth_token,
-                },
-            }
-        );
-        const allowedSortBy = ["raw_item", "sku", "unit"];
-        const allowedSortOrder = ["ASC", "DESC"];
+        const url = searchRawItem
+            ? `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?search=${searchRawItem}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}` :
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?page=${page}&limit=${limit}`
+
+        const result = await axios.get(url, {
+            headers: {
+                Authorization: auth_token,
+            },
+        });
 
         return result?.data?.data;
     } catch (error) {
