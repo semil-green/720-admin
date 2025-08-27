@@ -10,63 +10,78 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { deleteWorkflowService } from "@/service/work-flow/workflow.service"
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
+import { deleteWorkFlow } from "@/store/slices/work-flow/workflow.slice"
 
-export default function ItemWorkflowTable({ data, onDelete }) {
-    const router = useRouter()
+export default function ItemWorkflowTable({ data, totalPages, page, setPage, limit }) {
+    const router = useRouter();
+    const dispatch = useDispatch();
 
-    const storeColumns = (onEdit, onDelete) => [
+    const handleDelete = async (workflow_id) => {
+        const res = await deleteWorkflowService(workflow_id);
+        if (res?.status === 200 || res?.status === 201) {
+            toast.success("Deleted", { description: "Workflow deleted successfully" });
+            dispatch(deleteWorkFlow(workflow_id));
+        }
+    };
+
+    const storeColumns = () => [
         {
-            accessorKey: "Title",
-            header: "Output Product",
+            accessorKey: "outputs",
+            header: "Output Products",
             cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="flex items-center gap-3">
-                        <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                        <div className="">
-                            <div className="font-semibold">{item.Title}</div>
-                            <div className="text-sm">{item.SKU}</div>
-                        </div>
+                const outputs = row.original.outputs || [];
+                return outputs.length > 0 ? (
+                    <div className="flex flex-col gap-3">
+                        {outputs.map((out, i) => (
+                            <div key={i} className="flex items-center gap-3">
+                                <img
+                                    src={out.thumbnail_image}
+                                    alt={out.title}
+                                    width={50}
+                                    height={50}
+                                    className="rounded-full"
+                                />
+                                <div>
+                                    <div className="font-semibold">{out.title}</div>
+                                    <div className="text-sm">{out.sku}</div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                )
-            }
+                ) : (
+                    <span className="text-gray-400 text-sm">No outputs</span>
+                );
+            },
         },
         {
-            accessorKey: "CategoryId",
-            header: "Input Raw Item",
+            accessorKey: "inputs",
+            header: "Input Raw Items",
             cell: ({ row }) => {
-                const item = row.original
-                return (
+                const inputs = row.original.inputs || [];
+                return inputs.length > 0 ? (
                     <div className="grid gap-3">
-                        <div className="">
-                            <div className="font-semibold">Raw Fish</div>
-                            <div className="text-xs">RI-G-12</div>
-                            <div className="text-xs">Qty 300</div>
-                        </div>
-                        <div className="">
-                            <div className="font-semibold">Raw Material</div>
-                            <div className="text-xs">RI-G-48</div>
-                            <div className="text-xs">Qty 100</div>
-                        </div>
+                        {inputs.map((inp, i) => (
+                            <div key={i}>
+                                <div className="font-semibold">{inp.raw_item}</div>
+                                <div className="text-xs">Sku : {inp.sku}</div>
+                                <div className="text-xs">Qty : {inp.quantity}</div>
+                                <div className="text-xs">Unit : {inp.unit}</div>
+                            </div>
+                        ))}
                     </div>
-                )
-            }
-        },
-        {
-            accessorKey: "Unit",
-            header: "Unit",
-            cell: ({ row }) => {
-                const item = row.original
-                return (
-                    <div className="">Gram</div>
-                )
-            }
+                ) : (
+                    <span className="text-gray-400 text-sm">No inputs</span>
+                );
+            },
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const item = row.original
+                const item = row.original;
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -75,10 +90,13 @@ export default function ItemWorkflowTable({ data, onDelete }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(item)}>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    router.push(`/inward-items/new-workflow?id=${item?.workflow_id}`)
+                                }
+                            >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
-
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
@@ -88,14 +106,14 @@ export default function ItemWorkflowTable({ data, onDelete }) {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete Workflow?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            Are you sure you want to delete? This action cannot be undone.
+                                            Are you sure you want to delete this workflow? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.ItemId)}>
+                                        <AlertDialogAction onClick={() => handleDelete(item.workflow_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -103,21 +121,24 @@ export default function ItemWorkflowTable({ data, onDelete }) {
                             </AlertDialog>
                         </DropdownMenuContent>
                     </DropdownMenu>
-                )
+                );
             },
         },
-    ]
+    ];
 
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            (store) => { },
-            onDelete
-        ),
+        columns: storeColumns(),
+        pageCount: totalPages,
+        manualPagination: true,
+        state: {
+            pagination: {
+                pageIndex: page - 1,
+                pageSize: limit,
+            },
+        },
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
-        getSortedRowModel: getSortedRowModel(),
-    })
+    });
 
     return (
         <div className="rounded border p-4 pt-0 shadow">
@@ -146,26 +167,28 @@ export default function ItemWorkflowTable({ data, onDelete }) {
                 </TableBody>
             </Table>
 
+
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => setPage(page - 1)}
+                    disabled={page <= 1}
                 >
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {page} of {totalPages}
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= totalPages}
                 >
                     Next
                 </Button>
             </div>
+
         </div>
-    )
+    );
 }
+

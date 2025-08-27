@@ -10,6 +10,7 @@ export const getAllItemsService = async (page, limit, search, sortBy, sortOrder)
                     Authorization: auth_token
                 }
             })
+
         return data?.data
     } catch (err) {
         return err

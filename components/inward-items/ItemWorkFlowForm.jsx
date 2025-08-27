@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect, Fragment } from "react"
 import { useRouter } from "next/navigation"
@@ -6,73 +6,249 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
 import { Loader2, PlusIcon, MinusIcon } from "lucide-react"
-import { Item_Unit, Item_Unit_List } from "@/lib/constants"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import Link from "next/link"
+import { Textarea } from "@/components/ui/textarea"
+import { useSelector, useDispatch } from "react-redux"
+import { setAllRawItems } from "@/store/slices/raw-ittem/raw-item.store"
+import { getAllRawItemsService } from "@/service/raw-item/raw-item.service"
+import { getAllUnitsService } from "@/service/unit/unit.service"
+import { getAllItemsService } from "@/service/items/items.service"
+import { getAllItemsData } from "@/store/slices/items/items.slice"
+import { addNewWorkFlowService, editWorkflowService } from "@/service/work-flow/workflow.service";
+import { toast } from "sonner";
+import { setWorkFlows } from "@/store/slices/work-flow/workflow.slice";
 
-export default function ItemWorkFlowForm({ onSubmit }) {
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
-    const [outputItem, setOutputItem] = useState([{ value: "", Id: Date.now() }])
-    const [nutrients, setNutrient] = useState([{ RawItem: 0, SKU: '', Quantity: '', Unit: 0, Id: Date.now() }])
+export default function ItemWorkFlowForm({ editData }) {
 
-    const itemsList = [
-        { value: "1", label: "Item 1", Unit: Item_Unit.KG },
-        { value: "2", label: "Item 2", Unit: Item_Unit.Gram },
-        { value: "3", label: "Item 3", Unit: Item_Unit.KG },
-        { value: "4", label: "Item 4", Unit: Item_Unit.Piece },
-        { value: "5", label: "Item 5", Unit: Item_Unit.Gram },
-    ]
+    const router = useRouter();
+    const dispatch = useDispatch();
 
-    const outputItemsList = [
-        { value: "1", label: "Kolkata Bhetki (Sea Bass) Kali Mirch (Boneless Cubes) Nt. Wt. 300g (6-8 pcs)" },
-        { value: "2", label: "Amritsari Basa (Boneless Cubes) (Pangasius, Basa) Nt. Wt. 300g (6-8 pcs)" },
-        { value: "3", label: "Amritsari Basa (Boneless Cubes) (Pangasius, Basa) Nt. Wt. 100g (2-3 pcs)" },
-    ]
+    const [loading, setLoading] = useState(false);
+
+    const [workflowName, setWorkflowName] = useState("");
+    const [description, setDescription] = useState("");
+
+    const [nutrients, setNutrient] = useState([
+        { RawItem: 0, SKU: "", Quantity: "", Unit: 0, Id: Date.now() },
+    ]);
+
+    const [outputItem, setOutputItem] = useState([
+        { value: "", Id: Date.now() },
+    ]);
+
+    const [units, setUnits] = useState([]);
+    const allRawItemsData = useSelector(
+        (state) => state.rawItemSlice.allRawItemsData
+    );
+    const allProductsData = useSelector(
+        (state) => state.allItemsSlice.allItemsData
+    );
 
     const handleNutrientChange = (index, field, value) => {
-        const updated = [...nutrients]
-        updated[index][field] = value
-        setNutrient(updated)
-    }
+        const updated = [...nutrients];
+        updated[index][field] = value;
+        setNutrient(updated);
+    };
 
     const addNewNutrient = () => {
-        setNutrient([...nutrients, { RawItem: 0, SKU: '', Unit: 0, Quantity: '', Id: Date.now() }])
-    }
+        setNutrient([
+            ...nutrients,
+            { RawItem: 0, SKU: "", Unit: 0, Quantity: "", Id: Date.now() },
+        ]);
+    };
 
     const removeNutrient = (id) => {
-        const newNutrients = nutrients.filter((d) => d.Id !== id)
-        setNutrient(newNutrients)
-    }
+        const newNutrients = nutrients.filter((d) => d.Id !== id);
+        setNutrient(newNutrients);
+    };
 
     const handleOutputChange = (index, value) => {
-        const updated = [...outputItem]
-        updated[index].value = value
-        setOutputItem(updated)
-    }
+        const updated = [...outputItem];
+        updated[index].value = value;
+        setOutputItem(updated);
+    };
 
     const addNewOutputProduct = () => {
-        setOutputItem([...outputItem, { value: "", Id: Date.now() }])
-    }
+        setOutputItem([...outputItem, { value: "", Id: Date.now() }]);
+    };
 
     const removeOutputItem = (index) => {
-        const updated = outputItem.filter((_, i) => i !== index)
-        setOutputItem(updated)
-    }
+        const updated = outputItem.filter((_, i) => i !== index);
+        setOutputItem(updated);
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
-        await onSubmit(nutrients)
-        setLoading(false)
-    }
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const payload = {
+                workflow_name: workflowName,
+                description,
+                inputs: nutrients.map((n) => ({
+                    raw_id: Number(n.RawItem),
+                    quantity: Number(n.Quantity),
+                    unit: Number(n.Unit),
+                    sku: n.SKU,
+                })),
+                outputs: outputItem.map((o) => ({
+                    product_id: Number(o.value),
+                })),
+            };
+
+
+            const saveData = await addNewWorkFlowService(payload);
+
+            if (saveData?.status === 201 || saveData?.status === 200) {
+                dispatch(setWorkFlows([]))
+                toast.success("Workflow saved successfully");
+                router.push("/inward-items");
+            }
+        } catch (error) {
+            toast.error("Failed to save workflow");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (!allRawItemsData || allRawItemsData.length === 0) {
+            const fetchRawItems = async () => {
+                const res = await getAllRawItemsService({ page: 1, limit: 10000 });
+                if (res) {
+                    dispatch(setAllRawItems(res?.items || []));
+                }
+            };
+            fetchRawItems();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (units.length === 0) {
+            const fetchUnitsData = async () => {
+                try {
+                    const res = await getAllUnitsService();
+                    setUnits(res?.data || []);
+                } catch (error) {
+                    toast.error("Failed to fetch units");
+                }
+            };
+            fetchUnitsData();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (allProductsData?.length === 0) {
+            const fetchProductData = async () => {
+                const res = await getAllItemsService(1, 10000, "", "", "");
+                if (res?.status == 200) {
+                    dispatch(getAllItemsData(res?.data?.data));
+                }
+            };
+            fetchProductData();
+        }
+    }, []);
+
+    // prefill edit data
+    useEffect(() => {
+        if (editData?.workflow_id) {
+            setWorkflowName(editData.workflow_name || "");
+            setDescription(editData.description || "");
+
+            if (editData.inputs?.length > 0) {
+                setNutrient(
+                    editData.inputs.map((input) => ({
+                        RawItem: input.raw_id || 0,
+                        SKU: input.sku || "",
+                        Quantity: input.quantity || "",
+                        Unit: input.unit_id || 0,
+                        Id: Date.now() + Math.random(),
+                    }))
+                );
+            }
+
+            if (editData.outputs?.length > 0) {
+                setOutputItem(
+                    editData.outputs.map((o) => ({
+                        value: o.product_id?.toString() || "",
+                        Id: Date.now() + Math.random(),
+                    }))
+                );
+            }
+        }
+    }, [editData]);
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const payload = {
+                workflow_name: workflowName,
+                description,
+                inputs: nutrients.map((n) => ({
+                    raw_id: Number(n.RawItem),
+                    quantity: Number(n.Quantity),
+                    unit: Number(n.Unit),
+                    sku: n.SKU,
+                })),
+                outputs: outputItem.map((o) => ({
+                    product_id: Number(o.value),
+                })),
+            };
+
+            const res = await editWorkflowService(editData?.workflow_id, payload);
+
+            if (res?.status === 200 || res?.status === 201) {
+                toast.success("Workflow updated successfully");
+                router.push("/inward-items");
+            }
+        } catch (error) {
+            toast.error("Failed to update workflow");
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form >
             <div className="grid gap-5">
+                <Card className="flex-1">
+                    <CardHeader>
+                        <CardTitle>
+                            <h2 className="text-2xl font-bold">Workflow </h2>
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex-1">
+                            <Label className="pb-1">Workflow Name</Label>
+                            <Input
+                                name="workflow_name"
+                                value={workflowName}
+                                onChange={(e) => setWorkflowName(e.target.value)}
+                                placeholder="Enter workflow name"
+                                type="text"
+                                required
+                            />
+                        </div>
 
-                {/* ====== Input Raw Items ====== */}
+                        <div className="flex-1 mt-4">
+                            <Label className="pb-1">Workflow Description</Label>
+                            <Textarea
+                                name="description"
+                                value={description}
+                                onChange={(e) => setDescription(e.target.value)}
+                                className="min-h-[110px]"
+                                required
+                                placeholder="Enter Workflow Description"
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
+
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>
@@ -94,15 +270,29 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                             <Label className="pb-1">Raw Item</Label>
                                             <Select
                                                 value={nutrient.RawItem?.toString()}
-                                                onValueChange={(value) => handleNutrientChange(index, 'RawItem', value)}
+                                                onValueChange={(value) => {
+                                                    handleNutrientChange(index, "RawItem", value);
+
+                                                    const selectedItem = allRawItemsData.find(
+                                                        (item) => String(item.raw_id) === String(value)
+                                                    );
+
+                                                    if (selectedItem) {
+                                                        handleNutrientChange(index, "SKU", selectedItem.sku);
+                                                        handleNutrientChange(index, "Unit", selectedItem.unit_id);
+                                                    }
+                                                }}
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select an Item" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {itemsList.map((item) => (
-                                                        <SelectItem key={item.value} value={item.value}>
-                                                            {item.label}
+                                                    {allRawItemsData?.map((item) => (
+                                                        <SelectItem
+                                                            key={item.raw_id}
+                                                            value={item.raw_id.toString()}
+                                                        >
+                                                            {item.raw_item}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -113,15 +303,20 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                             <Label className="pb-1">Unit</Label>
                                             <Select
                                                 value={nutrient.Unit?.toString()}
-                                                onValueChange={(value) => handleNutrientChange(index, 'Unit', value)}
+                                                onValueChange={(value) =>
+                                                    handleNutrientChange(index, "Unit", value)
+                                                }
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a Unit" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {Item_Unit_List.filter(d => d.id !== Item_Unit.KG).map((unit) => (
-                                                        <SelectItem key={unit.id} value={unit.id.toString()}>
-                                                            {unit.name}
+                                                    {units?.map((unit) => (
+                                                        <SelectItem
+                                                            key={unit?.unit_id}
+                                                            value={unit?.unit_id.toString()}
+                                                        >
+                                                            {unit?.unit}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -133,7 +328,9 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                             <Input
                                                 name="Quantity"
                                                 value={nutrient.Quantity}
-                                                onChange={(e) => handleNutrientChange(index, e.target.name, e.target.value)}
+                                                onChange={(e) =>
+                                                    handleNutrientChange(index, e.target.name, e.target.value)
+                                                }
                                                 placeholder="Quantity"
                                                 type="number"
                                                 required
@@ -145,18 +342,26 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                             <Input
                                                 name="SKU"
                                                 value={nutrient.SKU}
-                                                onChange={(e) => handleNutrientChange(index, e.target.name, e.target.value)}
+                                                onChange={(e) =>
+                                                    handleNutrientChange(index, e.target.name, e.target.value)
+                                                }
                                                 placeholder="SKU"
-                                                required
+                                                disabled
                                             />
                                         </div>
 
                                         {index === 0 ? (
-                                            <div className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer" onClick={addNewNutrient}>
+                                            <div
+                                                className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer"
+                                                onClick={addNewNutrient}
+                                            >
                                                 <PlusIcon className="text-secondary-foreground" />
                                             </div>
                                         ) : (
-                                            <div className="rounded-lg size-9 min-w-[36px] flex justify-center items-center bg-secondary cursor-pointer" onClick={() => removeNutrient(nutrient.Id)}>
+                                            <div
+                                                className="rounded-lg size-9 min-w-[36px] flex justify-center items-center bg-secondary cursor-pointer"
+                                                onClick={() => removeNutrient(nutrient.Id)}
+                                            >
                                                 <MinusIcon className="text-secondary-foreground" />
                                             </div>
                                         )}
@@ -167,7 +372,6 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                     </CardContent>
                 </Card>
 
-                {/* ====== Output Products ====== */}
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>
@@ -189,15 +393,21 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                             <Label className="pb-1">Output Product</Label>
                                             <Select
                                                 value={item.value}
-                                                onValueChange={(value) => handleOutputChange(index, value)}
+                                                onValueChange={(value) =>
+                                                    handleOutputChange(index, value)
+                                                }
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select an output item" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    {outputItemsList.map((opt) => (
-                                                        <SelectItem key={opt.value} value={opt.value}>
-                                                            {opt.label}
+                                                    {allProductsData?.map((opt) => (
+                                                        <SelectItem
+                                                            key={opt?.product_id}
+                                                            value={opt?.product_id.toString()}
+                                                        >
+                                                            {opt?.title}, Qty : {opt?.quantity} , {opt?.unit} ,
+                                                            Piece : {opt?.pieces}
                                                         </SelectItem>
                                                     ))}
                                                 </SelectContent>
@@ -205,11 +415,17 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                                         </div>
 
                                         {index === 0 ? (
-                                            <div className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer" onClick={addNewOutputProduct}>
+                                            <div
+                                                className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer"
+                                                onClick={addNewOutputProduct}
+                                            >
                                                 <PlusIcon className="text-secondary-foreground" />
                                             </div>
                                         ) : (
-                                            <div className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer" onClick={() => removeOutputItem(index)}>
+                                            <div
+                                                className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer"
+                                                onClick={() => removeOutputItem(index)}
+                                            >
                                                 <MinusIcon className="text-secondary-foreground" />
                                             </div>
                                         )}
@@ -221,18 +437,24 @@ export default function ItemWorkFlowForm({ onSubmit }) {
                 </Card>
             </div>
 
-            {/* Submit Button */}
             <div className="mt-6 flex justify-center gap-4">
-                <Link href={'/inward-items'}>
-                    <Button type="button" variant="outline" >
+                <Link href={"/inward-items"}>
+                    <Button type="button" variant="outline">
                         Back to list
                     </Button>
                 </Link>
-                <Button type="submit" disabled={loading}>
-                    {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
-                    Save
-                </Button>
+
+                {
+                    !editData?.workflow_id ? (<Button type="submit" disabled={loading} onClick={handleSubmit}>
+                        {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
+                        Save
+                    </Button>) : (<Button type="submit" disabled={loading} onClick={handleUpdate}>
+                        {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
+                        Update
+                    </Button>)
+                }
+
             </div>
         </form>
-    )
+    );
 }
