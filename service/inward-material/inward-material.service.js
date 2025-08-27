@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getAllInwardMatrialService = async (page, limit, search, packagingstore_id) => {
+export const getAllInwardMatrialService = async (page, limit, search, packagingstore_id, sortBy, sortOrder) => {
     try {
         const auth_token = localStorage.getItem("token");
 
@@ -9,6 +9,8 @@ export const getAllInwardMatrialService = async (page, limit, search, packagings
         if (limit) params.append("limit", limit);
         if (search) params.append("search", search);
         if (packagingstore_id) params.append("packagingstore_id", packagingstore_id);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (sortOrder) params.append("sortOrder", sortOrder);
 
         const url = `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/inward-material?${params.toString()}`;
 
