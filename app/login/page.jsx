@@ -13,8 +13,8 @@ import { toast } from "sonner"
 function page() {
     const router = useRouter()
 
-    const [email, setEmail] = useState("admin1@example.com")
-    const [password, setPassword] = useState("adminpass1")
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
     const [loading, setLoading] = useState(false)
 
     const styles = {
