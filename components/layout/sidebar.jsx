@@ -50,7 +50,7 @@ export default function Sidebar() {
       return;
     }
 
-    if (role === "2") {
+    if (role === "DSManager") {
       allowedLabels = [
         "Customer Orders",
         "Order Request",
@@ -58,7 +58,7 @@ export default function Sidebar() {
         "Customer",
         "Dashboard"
       ];
-    } else if (role === "3") {
+    } else if (role === "PCManager") {
       allowedLabels = [
         "Customer Orders",
         "Store Orders",
