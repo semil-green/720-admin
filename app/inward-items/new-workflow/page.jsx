@@ -1,26 +1,50 @@
 "use client"
 
+import { useEffect, useState } from "react";
 import MainLayout from "@/components/layout/mainLayout";
-import ItemForm from "@/components/items/ItemForm"
-import { Card, CardAction, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import BenefitForm from "@/components/items/BenefitForm";
 import ItemWorkFlowForm from "@/components/inward-items/ItemWorkFlowForm";
+import { useSearchParams } from "next/navigation";
+import { getWorkflowbyIdService } from "@/service/work-flow/workflow.service";
+import { Suspense } from "react";
 
-export default function CreateItem() {
+function CreateItemPage() {
     const router = useRouter()
+    const editId = useSearchParams().get("id");
 
-    const handleSubmit = async (data) => {
-        toast.success("Created", { description: "Item Workflow created successfully" })
-        router.push("/inward-items")
-    }
+    const [editData, setEditData] = useState({});
+
+    useEffect(() => {
+        if (!editId) return;
+
+        const editData = async () => {
+            try {
+                const response = await getWorkflowbyIdService(editId);
+
+                setEditData(response);
+            } catch (error) {
+                toast.error("Failed to fetch edit data")
+            }
+        }
+
+        editData();
+    }, [editId])
 
     return (
         <MainLayout>
             <div className="">
-                <ItemWorkFlowForm initialData={{}} onSubmit={handleSubmit} />
+                <ItemWorkFlowForm editData={editData} />
             </div>
         </MainLayout>
     )
+}
+
+
+export default function CreateItem() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CreateItemPage />
+        </Suspense>
+    );
 }

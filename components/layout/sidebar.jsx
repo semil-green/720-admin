@@ -7,7 +7,7 @@ import {
   ChartColumnStacked, ShoppingCartIcon, FileDown,
   Truck, Wallet, ArrowDownUp, ShoppingBasket,
   UsersRound, BookText, ClockArrowUp, CirclePercent,
-  Menu, MapPin, PencilLine
+  Menu, MapPin, PencilLine, SlidersHorizontal
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -27,6 +27,7 @@ export const fullMenuItems = [
   { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
   { label: "Dark Stores", href: "/stores", icon: StoreIcon },
   { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
+  { label: "Slider", href: "/slider", icon: SlidersHorizontal },
   { label: "Vendor", href: "/vendors", icon: Users },
   { label: "Pincode wise Slot", href: "/pincodeWiseSlot", icon: MapPin },
   { label: "Users", href: "/users", icon: Users },
