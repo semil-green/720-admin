@@ -26,6 +26,7 @@ export default function PackagingForm({ editId, type }) {
     const dispatch = useDispatch();
 
     const allStates = useSelector((state) => state.stateSlice.allStates);
+
     const allCities = useSelector((state) => state.citySlice.allCities);
 
     const allPackagingCenters = useSelector((state) => state.packagingStoreSlice.packagingCenters);
@@ -48,9 +49,8 @@ export default function PackagingForm({ editId, type }) {
         const fetchStates = async () => {
             if (!allStates?.data?.length) {
                 const data = await getAllStatesService();
-
                 if (data?.status === 200) {
-                    dispatch(setAllStates(data));
+                    dispatch(setAllStates(data?.data?.data));
                 }
                 else {
                     toast.error("Failed to get all states");
@@ -68,7 +68,7 @@ export default function PackagingForm({ editId, type }) {
 
                 if (data?.status === 200) {
 
-                    dispatch(setAllCities(data));
+                    dispatch(setAllCities(data?.data?.data));
                 }
                 else {
                     toast.error("Failed to get all cities");
@@ -143,8 +143,6 @@ export default function PackagingForm({ editId, type }) {
         }
     };
 
-    const filteredCities = allCities?.data || [];
-
 
     if (!isDataLoaded) return <p className="text-center">Loading form...</p>;
 
@@ -174,7 +172,7 @@ export default function PackagingForm({ editId, type }) {
                         <SelectValue placeholder="Select a state" />
                     </SelectTrigger>
                     <SelectContent>
-                        {allStates?.data?.map((state) => (
+                        {allStates?.map((state) => (
                             <SelectItem key={state.id} value={state.id.toString()}>
                                 {state.state_name}
                             </SelectItem>
@@ -195,15 +193,18 @@ export default function PackagingForm({ editId, type }) {
                         <SelectValue placeholder="Select a city" />
                     </SelectTrigger>
                     <SelectContent>
-                        {filteredCities?.length > 0 ? (
-                            filteredCities.map((city) => (
+                        {allCities?.length > 0 ? (
+                            allCities.map((city) => (
                                 <SelectItem key={city.id} value={city.id.toString()}>
                                     {city.city_name}
                                 </SelectItem>
                             ))
-                        ) : (
-                            <p className="text-center text-sm px-2 py-1">No cities available</p>
-                        )}
+                        )
+                            : (
+                                <p className="text-center text-sm px-2 py-1">No cities available</p>
+                            )}
+
+
                     </SelectContent>
                 </Select>
             </div>

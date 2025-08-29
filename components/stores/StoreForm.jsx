@@ -52,7 +52,7 @@ export default function StoreForm({ editId, type }) {
                 const data = await getAllStatesService();
                 if (data?.status === 200) {
 
-                    dispatch(setAllStates(data));
+                    dispatch(setAllStates(data?.data?.data));
                 }
                 else {
                     toast.error("Failed to get all states");
@@ -68,7 +68,7 @@ export default function StoreForm({ editId, type }) {
                 const data = await getALlCitiesService();
                 if (data?.status === 200) {
 
-                    dispatch(setAllCities(data));
+                    dispatch(setAllCities(data?.data?.data));
                 }
                 else {
                     toast.error("Failed to get all cities");
@@ -142,8 +142,6 @@ export default function StoreForm({ editId, type }) {
         }
     };
 
-    const filteredCities = allCities?.data || [];
-
 
     if (!isDataLoaded) return <p className="text-center">Loading form...</p>;
 
@@ -173,7 +171,7 @@ export default function StoreForm({ editId, type }) {
                         <SelectValue placeholder="Select a state" />
                     </SelectTrigger>
                     <SelectContent>
-                        {allStates?.data?.map((state) => (
+                        {allStates?.map((state) => (
                             <SelectItem key={state.id} value={state.id.toString()}>
                                 {state.state_name}
                             </SelectItem>
@@ -194,8 +192,8 @@ export default function StoreForm({ editId, type }) {
                         <SelectValue placeholder="Select a city" />
                     </SelectTrigger>
                     <SelectContent>
-                        {filteredCities?.length > 0 ? (
-                            filteredCities.map((city) => (
+                        {allCities?.length > 0 ? (
+                            allCities.map((city) => (
                                 <SelectItem key={city.id} value={city.id.toString()}>
                                     {city.city_name}
                                 </SelectItem>
