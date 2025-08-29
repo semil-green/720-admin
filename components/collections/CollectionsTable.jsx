@@ -139,16 +139,34 @@ export default function CollectionsTable({ allCollectionsData }) {
                         ))}
                     </thead>
                     <tbody className="divide-y divide-gray-100">
-                        {table.getRowModel().rows.map(row => (
-                            <tr key={row.id}>
-                                {row.getVisibleCells().map(cell => (
-                                    <td key={cell.id} className="px-4 py-3 text-sm text-gray-800">
-                                        {flexRender(cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey, cell.getContext())}
-                                    </td>
-                                ))}
+                        {table.getRowModel().rows.length > 0 ? (
+                            table.getRowModel().rows.map((row) => (
+                                <tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <td
+                                            key={cell.id}
+                                            className="px-4 py-3 text-sm text-gray-800"
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey,
+                                                cell.getContext()
+                                            )}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td
+                                    colSpan={table.getAllColumns().length}
+                                    className="px-4 py-6 text-center text-gray-500"
+                                >
+                                    No categories found
+                                </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
+
                 </table>
             </div>
 

@@ -109,18 +109,27 @@ export default function UserTable({ data, onDelete, page, limit, totalPages, set
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {data?.map((user, index) => (
-                        <TableRow key={index}>
-                            {columns.map((col) => (
-                                <TableCell key={col.accessorKey || col.id}>
-                                    {col.cell
-                                        ? col.cell({ row: { original: user } })
-                                        : user[col.accessorKey]}
-                                </TableCell>
-                            ))}
+                    {data && data.length > 0 ? (
+                        data.map((user, index) => (
+                            <TableRow key={index}>
+                                {columns.map((col) => (
+                                    <TableCell key={col.accessorKey || col.id}>
+                                        {col.cell
+                                            ? col.cell({ row: { original: user } })
+                                            : user[col.accessorKey]}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={columns.length} className="text-center">
+                                No records found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
+
             </Table>
 
             {/* Pagination UI */}
