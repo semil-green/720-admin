@@ -31,8 +31,8 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
         {
             accessorKey: "category_name",
             header: ({ column }) => (
-                <Button variant="ghost" onClick={() => column.toggleSorting()}>
-                    Category <ArrowUpDown className="ml-2 h-4 w-4" />
+                <Button variant="ghost" >
+                    Category
                 </Button>
             ),
         },
@@ -111,16 +111,25 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length > 0 ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={table.getAllColumns().length} className="text-center font-semibold">
+                                No categories found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
+
             </Table>
 
             <div className="flex items-center justify-between mt-4">
