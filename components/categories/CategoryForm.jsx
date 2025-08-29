@@ -10,9 +10,7 @@ import {
 } from "@/service/category/category.service";
 import { useDispatch } from "react-redux";
 import {
-
     addNewCategory,
-    addNewCategorySlice,
     updateCategory
 } from "@/store/slices/category/category.slice";
 import { toast } from "sonner";
@@ -96,7 +94,8 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
         if (formData.category_image instanceof File) {
             formDataToSend.append("category_image", formData.category_image);
         } else if (typeof formData.category_image === "string" && formData.category_image) {
-            formDataToSend.append("category_image", formData.category_image);
+            const fileName = formData.category_image.split("/").pop();
+            formDataToSend.append("category_image", fileName);
         }
 
         const res = await updateCategoryService(
@@ -106,7 +105,11 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
         if (res?.status === 200) {
             dispatch(updateCategory(res?.data));
+            toast.success("Updated", { description: "Category updated successfully" });
+        } else {
+            toast.error("Error updating category", { description: res?.data?.message || "Something went wrong" });
         }
+
         setLoading(false);
         handleCose();
     };
@@ -154,12 +157,12 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
                 {!editcategoryData?.category_id ? (
                     <Button type="submit" disabled={loading} onClick={handleSubmit}>
                         {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
-                        Add Category
+                        Save
                     </Button>
                 ) : (
                     <Button type="submit" disabled={loading} onClick={handleUpdate}>
                         {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
-                        Edit Category
+                        Update
                     </Button>
                 )}
             </div>

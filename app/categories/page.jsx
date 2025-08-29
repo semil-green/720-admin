@@ -1,32 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-    getCategories,
-    addCategory,
-    getCategory,
-    updateCategory,
-} from "@/lib/api/categories";
 import CategoryTable from "@/components/categories/CategoryTable";
 import CategoryForm from "@/components/categories/CategoryForm";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
 import MainLayout from "@/components/layout/mainLayout";
 import {
     Dialog,
-    DialogClose,
     DialogContent,
     DialogDescription,
-    DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { useDispatch, useSelector } from "react-redux";
 import {
     deleteCategoryService,
@@ -85,22 +72,23 @@ export default function Categories() {
 
     useEffect(() => {
         const fetchCategories = async () => {
-            if (allCategoriesData.length === 0) {
+            if (!allCategoriesData || allCategoriesData.length == 0) {
                 const response = await getAllCategoriesService();
 
                 if (response?.status === 200) {
                     dispatch(setCategoriesData(response?.data));
-                    setLoading(false);
                 } else {
                     toast.error("Error fetching categories", {
                         description: response?.data?.message || "Something went wrong",
                     });
                 }
             }
+            setLoading(false);
         };
 
         fetchCategories();
-    }, [allCategoriesData]);
+    }, []);
+
 
     return (
         <MainLayout>
