@@ -57,6 +57,21 @@ export default function AvailablePincodes({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!pincode.trim() || !deliveryCharge.trim()) {
+            toast.error("Validation Error", {
+                description: "Both pincode and delivery charge are required",
+            });
+            return;
+        }
+
+        if (isNaN(Number(pincode)) || isNaN(Number(deliveryCharge))) {
+            toast.error("Validation Error", {
+                description: "Pincode and delivery charge must be numbers",
+            });
+            return;
+        }
+
         const data = {
             packaging_store_dark_store_id: editId,
             pincode,
@@ -91,6 +106,21 @@ export default function AvailablePincodes({
 
     const handleUpdatePinCode = async (e) => {
         e.preventDefault();
+
+        if (!pincode.trim() || !deliveryCharge.trim()) {
+            toast.error("Validation Error", {
+                description: "Both pincode and delivery charge are required",
+            });
+            return;
+        }
+
+        if (isNaN(Number(pincode)) || isNaN(Number(deliveryCharge))) {
+            toast.error("Validation Error", {
+                description: "Pincode and delivery charge must be numbers",
+            });
+            return;
+        }
+
         const data = {
             packaging_store_dark_store_id: editId,
             pincode,

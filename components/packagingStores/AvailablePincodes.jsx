@@ -39,6 +39,12 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
     const handleSubmit = async (e) => {
 
         e.preventDefault()
+
+        if (!pincode.trim() || !deliveryCharge.trim()) {
+            toast.error("Missing Fields", { description: "Please enter both Pincode and Delivery Charge" });
+            return;
+        }
+
         const data = {
             packaging_store_dark_store_id: editId,
             pincode,
@@ -71,6 +77,11 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
 
     const handleUpdatePinCode = async (e) => {
         e.preventDefault();
+
+        if (!pincode.trim() || !deliveryCharge.trim()) {
+            toast.error("Missing Fields", { description: "Please enter both Pincode and Delivery Charge" });
+            return;
+        }
         const data = {
             packaging_store_dark_store_id: editId,
             pincode,

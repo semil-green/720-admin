@@ -13,6 +13,8 @@ import { useSelector } from "react-redux";
 export default function VendorForm({ editId }) {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
+    const [attachment, setAttachment] = useState(null);
+
     const [formData, setFormData] = useState({
         vendor_name: "",
         gst: "",
@@ -30,10 +32,10 @@ export default function VendorForm({ editId }) {
 
     const allVendorsData = useSelector((state) => state.vendorMasterSlice.allVendors)
 
-
     useEffect(() => {
         if (editId && allVendorsData?.data?.length) {
             const vendor = allVendorsData.data.find((item) => item.id === editId);
+
             if (vendor) {
                 setFormData({
                     vendor_name: vendor.vendor_name || "",
@@ -48,9 +50,16 @@ export default function VendorForm({ editId }) {
                     upi_id: vendor.upi_id || "",
                     payment_mode: vendor.payment_mode || "",
                 });
+
+                if (vendor.attachment) {
+                    setImages([vendor.attachment]);
+                    const fileName = vendor.attachment.split("/").pop();
+                    setAttachment(fileName);
+                }
             }
         }
     }, [editId, allVendorsData]);
+
 
     const handleChange = (e) => {
         const { name, type, checked, value } = e.target;
@@ -60,24 +69,33 @@ export default function VendorForm({ editId }) {
         }));
     };
 
-    const handleItemImageChange = (e) => {
-        const file = e.target.files[0]
-        if (file) {
-            const imageUrl = URL.createObjectURL(file)
-            setImages([...images, imageUrl])
-        }
-    }
 
+    const handleItemImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const imageUrl = URL.createObjectURL(file);
+            setImages([imageUrl]);
+            setAttachment(file);
+        }
+    };
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        setLoading(true)
+        e.preventDefault();
+        setLoading(true);
 
         try {
-            const res = await addNewVendorService(formData)
+            const formDataToSend = new FormData();
+            for (const key in formData) {
+                formDataToSend.append(key, formData[key]);
+            }
+            if (attachment) {
+                formDataToSend.append("attachment", attachment);
+            }
 
-            if (res?.status === 200) {
-                toast.success("Vendor added successfully")
+            const res = await addNewVendorService(formDataToSend);
+
+            if (res?.status === 200 || res?.status === 201) {
+                toast.success("Vendor added successfully");
                 setFormData({
                     vendor_name: "",
                     gst: "",
@@ -90,24 +108,44 @@ export default function VendorForm({ editId }) {
                     gpay_number: "",
                     upi_id: "",
                     payment_mode: "",
-                })
+                });
+                router.push("/vendors");
+                setAttachment(null);
+                setImages([]);
             } else {
-                toast.error("Failed to add vendor")
+                toast.error("Failed to add vendor");
             }
         } catch (error) {
-            console.error("Error adding vendor:", error)
-            toast.error("Failed to add vendor")
+            console.error("Error adding vendor:", error);
+            toast.error("Failed to add vendor");
         } finally {
-            setLoading(false)
+            setLoading(false);
         }
-    }
-
+    };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
         setLoading(true);
+
         try {
-            const res = await updateVendorService(editId, formData);
+            let res;
+            if (attachment instanceof File) {
+                const formDataToSend = new FormData();
+                for (const key in formData) {
+                    formDataToSend.append(key, formData[key]);
+                }
+                formDataToSend.append("attachment", attachment);
+
+                res = await updateVendorService(editId, formDataToSend);
+            } else {
+
+                const payload = {
+                    ...formData,
+                    attachment: attachment,
+                };
+                res = await updateVendorService(editId, payload);
+            }
+
             if (res?.status === 200) {
                 toast.success("Vendor updated successfully");
                 router.push("/vendors");
@@ -121,7 +159,6 @@ export default function VendorForm({ editId }) {
             setLoading(false);
         }
     };
-
 
     const unitOptions = [
         { label: "Cash", value: "cash" },
@@ -218,6 +255,12 @@ export default function VendorForm({ editId }) {
                     <Label className='pb-1'>Attachment</Label>
                     <Input name="attachment" onChange={handleItemImageChange} placeholder='Vendor attachment' type='file' />
                 </div>
+                {images.length > 0 && (
+                    <div className="mt-2">
+                        <img src={images[0]} alt="Preview" className="w-32 h-32 object-cover rounded-md border" />
+                    </div>
+                )}
+
                 <div className="flex-1"></div>
             </div>
 

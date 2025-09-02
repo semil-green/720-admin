@@ -186,37 +186,28 @@ export default function VendorsTable({
 
             </table>
 
-            <div className="flex items-center justify-between mt-4 gap-4 flex-wrap">
-                <div className="flex items-center gap-2">
-                    <Button onClick={() => setPage(page - 1)} disabled={page <= 1}>
-                        Previous
-                    </Button>
-                    <span className="text-sm">
-                        Page {page} of {totalPages}
-                    </span>
-                    <Button onClick={() => setPage(page + 1)} disabled={page >= totalPages}>
-                        Next
-                    </Button>
-                </div>
-
-                <div className="flex items-center gap-2">
-                    <span className="text-sm">Rows per page:</span>
-                    <select
-                        value={limit}
-                        onChange={(e) => {
-                            setLimit(Number(e.target.value));
-                            setPage(1);
-                        }}
-                        className="border rounded px-2 py-1 text-sm"
-                    >
-                        {[2, 5, 10, 20].map((val) => (
-                            <option key={val} value={val}>
-                                {val}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+            <div className="flex justify-between items-center mt-4">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                >
+                    Previous
+                </Button>
+                <span className="text-sm">
+                    Page {page} of {totalPages}
+                </span>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPages}
+                >
+                    Next
+                </Button>
             </div>
+
         </div>
     );
 }

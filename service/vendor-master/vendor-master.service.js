@@ -1,11 +1,10 @@
 import axios from "axios"
 
-export const getAllVendorsService = async (queryParams) => {
+export const getAllVendorsService = async (page, limit, search, sortBy, sortType) => {
     try {
         const auth_token = localStorage.getItem("token")
 
-        const fetchResult = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master`, {
-            params: queryParams,
+        const fetchResult = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master?search=${search}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortType=${sortType}`, {
             headers: {
                 Authorization: auth_token
             }
@@ -22,7 +21,7 @@ export const addNewVendorService = async (data) => {
     try {
         const auth_token = localStorage.getItem("token")
 
-        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master/add`, data, {
+        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master`, data, {
             headers: {
                 Authorization: auth_token
             }
@@ -39,7 +38,7 @@ export const updateVendorService = async (id, data) => {
     try {
         const auth_token = localStorage.getItem("token")
 
-        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master/update/${id}`, data, {
+        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master/update/${id}`, data, {
             headers: {
                 Authorization: auth_token
             }

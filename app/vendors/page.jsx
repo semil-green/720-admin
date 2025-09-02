@@ -9,14 +9,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { getAllVendorsService } from "@/service/vendor-master/vendor-master.service";
 import { toast } from "sonner";
 import { setVendors } from "@/store/slices/vendor-master/vendor-master.slice";
+import FilterDropdown from "@/components/items/FilterDropDown";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react"
+
 
 const page = () => {
 
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
-    const [sortBy, setSortBy] = useState("");
-    const [sortType, setSortType] = useState("ASC");
+    const [vendorSort, setVendorSort] = useState("ASC");
+    const [vendorSearch, setVendorSearch] = useState("");
+    const [loading, setLoading] = useState(false)
 
     const dispatch = useDispatch();
 
@@ -24,33 +29,71 @@ const page = () => {
         (state) => state.vendorMasterSlice.allVendors
     );
 
-    useEffect(() => {
-        const fetchVendors = async () => {
-            const result = await getAllVendorsService({
-                page,
-                limit,
-                sortBy: sortBy || undefined,
-                sortType,
-            });
+    const fetchVendors = async (
+        currentPage = page,
+        currentLimit = limit,
+        search = vendorSearch,
+        sortBy = vendorSort?.sortBy,
+        sortOrder = vendorSort?.sortOrder
+    ) => {
+        try {
+            setLoading(true);
+            const result = await getAllVendorsService(
+                currentPage,
+                currentLimit,
+                search,
+                sortBy,
+                sortOrder
+            );
 
             if (result?.status === 200) {
                 dispatch(setVendors(result?.data));
 
                 const totalCount = result?.data?.total || 0;
-                setTotalPages(Math.ceil(totalCount / limit));
-            }
-
-            else {
+                setTotalPages(Math.ceil(totalCount / currentLimit));
+                setLoading(false);
+            } else {
                 toast.error("Error in fetching vendors");
+                setLoading(false);
             }
-        };
+        } catch (error) {
+            toast.error("Something went wrong");
+            setLoading(false);
+        }
+    };
 
-        fetchVendors();
-    }, [page, limit, sortBy, sortType, dispatch]);
+    useEffect(() => {
+        fetchVendors(page, limit, vendorSearch, vendorSort?.sortBy, vendorSort?.sortOrder);
+    }, [page, limit]);
 
+    useEffect(() => {
+        if (vendorSort) {
+            fetchVendors(1, limit, vendorSearch, vendorSort?.sortBy, vendorSort?.sortOrder);
+            setPage(1);
+        }
+    }, [vendorSort]);
+
+
+    const vendorColumns = [
+        { label: "name", value: "vendor_name" },
+        { label: "payment mode", value: "payment_mode" },
+
+    ];
+
+    const handleVendorSortChange = (sort) => {
+        setVendorSort(sort);
+    };
 
     return (
         <MainLayout>
+
+            {loading &&
+                <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            }
             <div className="space-y-4">
                 <div className="flex justify-between items-end ">
                     <div className="flex  gap-3">
@@ -67,29 +110,32 @@ const page = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 my-4">
-                    <label className="text-sm">Sort by:</label>
-                    <select
-                        value={sortBy}
-                        onChange={(e) => {
-                            setSortBy(e.target.value);
-                            setPage(1);
-                        }}
-                        className="border px-2 py-1 rounded text-sm"
-                    >
-                        <option value="">Default</option>
-                        <option value="vendor_name">Vendor Name</option>
-                        <option value="payment_mode">Payment Mode</option>
-                    </select>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex flex-1 gap-2">
+                        <Input
+                            placeholder="Search City"
+                            className="flex-1 sm:flex-[2]"
+                            onChange={(e) => setVendorSearch(e.target.value)}
+                            value={vendorSearch}
+                        />
+                        <Button onClick={() => fetchVendors(1, limit, vendorSearch)}>
+                            Search
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setVendorSearch("");
+                                setPage(1);
+                                fetchVendors(1, limit, "");
+                            }}
+                            variant={"link"}
+                        >
+                            Clear
+                        </Button>
+                    </div>
 
-                    <Button
-                        variant="outline"
-                        onClick={() =>
-                            setSortType((prev) => (prev === "ASC" ? "DESC" : "ASC"))
-                        }
-                    >
-                        {sortType === "DESC" ? "Descending" : "Ascending"}
-                    </Button>
+                    <div className="flex justify-end">
+                        <FilterDropdown columns={vendorColumns} onSortChange={handleVendorSortChange} />
+                    </div>
                 </div>
 
                 <VendorsTable
