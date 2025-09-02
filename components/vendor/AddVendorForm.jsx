@@ -71,6 +71,7 @@ export default function VendorForm({ editId }) {
 
 
     const handleItemImageChange = (e) => {
+
         const file = e.target.files[0];
         if (file) {
             const imageUrl = URL.createObjectURL(file);
@@ -81,6 +82,25 @@ export default function VendorForm({ editId }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        let hasError = false;
+
+        if (!formData.vendor_name) {
+            toast.error("Vendor Name is required");
+            hasError = true;
+        }
+
+        if (!formData.contact_number) {
+            toast.error("Contact Number is required");
+            hasError = true;
+        }
+
+        if (!formData.gst) {
+            toast.error("GST is required");
+            hasError = true;
+        }
+
+        if (hasError) return;
         setLoading(true);
 
         try {
@@ -125,6 +145,25 @@ export default function VendorForm({ editId }) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        let hasError = false;
+
+        if (!formData.vendor_name) {
+            toast.error("Vendor Name is required");
+            hasError = true;
+        }
+
+        if (!formData.contact_number) {
+            toast.error("Contact Number is required");
+            hasError = true;
+        }
+
+        if (!formData.gst) {
+            toast.error("GST is required");
+            hasError = true;
+        }
+
+        if (hasError) return;
         setLoading(true);
 
         try {
