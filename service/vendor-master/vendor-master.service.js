@@ -4,7 +4,15 @@ export const getAllVendorsService = async (page, limit, search, sortBy, sortType
     try {
         const auth_token = localStorage.getItem("token")
 
-        const fetchResult = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master?search=${search}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortType=${sortType}`, {
+
+        const params = new URLSearchParams();
+        if (search) params.append("search", search);
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (sortType) params.append("sortOrder", sortType);
+
+        const fetchResult = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master?${params.toString()}`, {
             headers: {
                 Authorization: auth_token
             }
