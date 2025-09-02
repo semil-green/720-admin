@@ -21,13 +21,21 @@ import {
 import { MoreVertical, Pencil, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation";
 
-
-export default function ItemTable({ data, onDelete, sortState, page, limit, setPage, totalItems, openEditModal }) {
-
-    const router = useRouter();
+export default function ItemTable({
+    data,
+    onDelete,
+    sortState,
+    page,
+    limit,
+    setPage,
+    totalItems,
+    openEditModal,
+}) {
+    const router = useRouter()
     const handleEdit = (item) => {
-        router.push(`/items/new?id=${item}`);
-    };
+        router.push(`/items/new?id=${item}`)
+    }
+
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
@@ -35,40 +43,64 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 min-w-[200px] max-w-xs">
                         <img
                             src={item.thumbnail_image ?? "https://i.pravatar.cc/100"}
                             alt="image"
                             width={50}
                             height={50}
-                            className="rounded-full"
+                            className="rounded-full flex-shrink-0"
                         />
-                        <div>
-                            <div className="font-semibold">{item?.title}</div>
-                            <div>{item?.sku}</div>
+                        <div className="flex flex-col overflow-hidden">
+                            <div className="font-semibold truncate">
+                                {item?.title}
+                            </div>
+                            <div className="text-sm text-gray-500 truncate">
+                                {item?.sku}
+                            </div>
                         </div>
                     </div>
                 )
             },
         },
         {
-            accessorKey: "CategoryId",
+            accessorKey: "categories",
             header: "Category",
-            cell: () => (
-                <div className="flex flex-col">
-                    <div className="font-semibold">Fresh Water</div>
-                    <div>Rohu</div>
-                </div>
-            ),
+            cell: ({ row }) => {
+                const categories = row.original.categories || [];
+
+                return (
+                    <div className="flex flex-col min-w-[150px] max-w-xs break-words">
+                        {categories.length > 0 &&
+                            categories
+                                .filter((cat) => cat !== null)
+                                .map((cat, index) => (
+                                    <span key={index} className="">
+                                        {cat}
+                                    </span>
+                                ))
+                        }
+                    </div>
+                );
+            },
         },
         {
             accessorKey: "Quantity",
             header: "Quantity/Unit",
-            cell: ({ row }) => <div>{row.original?.quantity} in stock</div>,
+            cell: ({ row }) => (
+                <div className="whitespace-nowrap">
+                    {row.original?.quantity} in stock
+                </div>
+            ),
         },
         {
             accessorKey: "serve_person",
             header: "Serve Person",
+            cell: ({ row }) => (
+                <div className="whitespace-nowrap">
+                    {row.original?.serve_person}
+                </div>
+            ),
         },
         {
             id: "actions",
@@ -83,7 +115,12 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => { handleEdit?.(item.product_id), openEditModal() }}>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    handleEdit?.(item.product_id)
+                                    openEditModal()
+                                }}
+                            >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
                             <AlertDialog>
@@ -102,7 +139,9 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(item.product_id)}>
+                                        <AlertDialogAction
+                                            onClick={() => onDelete(item.product_id)}
+                                        >
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -134,14 +173,17 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
     })
 
     return (
-        <div className="rounded border p-4 pt-0 shadow">
-            <Table>
+        <div className="rounded border p-4 pt-0 shadow overflow-x-auto">
+            <Table className="min-w-full">
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
-                                    {flexRender(header.column.columnDef.header, header.getContext())}
+                                <TableHead key={header.id} className="whitespace-nowrap">
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -151,7 +193,7 @@ export default function ItemTable({ data, onDelete, sortState, page, limit, setP
                     {table.getRowModel().rows.map((row) => (
                         <TableRow key={row.id}>
                             {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
+                                <TableCell key={cell.id} className="align-top">
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </TableCell>
                             ))}

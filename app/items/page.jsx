@@ -192,15 +192,17 @@ export default function Items() {
                             </div>
                         </div>
 
-                        <div className="flex justify-between">
-                            <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                            <div className="flex flex-1 gap-2">
                                 <Input
                                     placeholder="Search Items"
-                                    className="w-2xl"
+                                    className="flex-1 sm:flex-[2]"
                                     onChange={(e) => setSearchProduct(e.target.value)}
                                     value={searchProduct}
                                 />
-                                <Button onClick={() => fetchItems(page, limit, searchProduct)}>
+                                <Button
+                                    onClick={() => fetchItems(page, limit, searchProduct)}
+                                >
                                     Search
                                 </Button>
                                 <Button
@@ -214,6 +216,7 @@ export default function Items() {
                                     Clear
                                 </Button>
                             </div>
+
                             <div className="flex justify-end">
                                 <FilterDropdown
                                     columns={productColumns}

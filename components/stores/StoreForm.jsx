@@ -79,12 +79,7 @@ export default function StoreForm({ editId, type }) {
     }, [dispatch]);
 
     useEffect(() => {
-        if (
-            editId &&
-            allDarkStores?.length &&
-            allStates?.data?.length &&
-            allCities?.data?.length
-        ) {
+        if (editId) {
             const store = allDarkStores.find((s) => s.id === parseInt(editId));
 
             if (store) {
@@ -134,7 +129,7 @@ export default function StoreForm({ editId, type }) {
 
         if (res?.status === 200) {
             dispatch(addDarkStore(res.data));
-            router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
+            router.push(`/stores`, undefined, { shallow: true });
             toast.success("Updated", { description: "Store updated successfully" })
         }
         else {
@@ -184,22 +179,39 @@ export default function StoreForm({ editId, type }) {
                 <Select
                     value={formData.city_id}
                     onValueChange={(value) =>
-                        setFormData((prev) => ({ ...prev, city_id: value }))
+                        setFormData((prev) => ({
+                            ...prev,
+                            city_id: value,
+                        }))
                     }
-
+                    disabled={!formData.state_id}
                 >
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a city" />
                     </SelectTrigger>
                     <SelectContent>
-                        {allCities?.length > 0 ? (
-                            allCities.map((city) => (
-                                <SelectItem key={city.id} value={city.id.toString()}>
-                                    {city.city_name}
-                                </SelectItem>
-                            ))
+                        {formData.state_id ? (
+                            (() => {
+                                const filteredCities = allCities.filter(
+                                    (city) => city.state_id.toString() === formData.state_id
+                                );
+
+                                return filteredCities.length > 0 ? (
+                                    filteredCities.map((city) => (
+                                        <SelectItem key={city.id} value={city.id.toString()}>
+                                            {city.city_name}
+                                        </SelectItem>
+                                    ))
+                                ) : (
+                                    <p className="text-center text-sm px-2 py-1 text-gray-500">
+                                        No cities available
+                                    </p>
+                                );
+                            })()
                         ) : (
-                            <p className="text-center text-sm px-2 py-1">No cities available</p>
+                            <p className="text-center text-sm px-2 py-1 text-gray-500">
+                                Please select a state first
+                            </p>
                         )}
                     </SelectContent>
                 </Select>
