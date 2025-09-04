@@ -17,6 +17,7 @@ import inwardMaterialReducer from "./slices/inward-material/inward-material.slic
 import rawItemRedcuer from "./slices/raw-ittem/raw-item.store"
 import workflowReducer from "./slices/work-flow/workflow.slice"
 import slicerReducer from "./slices/slider/slider.slice"
+import discountReducer from "./slices/discount/discount.slice"
 
 export const store = configureStore({
         reducer: {
@@ -37,6 +38,7 @@ export const store = configureStore({
                 inwardMaterialSlice: inwardMaterialReducer,
                 rawItemSlice: rawItemRedcuer,
                 workflowSlice: workflowReducer,
-                sliderSlice: slicerReducer
+                sliderSlice: slicerReducer,
+                discountSlice: discountReducer
         },
 });
