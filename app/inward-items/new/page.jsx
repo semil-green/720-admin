@@ -24,7 +24,6 @@ import { getAllRawItemsService } from "@/service/raw-item/raw-item.service";
 import { Button } from "@/components/ui/button";
 import {
     addNewInwardmaterialService,
-    getInwardMaterialById,
     getInwardMaterialByIdService,
     updateInwardMaterialService,
 } from "@/service/inward-material/inward-material.service";
@@ -140,6 +139,11 @@ function CreateInwardItem() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.batch) {
+            toast.error("Batch is required");
+            return
+        }
 
         const payload = {
             packagingstore_id: parseInt(formData.packagingstore_id),
