@@ -16,18 +16,20 @@ import {
     deleteUserData,
     setAllUSers,
 } from "@/store/slices/user-slice/user.slice";
-
+import FilterDropdown from "@/components/items/FilterDropDown";
+import { Input } from "@/components/ui/input";
 export default function Users() {
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(8);
     const [totalPages, setTotalPages] = useState(1);
+    const [sort, setSort] = useState("");
+    const [search, setSearch] = useState("");
 
     const router = useRouter();
     const dispatch = useDispatch();
 
     const allUsersData = useSelector((state) => state.userSlice.users);
-
     const handleDelete = async (id) => {
         setLoading(true);
 
@@ -46,40 +48,58 @@ export default function Users() {
         }
         setLoading(false);
     };
-    const fetchAllUsers = async () => {
+
+    const fetchAllUsers = async (
+        pageParam = page,
+        limitParam = limit,
+        searchParam = search,
+        sortByParam = sort?.sortBy,
+        sortOrderParam = sort?.sortOrder
+    ) => {
         try {
             setLoading(true);
-            const res = await getAllUsersService(page, limit);
+            const res = await getAllUsersService(
+                pageParam,
+                limitParam,
+                searchParam,
+                sortByParam,
+                sortOrderParam
+            );
 
-            const result = res.data;
-            const usersArray = result.data || [];
-            const totalCount = result.total || 0;
-
+            const usersArray = res?.data?.data || [];
             if (res?.status === 200) {
                 dispatch(setAllUSers(usersArray));
-                setTotalPages(Math.ceil(totalCount / limit));
+                const totalCount = Number(res?.data?.total) || 0;
+                setTotalPages(Math.ceil(totalCount / limitParam));
             }
         } catch (err) {
             const status = err?.response?.status;
             const message = err?.response?.data?.message || "Something went wrong";
 
             if (status === 401 || status === 403) {
-                toast.error("Access Denied", {
-                    description: message,
-                });
+                toast.error("Access Denied", { description: message });
             } else {
-                toast.error("Error fetching users", {
-                    description: message,
-                });
+                toast.error("Error fetching users", { description: message });
             }
         } finally {
             setLoading(false);
         }
     };
 
+
     useEffect(() => {
         fetchAllUsers();
-    }, [page, limit]);
+    }, [page, limit, sort?.sortBy, sort?.sortOrder]);
+
+    const userSortColumns = [
+        { label: "Name", value: "full_name" },
+        { label: "Email", value: "email" },
+    ]
+
+    const handleUserSortChange = (sort) => {
+        setSort(sort);
+        setPage(1);
+    }
 
     return (
         <MainLayout>
@@ -99,6 +119,42 @@ export default function Users() {
                     >
                         Add User
                     </Button>
+                </div>
+
+                <div className="flex justify-between">
+                    <div className="flex gap-4">
+                        <Input
+                            placeholder="Search Order Request"
+                            className="w-2xl"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={search}
+                        />
+                        <Button
+                            onClick={() => {
+                                setPage(1);
+                                fetchAllUsers(1, limit, search, sort?.sortBy, sort?.sortOrder);
+                            }}>
+                            Search
+                        </Button>
+                        <Button
+
+                            onClick={() => {
+                                setSearch("");
+                                setPage(1);
+                                setSort("");
+                                fetchAllUsers(1, limit, "", "", "");
+                            }}
+                            variant={"link"}
+                        >
+                            Clear
+                        </Button>
+                    </div>
+                    <div className="flex justify-end">
+                        <FilterDropdown
+                            columns={userSortColumns}
+                            onSortChange={handleUserSortChange}
+                        />
+                    </div>
                 </div>
 
                 <UserTable

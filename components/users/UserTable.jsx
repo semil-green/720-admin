@@ -132,34 +132,25 @@ export default function UserTable({ data, onDelete, page, limit, totalPages, set
 
             </Table>
 
-            {/* Pagination UI */}
-            <div className="flex items-center justify-between mt-4 gap-4 flex-wrap">
-                <div className="flex items-center gap-2">
-                    <Button onClick={() => handleSetPage(page - 1)} disabled={page <= 1}>
-                        Previous
-                    </Button>
-                    <span className="text-sm">
-                        Page {page} of {totalPages}
-                    </span>
-                    <Button onClick={() => handleSetPage(page + 1)} disabled={page >= totalPages}>
-                        Next
-                    </Button>
-                </div>
+            <div className="flex items-center justify-between mt-4">
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                >
+                    Previous
+                </Button>
+                <span className="text-sm">
+                    Page {page} of {totalPages}
+                </span>
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                >
+                    Next
+                </Button>
 
-                <div className="flex items-center gap-2">
-                    <span className="text-sm">Rows per page:</span>
-                    <select
-                        value={limit}
-                        onChange={(e) => handleSetLimit(e.target.value)}
-                        className="border rounded px-2 py-1 text-sm"
-                    >
-                        {[3, 5, 10, 20].map((opt) => (
-                            <option key={opt} value={opt}>
-                                {opt}
-                            </option>
-                        ))}
-                    </select>
-                </div>
             </div>
         </div>
     );

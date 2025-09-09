@@ -1,12 +1,20 @@
 import axios from "axios"
 
-export const getAllUsersService = async (page, limit) => {
+export const getAllUsersService = async (page, limit, search, sortBy, sortOrder) => {
     try {
 
         const auth_token = localStorage.getItem("token")
 
+        const params = new URLSearchParams();
+
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (search) params.append("search", search);
+
         const fetchUserData = await axios.get(
-            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user?page=${page}&limit=${limit}`,
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user?${params.toString()}`,
             {
                 headers: {
                     Authorization: auth_token
