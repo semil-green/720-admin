@@ -79,3 +79,18 @@ export const deleteDarkStorePackagingCenterService = async (id) => {
         return error
     }
 }
+
+export const allDarkStoresOfUserService = async () => {
+    try {
+        const auth_token = localStorage.getItem("token")
+        const result = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/user/all-dark-stores-of-user`, {
+            headers: {
+                Authorization: auth_token
+            }
+        })
+        return result?.data
+    }
+    catch (error) {
+        return error
+    }
+}
