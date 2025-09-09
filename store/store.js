@@ -18,6 +18,7 @@ import rawItemRedcuer from "./slices/raw-ittem/raw-item.store"
 import workflowReducer from "./slices/work-flow/workflow.slice"
 import slicerReducer from "./slices/slider/slider.slice"
 import discountReducer from "./slices/discount/discount.slice"
+import orderRequestReducer from "./slices/order-request/order-request.slice"
 
 export const store = configureStore({
         reducer: {
@@ -39,6 +40,7 @@ export const store = configureStore({
                 rawItemSlice: rawItemRedcuer,
                 workflowSlice: workflowReducer,
                 sliderSlice: slicerReducer,
-                discountSlice: discountReducer
+                discountSlice: discountReducer,
+                orderRequestSlice: orderRequestReducer
         },
 });

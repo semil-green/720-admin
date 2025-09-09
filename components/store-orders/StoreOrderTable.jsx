@@ -10,43 +10,81 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
-import { stores } from "@/lib/constants"
-
-export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
+import { deleteOrderRequest } from "@/store/slices/order-request/order-request.slice"
+import { deleteOrderRequestService } from "@/service/order-request/order-requet.service"
+import { useDispatch } from "react-redux"
+import { toast } from "sonner"
+export default function StoreOrderTable({ data, openAddStoreOrder, setEditData, page, totalPages, setPage }) {
     const router = useRouter()
+    const dispatch = useDispatch()
+    const handleOrderRequestDelete = async (id) => {
 
-    const storeColumns = (onEdit, onDelete) => [
+        try {
+
+            const res = await deleteOrderRequestService(id)
+
+            if (res?.status == 200) {
+                dispatch(deleteOrderRequest(id));
+                toast.success("Deleted", { description: "Order Request deleted successfully" });
+            }
+        }
+        catch (error) {
+            toast.error("Failed to delete order request");
+        }
+
+    }
+    const columns = [
         {
-            accessorKey: "StoreOrderId",
+            accessorKey: "product",
             header: "Product",
             cell: ({ row }) => {
                 const item = row.original
-                return <div className="flex items-center gap-3">
-                    <img src={item.Image} alt="image" width={50} height={50} className="rounded-full" />
-                    <div className="">
-                        <div className="font-semibold">{itemsList.find(f => f.value == item.ItemId).label}</div>
-                        <div className="">{itemsList.find(f => f.value == item.ItemId).SKU}</div>
+                return (
+                    <div className="flex items-center gap-3">
+                        <img
+                            src={item.product?.product_display_image}
+                            alt={item.product?.title}
+                            width={50}
+                            height={50}
+                            className="rounded-full object-cover"
+                        />
+                        <div>
+                            <div className="font-semibold">{item.product?.title}</div>
+                            <div className="text-sm text-gray-600">{item.product?.sku}</div>
+                        </div>
                     </div>
-                </div>
-            }
+                )
+            },
         },
         {
-            accessorKey: "Store",
+            accessorKey: "dark_store",
             header: "Dark Store",
             cell: ({ row }) => {
                 const item = row.original
-                return <div>{stores.find(f => f.value == item.ItemId).label}</div>
-            }
+                return <div>{item.dark_store?.store_name || "-"}</div>
+            },
         },
         {
-            accessorKey: "Quantity",
+            accessorKey: "packaging_center",
+            header: "Packaging Center",
+            cell: ({ row }) => {
+                const item = row.original
+                return <div>{item.packaging_center?.store_name || "-"}</div>
+            },
+        },
+        {
+            accessorKey: "quantity",
             header: "Quantity",
+            cell: ({ row }) => {
+                const item = row.original
+                return <div>{item.quantity}</div>
+            },
         },
         {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-                const storeOrder = row.original
+                const item = row.original
                 return (
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -55,7 +93,7 @@ export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => onEdit(storeOrder.StoreOrderId)}>
+                            <DropdownMenuItem onClick={() => { setEditData(item), openAddStoreOrder() }} >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
@@ -75,13 +113,12 @@ export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(storeOrder.StoreOrderId)}>
+                                        <AlertDialogAction onClick={() => handleOrderRequestDelete(item.id)} >
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
-
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )
@@ -91,10 +128,7 @@ export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
 
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            onEdit,
-            onDelete
-        ),
+        columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
@@ -115,34 +149,41 @@ export default function StoreOrderTable({ data, onEdit, onDelete, itemsList }) {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length > 0 ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id}>
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={table.getAllColumns().length} className="text-center pt-6 text-md font-medium">
+                                No records found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
+
                 </TableBody>
             </Table>
-
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
                 >
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {page} of {totalPages}
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
                 >
                     Next
                 </Button>
