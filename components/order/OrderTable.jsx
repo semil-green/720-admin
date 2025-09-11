@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
     useReactTable,
@@ -6,7 +6,7 @@ import {
     flexRender,
     getPaginationRowModel,
     getSortedRowModel,
-} from '@tanstack/react-table'
+} from "@tanstack/react-table";
 import {
     Table,
     TableBody,
@@ -14,264 +14,113 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from '@/components/ui/table'
-import { Button } from '@/components/ui/button'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { Eye, MoreVertical } from 'lucide-react'
-import Link from 'next/link'
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-export default function OrderTable({ data, onViewOrder, onDelete }) {
-    const storeColumns = (onViewOrder, onDelete) => [
+export default function OrderTable({ data, totalPages, page, setPage }) {
+    const storeColumns = () => [
         {
-            accessorKey: 'orderId',
-            header: 'Order ID',
+            accessorKey: "order_id",
+            header: "Order ID",
             cell: ({ row }) => {
                 const order = row.original;
+                return <Link href={`/orders/${order.order_id}`}>{order?.order_id}</Link>;
+            },
+        },
+        {
+            accessorKey: "created_date",
+            header: "Created",
+            cell: ({ row }) => {
+                const rawDate = row.original?.created_date;
+                if (!rawDate) return <span>-</span>;
+
+                const date = new Date(rawDate);
+
+                const formatted = date.toLocaleString("en-GB", {
+                    timeZone: "UTC",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                });
+
+                return <span className="text-md">{formatted}</span>;
+            },
+        },
+        {
+            accessorKey: "customer_name",
+            header: "Customer",
+            cell: ({ row }) => (
+                <Link href={`/orders/${row.original.order_id}`}>
+                    <span className="text-md">{row.original?.customer_name}</span>
+                </Link>
+            ),
+        },
+        {
+            accessorKey: "final_price",
+            header: "Total",
+            cell: ({ row }) => <div className="text-md">₹ {row?.original?.final_price}</div>,
+        },
+        {
+            accessorKey: "payment_status_name",
+            header: "Payment Status",
+            cell: ({ row }) => {
+                const status = row.original.payment_status_name;
                 return (
-                    <Link
-                        href={`/orders/${order.orderId}`}
-                        className='border-b border-black pb-[1px]'
+                    <div
+                        className={`text-sm  px-4 ${status === "Pending"
+                            ? "text-yellow-600"
+                            : status === "Success"
+                                ? "text-emerald-500"
+                                : "text-red-600"
+                            }`}
                     >
-                        {order.orderId}
-                    </Link>
+                        {status || "Null"}
+                    </div>
                 );
             },
         },
-
         {
-            accessorKey: 'Date',
-            header: 'Date ',
+            accessorKey: "payment_mode",
+            header: "Payment Mode",
             cell: ({ row }) => {
-                const order = row.original
-                return (
-
-                    <span className="font-medium  inline-block">
-                        {order.Date}
-                    </span>
-                )
-
-            },
-        },
-
-        {
-            accessorKey: 'name',
-            header: 'Customer ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
-                    <Link
-                        href={`/orders/${order.orderId}`}
-                    >
-                        <span className="font-semibold border-b border-black pb-[1px] inline-block">
-                            {order.name}
-                        </span>
-                    </Link>
-                )
-
-            },
-        },
-
-        {
-            accessorKey: 'TotalPrice',
-            header: 'Total',
-            cell: ({ row }) => (
-                <div className="text-sm font-medium">₹{row.original.TotalPrice}</div>
-            ),
-        },
-
-        {
-            accessorKey: 'PaymentStatus',
-            header: 'Payment Status',
-            cell: ({ row }) => {
-                const status = row.original.PaymentStatus
+                const status = row.original.payment_mode;
                 return (
                     <div
-                        className={`text-sm font-medium ${status === 0
-                            ? 'text-yellow-600'
-                            : status === 1
-                                ? 'text-green-600'
-                                : 'text-red-600'
+                        className={`text-sm font-medium px-4 ${status === "Razorpay"
+                            ? "text-purple-500"
+                            : status === "COD"
+                                ? "text-blue-600"
+                                : "text-gray-600"
                             }`}
                     >
-                        {status === 0
-                            ? 'Pending'
-                            : status === 1
-                                ? 'Success'
-                                : 'Failed'}
+                        {status || "Unknown"}
                     </div>
-                )
+                );
             },
         },
-
         {
-            accessorKey: 'fulfillmentStatus',
-            header: 'Fulfillment Status',
-            cell: ({ row }) => {
-                const status = row.original.fulfillmentStatus
-
-                return (
-                    <div
-                        className={`text-sm font-medium ${status === "unfulfilled"
-                            ? 'text-yellow-600'
-                            : status === 1
-                                ? 'text-green-600'
-                                : 'text-red-600'
-                            }`}
-                    >
-                        {status === 0
-                            ? 'Pending'
-                            : status === 1
-                                ? 'Success'
-                                : 'unfulfilled'}
-                    </div>
-                )
-            },
+            accessorKey: "order_items_count",
+            header: "Items",
+            cell: ({ row }) => <span className="text-md">{row.original.order_items_count}</span>,
         },
-
         {
-            accessorKey: 'Items',
-            header: 'Items ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
-
-                    <span className="font-medium  inline-block">
-                        {order.Items.length}
-                    </span>
-                )
-
-            },
+            accessorKey: "address",
+            header: "Destination",
+            cell: ({ row }) => <span className="text-md">{row.original?.address}</span>,
         },
-
-        // {
-        //     accessorKey: 'tags',
-        //     header: 'Tags ',
-        //     cell: ({ row }) => {
-        //         const order = row.original
-        //         return (
-
-
-        //             order.tags?.map((tag, index) => (
-
-        //                 <span className="font-medium  inline-block mr-2" key={index}>
-        //                     {tag.name},
-        //                 </span>
-        //             ))
-
-        //         )
-
-        //     },
-        // },
-
-        {
-            accessorKey: 'deliveryMethod',
-            header: 'Delivery Method ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
-
-                    <span className="font-medium  inline-block">
-                        {order.deliveryMethod}
-                    </span>
-                )
-
-            },
-        },
-
-        {
-            accessorKey: 'destination',
-            header: 'Destination ',
-            cell: ({ row }) => {
-                const order = row.original
-                return (
-
-                    <span className="font-medium  inline-block">
-                        {order.destination}
-                    </span>
-                )
-
-            },
-        },
-
-        // {
-        //     accessorKey: 'Channel',
-        //     header: 'Channel ',
-        //     cell: ({ row }) => {
-        //         const order = row.original
-        //         return (
-
-        //             <span className="font-medium  inline-block">
-        //                 {order.Channel}
-        //             </span>
-        //         )
-
-        //     },
-        // },
-
-        // {
-        //     accessorKey: 'OrderStatus',
-        //     header: 'Order Status',
-        //     cell: ({ row }) => {
-        //         const status = row.original.OrderStatus
-        //         return (
-        //             <div
-        //                 className={`text-sm font-medium ${status === 0
-        //                     ? 'text-yellow-600'
-        //                     : status === 1
-        //                         ? 'text-purple-600'
-        //                         : 'text-green-600'
-        //                     }`}
-        //             >
-        //                 {status === 0
-        //                     ? 'Pending'
-        //                     : status === 1
-        //                         ? 'In Progress'
-        //                         : 'Delivered'}
-        //             </div>
-        //         )
-        //     },
-        // },
-        // {
-        //     id: 'actions',
-        //     header: 'Actions',
-        //     cell: ({ row }) => {
-        //         const order = row.original
-        //         return (
-        //             <DropdownMenu>
-        //                 <DropdownMenuTrigger asChild>
-        //                     <Button variant="ghost" size="icon">
-        //                         <MoreVertical className="h-4 w-4" />
-        //                     </Button>
-        //                 </DropdownMenuTrigger>
-        //                 <DropdownMenuContent align="end">
-        //                     <Link
-        //                         href={`/orders/${order.orderId}`}
-        //                     >
-        //                         <DropdownMenuItem onClick={() => onViewOrder(order)}>
-        //                             <Eye className="mr-2 h-4 w-4" />
-        //                             View Order
-        //                         </DropdownMenuItem>
-        //                     </Link>
-        //                     {/* Optional delete code can go here */}
-        //                 </DropdownMenuContent>
-        //             </DropdownMenu>
-        //         )
-        //     },
-        // },
-    ]
+    ];
 
     const table = useReactTable({
         data,
-        columns: storeColumns(onViewOrder, onDelete),
+        columns: storeColumns(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-    })
+    });
 
     return (
         <div className="rounded border p-4 pt-0 shadow">
@@ -280,7 +129,7 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
+                                <TableHead key={header.id} className="px-4">
                                     {flexRender(
                                         header.column.columnDef.header,
                                         header.getContext()
@@ -290,42 +139,50 @@ export default function OrderTable({ data, onViewOrder, onDelete }) {
                         </TableRow>
                     ))}
                 </TableHeader>
+
                 <TableBody>
-                    {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
-                            {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
-                                    {flexRender(
-                                        cell.column.columnDef.cell,
-                                        cell.getContext()
-                                    )}
-                                </TableCell>
-                            ))}
+                    {table.getRowModel().rows.length > 0 ? (
+                        table.getRowModel().rows.map((row) => (
+                            <TableRow key={row.id}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <TableCell key={cell.id} className="px-4 py-2">
+                                        <div className="py-2">
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </div>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                            <TableCell colSpan={table.getAllColumns().length} className="text-center py-4 text-gray-500">
+                                No records found
+                            </TableCell>
                         </TableRow>
-                    ))}
+                    )}
                 </TableBody>
+
             </Table>
 
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => table.previousPage()}
-                    disabled={!table.getCanPreviousPage()}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
                 >
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{' '}
-                    {table.getPageCount()}
+                    Page {page} of {totalPages}
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => table.nextPage()}
-                    disabled={!table.getCanNextPage()}
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
                 >
                     Next
                 </Button>
             </div>
         </div>
-    )
+    );
 }
