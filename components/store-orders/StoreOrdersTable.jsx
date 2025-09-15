@@ -1,84 +1,96 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-} from '@tanstack/react-table';
-import { Button } from '../ui/button';
+} from "@tanstack/react-table";
+import { Button } from "../ui/button";
 
-const data = [
-    {
-        orderNumber: 'ORD-1001',
-        orderDateTime: '2025-07-16 10:30 AM',
-        product: 'Fish Curry Cut',
-        store: 'Store A - Kolkata',
-        storeRemarks: 'Urgent delivery',
-        demandedQty: 50,
-        transferredQty: 45,
-        pcRemarks: 'Partial stock available',
-        transferDateTime: '2025-07-16 12:15 PM',
-    },
-    {
-        orderNumber: 'ORD-1002',
-        orderDateTime: '2025-07-16 11:15 AM',
-        product: 'Chicken Drumsticks',
-        store: 'Store B - Delhi',
-        storeRemarks: 'Deliver by EOD',
-        demandedQty: 30,
-        transferredQty: 30,
-        pcRemarks: 'Completed',
-        transferDateTime: '2025-07-16 01:00 PM',
-    },
-];
-
-export default function StoreOrdersTable({ openAddStoreOrder, onTransferClick }) {
+export default function StoreOrdersTable({
+    data,
+    onTransferClick,
+    page,
+    totalPages,
+    setPage,
+    setDisplayTransferFields,
+    setEditData
+}) {
     const columns = [
         {
-            header: 'Order No.',
-            accessorKey: 'orderNumber',
+            header: "Order No.",
+            accessorKey: "id",
         },
         {
-            header: 'Order Date & Time',
-            accessorKey: 'orderDateTime',
+            header: "Order Date & Time",
+            accessorKey: "created_at",
+            cell: ({ row }) => {
+                const date = new Date(row.original.created_at);
+                const formattedDate = date.toLocaleDateString("en-GB");
+                const formattedTime = date.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                });
+                return `${formattedDate} ${formattedTime}`;
+            },
         },
         {
-            header: 'Product',
-            accessorKey: 'product',
+            header: "Product",
+            accessorKey: "product.title",
         },
         {
-            header: 'Store',
-            accessorKey: 'store',
+            header: "Store",
+            accessorKey: "packaging_center.store_name",
         },
         {
-            header: 'Store Remarks',
-            accessorKey: 'storeRemarks',
+            header: "Store Remarks",
+            accessorKey: "remarks",
         },
         {
-            header: 'Demanded Qty',
-            accessorKey: 'demandedQty',
+            header: "Demanded Qty",
+            accessorKey: "quantity",
         },
         {
-            header: 'Transferred Qty',
-            accessorKey: 'transferredQty',
+            header: "Transferred Qty",
+            accessorKey: "transferred_quantity",
+            cell: ({ row }) => row.original.transferred_quantity ?? 0,
         },
         {
-            header: 'PC Remarks',
-            accessorKey: 'pcRemarks',
+            header: "PC Remarks",
+            accessorKey: "transferred_remarks",
+            cell: ({ row }) => row.original.transferred_remarks ?? "-",
         },
         {
-            header: 'Transfer Date & Time',
-            accessorKey: 'transferDateTime',
+            header: "Transfer Date & Time",
+            accessorKey: "transferred_date",
+            cell: ({ row }) => {
+                const dateValue = row.original.transferred_date;
+                if (!dateValue) return "-";
+
+                const date = new Date(dateValue);
+                const formattedDate = date.toLocaleDateString("en-GB");
+                const formattedTime = date.toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "numeric",
+                    hour12: true,
+                });
+
+                return `${formattedDate} ${formattedTime}`;
+            },
         },
         {
-            header: 'Action',
+            header: "Action",
             cell: ({ row }) => (
-                <Button className="text-sm" onClick={() => onTransferClick(row.original)}>
+                <Button
+                    className="text-sm"
+                    onClick={() => { onTransferClick(row.original), setDisplayTransferFields(true), setEditData(row.original) }}
+                >
                     Transfer
                 </Button>
             ),
-        }
+        },
     ];
 
     const table = useReactTable({
@@ -88,28 +100,29 @@ export default function StoreOrdersTable({ openAddStoreOrder, onTransferClick })
     });
 
     return (
-        <div className="p-4">
-            <div className="overflow-x-auto rounded border shadow bg-white">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50 text-left">
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        className="px-4 py-2 text-xs font-semibold text-gray-600 uppercase"
-                                    >
-                                        {flexRender(
-                                            header.column.columnDef.header,
-                                            header.getContext()
-                                        )}
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                        {table.getRowModel().rows.map((row) => (
+
+        <div className="overflow-x-auto rounded border shadow bg-white mt-4">
+            <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 text-left">
+                    {table.getHeaderGroups().map((headerGroup) => (
+                        <tr key={headerGroup.id}>
+                            {headerGroup.headers.map((header) => (
+                                <th
+                                    key={header.id}
+                                    className="px-4 py-2 text-xs font-semibold text-gray-600 uppercase"
+                                >
+                                    {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                    )}
+                                </th>
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                    {table.getRowModel().rows.length > 0 ? (
+                        table.getRowModel().rows.map((row) => (
                             <tr key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="px-4 py-2 text-sm text-gray-800">
@@ -121,10 +134,42 @@ export default function StoreOrdersTable({ openAddStoreOrder, onTransferClick })
                                     </td>
                                 ))}
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        ))
+                    ) : (
+                        <tr>
+                            <td
+                                colSpan={table.getVisibleFlatColumns().length}
+                                className="px-4 py-6 text-center text-gray-500 text-sm"
+                            >
+                                No records found
+                            </td>
+                        </tr>
+                    )}
+                </tbody>
+
+            </table>
+
+            <div className="flex items-center justify-between mt-4 px-3 py-3">
+
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                >
+                    Previous
+                </Button>
+                <span className="text-sm">
+                    Page {page} of {totalPages}
+                </span>
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                >
+                    Next
+                </Button>
             </div>
         </div>
+
     );
 }

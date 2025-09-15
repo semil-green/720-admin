@@ -41,7 +41,8 @@ export default function StoreForm({ editId, type }) {
         address: "",
         store_pincode: "",
         latitude: "",
-        longitude: ""
+        longitude: "",
+        contact_no: ""
     });
 
     const [isDataLoaded, setIsDataLoaded] = useState(false);
@@ -91,7 +92,8 @@ export default function StoreForm({ editId, type }) {
                     address: store.address || "",
                     store_pincode: store.store_pincode?.toString() || "",
                     latitude: store.latitude || "",
-                    longitude: store.longitude || ""
+                    longitude: store.longitude || "",
+                    contact_no: store.contact_no || ""
                 });
                 setIsDataLoaded(true);
             }
@@ -149,6 +151,10 @@ export default function StoreForm({ editId, type }) {
             <div>
                 <Label className="pb-1">Store Code</Label>
                 <Input name="store_code" value={formData.store_code} onChange={handleChange} required />
+            </div>
+            <div>
+                <Label className="pb-1">Contact Number</Label>
+                <Input name="contact_no" type={"number"} value={formData.contact_no} onChange={handleChange} required />
             </div>
             <div>
                 <Label className="pb-1">State</Label>

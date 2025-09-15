@@ -20,6 +20,7 @@ import slicerReducer from "./slices/slider/slider.slice"
 import discountReducer from "./slices/discount/discount.slice"
 import orderRequestReducer from "./slices/order-request/order-request.slice"
 import customerOrderReducer from "./slices/cutomer-order/cutomer-order.slice"
+import storeOrderReducer from "./slices/store-order/store-order.slice"
 
 export const store = configureStore({
         reducer: {
@@ -43,6 +44,7 @@ export const store = configureStore({
                 sliderSlice: slicerReducer,
                 discountSlice: discountReducer,
                 orderRequestSlice: orderRequestReducer,
-                customerOrderSlice: customerOrderReducer
+                customerOrderSlice: customerOrderReducer,
+                storeOrderSlice: storeOrderReducer
         },
 });
