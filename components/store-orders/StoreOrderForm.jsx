@@ -16,12 +16,16 @@ import { addNewOrderRequestService, updateOrderRequestService } from "@/service/
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addNewOrderRequest, updateOrderRequest } from "@/store/slices/order-request/order-request.slice";
+import { handleStoreOrderTransferService } from "@/service/store-order/store-order.service";
+import { updateStoreOrderRequest } from "@/store/slices/store-order/store-order.slice";
 const StoreOrderForm = ({
     handleCose,
     allProductsData,
     packagingCenterData,
     allDarkStoresOfUser,
     editData,
+    displayTransferFields,
+    setDisplayTransferFields,
 }) => {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -33,6 +37,8 @@ const StoreOrderForm = ({
         product_id: "",
         quantity: "",
         remarks: "",
+        transferred_quantity: "",
+        transferred_remarks: "",
     });
 
     useEffect(() => {
@@ -47,6 +53,8 @@ const StoreOrderForm = ({
                 product_id: editData.product_id ? editData.product_id.toString() : "",
                 quantity: editData.quantity?.toString() || "",
                 remarks: editData.remarks || "",
+                transferred_quantity: editData.transferred_quantity?.toString() || "",
+                transferred_remarks: editData.transferred_remarks || "",
             });
         }
     }, [editData]);
@@ -65,6 +73,8 @@ const StoreOrderForm = ({
                 product_id: Number(formData.product_id),
                 quantity: Number(formData.quantity),
                 remarks: formData.remarks,
+                transferred_quantity: Number(formData.transferred_quantity),
+                transferred_remarks: formData.transferred_remarks
             };
 
             const res = await addNewOrderRequestService(payload);
@@ -88,19 +98,25 @@ const StoreOrderForm = ({
     const handleUpdate = async (e) => {
         e.preventDefault();
         try {
-
+            setLoading(true);
             const payload = {
-                dark_store_id: Number(formData.dark_store_id),
-                packaging_center_id: Number(formData.packaging_center_id),
-                product_id: Number(formData.product_id),
-                quantity: Number(formData.quantity),
-                remarks: formData.remarks,
+                id: editData?.id,
+                dark_store_id: editData?.dark_store?.id,
+                packaging_center_id: editData?.packaging_center?.id,
+                product_id: editData?.product?.product_id,
+                quantity: editData?.quantity,
+                remarks: editData?.remarks,
+                created_by: editData?.created_by,
+                transferred_quantity: Number(formData?.transferred_quantity),
+                transferred_remarks: formData?.transferred_remarks,
+                transferred_by: "",
+                updated_by: ""
             };
 
-            const res = await updateOrderRequestService(editData?.id, payload);
+            const res = await handleStoreOrderTransferService(payload);
 
             if (res?.status == 200) {
-                dispatch(updateOrderRequest(res?.data))
+                dispatch(updateStoreOrderRequest(res?.data?.data))
                 toast.success("Updated", {
                     description: "Order request updated successfully",
                 })
@@ -188,6 +204,7 @@ const StoreOrderForm = ({
                     value={formData.quantity}
                     onChange={(e) => handleChange("quantity", e.target.value)}
                     required
+                    disabled
                 />
             </div>
 
@@ -197,15 +214,47 @@ const StoreOrderForm = ({
                     name="remarks"
                     value={formData.remarks}
                     onChange={(e) => handleChange("remarks", e.target.value)}
+                    disabled
                 />
             </div>
+
+
+            {displayTransferFields &&
+                <div>
+                    <Label className="pb-2">Transfer Quantity</Label>
+                    <Input
+                        name="transferred_quantity"
+                        type="number"
+                        value={formData.transferred_quantity}
+                        onChange={(e) => handleChange("transferred_quantity", e.target.value)}
+                        required
+                    />
+                </div>
+            }
+
+            {displayTransferFields &&
+                <div>
+                    <Label className="pb-2">Transfer Remarks</Label>
+                    <Input
+                        name="transferred_remarks"
+                        type="text"
+                        value={formData.transferred_remarks}
+                        onChange={(e) => handleChange("transferred_remarks", e.target.value)}
+                        required
+                    />
+                </div>
+            }
 
             <div className="flex justify-end gap-4">
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={handleCose}
+                    onClick={() => {
+                        handleCose();
+                        setDisplayTransferFields(false);
+                    }}
                     disabled={loading}
+
                 >
                     Cancel
                 </Button>
