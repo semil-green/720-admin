@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     darkStores: [],
-    allDarkStoresOfUser: []
+    allDarkStoresOfUser: [],
+    allDarkStores: []
 };
 
 const darkStoreSlice = createSlice({
@@ -14,6 +15,9 @@ const darkStoreSlice = createSlice({
         },
         setAllDarkStoresOfUser: (state, action) => {
             state.allDarkStoresOfUser = action.payload
+        },
+        setAllDarkStores: (state, action) => {
+            state.allDarkStores = action.payload
         },
         addDarkStore: (state, action) => {
             state.darkStores.push(action.payload);
@@ -62,6 +66,7 @@ const darkStoreSlice = createSlice({
 export const {
     setDarkStores,
     setAllDarkStoresOfUser,
+    setAllDarkStores,
     addDarkStore,
     deleteDarkStore,
     addPincodeToDarkStore,

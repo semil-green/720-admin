@@ -1,93 +1,317 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { getInventories } from "@/lib/api/inventories"
-import InventoryTable from "@/components/inventories/InventoryTable"
-import { Loader2 } from "lucide-react"
+import { useEffect, useState } from "react";
+import { Loader2 } from "lucide-react";
 import MainLayout from "@/components/layout/mainLayout";
-import { Input } from "@/components/ui/input"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { stores, StoreTypes } from "@/lib/constants"
-import { Tabs, TabsContent, TabsList, TabsTrigger, } from "@/components/ui/tabs"
-
-import { MultiSelect } from "@/components/shadcn/MultiSelect"
-import { Label } from "@/components/ui/label"
-
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSelector, useDispatch } from "react-redux";
+import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
+import { setAllPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
+import { setAllDarkStores } from "@/store/slices/dark-store/dark-store.slice";
+import {
+    fetchAllRawMaterialService,
+    fetchFinishedMaterialService,
+} from "@/service/inventories/inventories.service";
+import {
+    setPaginatedFinishedProductData,
+    setPaginatedRawItemsData,
+} from "@/store/slices/inventories/inventories.slice";
+import InventoryRawItemTable from "@/components/inventories/RawitemTable";
+import { toast } from "sonner";
+import FinishedProductTable from "@/components/inventories/FinishedProductTable";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import FilterDropdown from "@/components/items/FilterDropDown";
 
 export default function Inventory() {
-    const [inventories, setInventories] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [selectedItem, setSelectedItem] = useState("Item")
-    const [selectedCategories, setSelectedCategories] = useState([]);
-    const [typeOfFinishedProduct, setTypeOfFinishedProduct] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [selectedItem, setSelectedItem] = useState("Item");
+    const [typeOfFinishedProduct, setTypeOfFinishedProduct] = useState("packagingCenter");
 
-    const [selectedPackagingStores, setSelectedPackagingStores] = useState([]);
-    const [selectedDarkStores, setSelectedDarkStores] = useState([]);
+    const [rawItemPage, setRawItemPage] = useState(1);
+    const [rawItemsLimit, setRawItemLimit] = useState(5);
+    const [totalRawItemsPage, setRawItemTotalPages] = useState(1);
 
+    const [finishedProductPage, setFinishedProductPage] = useState(1);
+    const [finishedProductLimit, setFinishedProductLimit] = useState(5);
+    const [totalFinishedProductPage, setFinishedProductTotalPages] = useState(1);
 
-    const router = useRouter()
+    const [selectedRawMaterialId, setSelectedRawMaterialId] = useState("");
+    const [selectedFinishedProductId, setSelectedFinishedProductId] = useState("");
+
+    const [searchRawMaterial, setSearchRawMaterial] = useState("")
+    const [rawItemSort, setRawItemSort] = useState("")
+
+    const [searchFinishedProduct, setSearchFinishedProduct] = useState("")
+    const [finishedProductSort, setFinishedProductSort] = useState("")
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
-        getInventoryList();
-    }, [])
+        setSelectedFinishedProductId(null);
+    }, [typeOfFinishedProduct]);
+
+    const allPackagingCentersData = useSelector(
+        (state) => state.packagingStoreSlice.allPackagingCenters
+    );
 
     useEffect(() => {
-        setSelectedCategories([]);
-    }, [typeOfFinishedProduct, selectedItem]);
+        if (!allPackagingCentersData || allPackagingCentersData.length === 0) {
+            const fetchData = async () => {
+                const result = await getAllDarkStorePackagingCenter({
+                    type: "packaging_center",
+                    page: 1,
+                    limit: 10000,
+                });
+                if (result?.status === 200) {
+                    dispatch(setAllPackagingCenter(result?.data?.data || []));
+                }
+            };
+            fetchData();
+        }
+    }, []);
 
-    const getInventoryList = async () => {
-        setLoading(true)
+    const allDarkStores = useSelector(
+        (state) => state.darkStoreSlice.allDarkStores
+    );
 
-        const items = await getInventories();
-        setInventories(items)
+    const fetchDarkStores = async () => {
+        try {
+            setLoading(true);
+            const result = await getAllDarkStorePackagingCenter({
+                type: "dark_store",
+                page: 1,
+                limit: 10000,
+            });
 
-        setLoading(false)
+            const storeList = result?.data?.data || [];
+            const totalCount = result?.data?.total || 0;
+
+            if (result?.status === 200) {
+                dispatch(setAllDarkStores(storeList));
+                setTotalPages(Math.ceil(totalCount / rawItemsLimit));
+            }
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchDarkStores();
+    }, []);
+
+    // raw item handler ======================================================================
+
+    const allRawItemsData = useSelector(
+        (state) => state.inventoriesSlice.paginatedRawItemsData
+    );
+
+    const fetchAllRawITemsData = async (
+        rawItemPage,
+        rawItemsLimit,
+        selectedRawMaterialId,
+        searchRawMaterial,
+        rawItemSortBy = rawItemSort?.sortBy,
+        rawItemSortOrder = rawItemSort?.sortOrder
+    ) => {
+        try {
+            setLoading(true);
+            const result = await fetchAllRawMaterialService(
+                rawItemPage,
+                rawItemsLimit,
+                selectedRawMaterialId,
+                searchRawMaterial,
+                rawItemSortBy,
+                rawItemSortOrder
+            );
+
+            if (result?.status == 200) {
+                setRawItemTotalPages(
+                    Math.ceil(result?.data?.pagination?.total / rawItemsLimit)
+                );
+
+                dispatch(setPaginatedRawItemsData(result?.data?.data));
+            }
+        } catch (error) {
+            toast.error("Error fetching raw items", {
+                description: "Something went wrong",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllRawITemsData(rawItemPage, rawItemsLimit, selectedRawMaterialId);
+    }, [rawItemPage, selectedRawMaterialId, rawItemSort]);
+
+    const rawItemColumns = [
+        { label: "Raw item", value: "raw_item" },
+        { label: "In hand", value: "in_hand" },
+
+    ]
+
+    const handleRawItemSortChange = (sort) => {
+        setRawItemSort(sort)
     }
 
-    const storesData = stores?.filter((item) => item?.label.includes("Packaging Center"))
+    // finish product handler ======================================================================
+
+    const finishedProductData = useSelector(
+        (state) => state.inventoriesSlice.paginatedFinishedProductData
+    );
+
+    const fetchAllFinishedProductData = async (
+        finishedProductPage,
+        finishedProductLimit,
+        selectedFinishedProductId,
+        searchFinishedProduct,
+        finishedProductSortBy = finishedProductSort?.sortBy,
+        finishedProductSortOrder = finishedProductSort?.sortOrder
+    ) => {
+        try {
+            setLoading(true);
+            const result = await fetchFinishedMaterialService(
+                finishedProductPage,
+                finishedProductLimit,
+                selectedFinishedProductId,
+                searchFinishedProduct,
+                finishedProductSortBy,
+                finishedProductSortOrder
+            );
+
+            if (result?.status == 200) {
+                setFinishedProductTotalPages(
+                    Math.ceil(result?.data?.pagination?.total / finishedProductLimit)
+                );
+
+                dispatch(setPaginatedFinishedProductData(result?.data?.data));
+            }
+        } catch (error) {
+            toast.error("Error fetching finished product ", {
+                description: "Something went wrong",
+            });
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAllFinishedProductData(
+            finishedProductPage,
+            finishedProductLimit,
+            selectedFinishedProductId
+        );
+    }, [finishedProductPage, selectedFinishedProductId, finishedProductSort]);
+
+    const finishedProductColumns = [
+        { label: "Product", value: "title" },
+        { label: "Stock", value: "in_hand" },
+    ]
+
+    const handleFinishedProductSortChange = (sort) => {
+        setFinishedProductSort(sort)
+    }
+
+
 
     return (
         <MainLayout>
-            {loading &&
+            {loading && (
                 <div className="fixed flex w-full h-full top-0 left-0 z-10">
                     <div className="flex-1 flex justify-center items-center">
                         <Loader2 className="h-12 w-12 animate-spin text-primary" />
                     </div>
                 </div>
-            }
+            )}
 
             <Tabs defaultValue="Item">
                 <TabsList>
-                    <TabsTrigger value="Item" onClick={() => { setSelectedItem("Item") }}>Raw Material</TabsTrigger>
-                    <TabsTrigger value="RawItem" onClick={() => { setSelectedItem("RawItem") }}>Finished Product</TabsTrigger>
+                    <TabsTrigger
+                        value="Item"
+                        onClick={() => {
+                            setSelectedItem("Item");
+                        }}
+                    >
+                        Raw Material
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="RawItem"
+                        onClick={() => {
+                            setSelectedItem("RawItem");
+                        }}
+                    >
+                        Finished Product
+                    </TabsTrigger>
                 </TabsList>
             </Tabs>
 
-
-
             <div className="space-y-4 mt-4">
+                {selectedItem === "Item" && (
 
-                {
-                    selectedItem == "Item" && <div className="flex justify-between items-center gap-2">
-                        <MultiSelect
-                            options={storesData.map((item) => ({
-                                label: item.label,
-                                value: item.value.toString(),
-                            }))}
-                            onValueChange={setSelectedCategories}
-                            defaultValue={selectedCategories}
-                            placeholder="Select a packaging center"
-                            variant="secondary"
-                            animation={0}
-                            modalPopover={true}
-                            maxCount={3}
-                        />
+                    <>
+                        <div className="flex justify-between items-center gap-2">
+                            <Select
+                                value={
+                                    selectedRawMaterialId ? selectedRawMaterialId.toString() : ""
+                                }
+                                onValueChange={(value) => setSelectedRawMaterialId(Number(value))}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Packaging Center" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allPackagingCentersData?.map((center) => (
+                                        <SelectItem key={center.id} value={center.id.toString()}>
+                                            {center.store_name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
 
-
-                        {/* <Input defaultValue="" placeholder='Search Items' className='' /> */}
-                    </div>
-                }
+                        <div className="flex justify-between">
+                            <div className="flex gap-4">
+                                <Input
+                                    placeholder="Search Raw Material"
+                                    className="w-2xl"
+                                    onChange={(e) => setSearchRawMaterial(e.target.value)}
+                                    value={searchRawMaterial}
+                                />
+                                <Button
+                                    onClick={() => fetchAllRawITemsData(rawItemPage, rawItemsLimit, "", searchRawMaterial)}
+                                >
+                                    Search
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        setSearchRawMaterial("");
+                                        setRawItemPage(1);
+                                        setRawItemSort("");
+                                        fetchAllRawITemsData(1, rawItemsLimit, "", "");
+                                    }}
+                                    variant={"link"}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
+                            <div className="flex justify-end">
+                                <FilterDropdown
+                                    columns={rawItemColumns}
+                                    onSortChange={handleRawItemSortChange}
+                                />
+                            </div>
+                        </div>
+                    </>
+                )}
 
                 {selectedItem === "RawItem" && (
                     <div className="flex mt-4 gap-6">
@@ -98,7 +322,10 @@ export default function Inventory() {
                                 value="packagingCenter"
                                 className="form-radio text-blue-600"
                                 checked={typeOfFinishedProduct === "packagingCenter"}
-                                onChange={(e) => setTypeOfFinishedProduct(e.target.value)}
+                                onChange={(e) => {
+                                    setTypeOfFinishedProduct(e.target.value);
+                                    setSelectedFinishedProductId(null);
+                                }}
                             />
                             <span>Packaging center</span>
                         </label>
@@ -110,47 +337,157 @@ export default function Inventory() {
                                 value="darkStore"
                                 className="form-radio text-blue-600"
                                 checked={typeOfFinishedProduct === "darkStore"}
-                                onChange={(e) => setTypeOfFinishedProduct(e.target.value)}
+                                onChange={(e) => {
+                                    setTypeOfFinishedProduct(e.target.value);
+                                    setSelectedFinishedProductId(null);
+                                }}
                             />
                             <span>Dark Store</span>
                         </label>
                     </div>
                 )}
 
+                {selectedItem === "RawItem" &&
+                    typeOfFinishedProduct === "packagingCenter" && (
+                        <>
+                            <Select
+                                value={
+                                    selectedFinishedProductId
+                                        ? selectedFinishedProductId.toString()
+                                        : ""
+                                }
+                                onValueChange={(value) =>
+                                    setSelectedFinishedProductId(Number(value))
+                                }
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Packaging Center" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allPackagingCentersData?.map((center) => (
+                                        <SelectItem key={center.id} value={center.id.toString()}>
+                                            {center.store_name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
 
-                {selectedItem === "RawItem" && typeOfFinishedProduct === "packagingCenter" && (
-                    <MultiSelect
-                        options={stores.map((item) => ({
-                            label: item.label,
-                            value: item.value.toString(),
-                        }))}
-                        onValueChange={setSelectedPackagingStores}
-                        defaultValue={selectedPackagingStores}
-                        placeholder={"Select Packaging store"}
-                        variant="secondary"
-                        animation={0}
-                        modalPopover={true}
-                        maxCount={3}
+                            <div className="flex justify-between">
+                                <div className="flex gap-4">
+                                    <Input
+                                        placeholder="Search Raw Material"
+                                        className="w-2xl"
+                                        onChange={(e) => setSearchFinishedProduct(e.target.value)}
+                                        value={searchFinishedProduct}
+                                    />
+                                    <Button
+                                        onClick={() => fetchAllFinishedProductData(finishedProductPage, finishedProductLimit, "", searchFinishedProduct)}
+
+                                    >
+                                        Search
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            setSearchFinishedProduct("");
+                                            setFinishedProductPage(1);
+                                            setFinishedProductSort("");
+                                            fetchAllFinishedProductData(1, finishedProductLimit, "", "");
+                                        }}
+                                        variant={"link"}
+                                    >
+                                        Clear
+                                    </Button>
+                                </div>
+                                <div className="flex justify-end">
+                                    <FilterDropdown
+                                        // columns={orderRequestColumns}
+                                        columns={finishedProductColumns}
+                                        onSortChange={handleFinishedProductSortChange}
+                                    />
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                {selectedItem === "RawItem" &&
+                    typeOfFinishedProduct === "darkStore" && (
+                        <>
+                            <Select
+                                value={
+                                    selectedFinishedProductId
+                                        ? selectedFinishedProductId.toString()
+                                        : ""
+                                }
+                                onValueChange={(value) =>
+                                    setSelectedFinishedProductId(Number(value))
+                                }
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select Finished Product" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {allDarkStores?.map((store) => (
+                                        <SelectItem key={store.id} value={store.id.toString()}>
+                                            {store.store_name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            <div className="flex justify-between">
+                                <div className="flex gap-4">
+                                    <Input
+                                        placeholder="Search Finished Product"
+                                        className="w-2xl"
+                                        onChange={(e) => setSearchRawMaterial(e.target.value)}
+                                        value={searchRawMaterial}
+                                    />
+                                    <Button
+                                    // onClick={() => fetchALlOrderRequestData(page, limit, search)}
+                                    >
+                                        Search
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            // setSearch("");
+                                            // setPage(1);
+                                            // setSort("");
+                                            // fetchALlOrderRequestData(1, limit, "");
+                                        }}
+                                        variant={"link"}
+                                    >
+                                        Clear
+                                    </Button>
+                                </div>
+                                <div className="flex justify-end">
+                                    {/* <FilterDropdown
+                                    columns={orderRequestColumns}
+                                    onSortChange={handleOrderRequestSortChange}
+                                /> */}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                {selectedItem === "Item" && (
+                    <InventoryRawItemTable
+                        data={allRawItemsData}
+                        totalPage={totalRawItemsPage}
+                        rawItemPage={rawItemPage}
+                        setRawItemPage={setRawItemPage}
                     />
                 )}
-                {selectedItem === "RawItem" && typeOfFinishedProduct === "darkStore" && (
-                    <MultiSelect
-                        options={stores.map((item) => ({
-                            label: item.label,
-                            value: item.value.toString(),
-                        }))}
-                        onValueChange={setSelectedDarkStores}
-                        defaultValue={selectedDarkStores}
-                        placeholder={"Select Dark Store"}
-                        variant="secondary"
-                        animation={0}
-                        modalPopover={true}
-                        maxCount={3}
-                    />
-                )}
 
-                <InventoryTable data={inventories} />
+                {selectedItem === "RawItem" &&
+                    (typeOfFinishedProduct === "packagingCenter" ||
+                        typeOfFinishedProduct === "darkStore") && (
+                        <FinishedProductTable
+                            data={finishedProductData}
+                            totalPage={totalFinishedProductPage}
+                            page={finishedProductPage}
+                            setRawItemPage={setFinishedProductPage}
+                        />
+                    )}
             </div>
         </MainLayout>
-    )
+    );
 }
