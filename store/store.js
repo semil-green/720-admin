@@ -21,6 +21,7 @@ import discountReducer from "./slices/discount/discount.slice"
 import orderRequestReducer from "./slices/order-request/order-request.slice"
 import customerOrderReducer from "./slices/cutomer-order/cutomer-order.slice"
 import storeOrderReducer from "./slices/store-order/store-order.slice"
+import inventoriesReducer from "./slices/inventories/inventories.slice"
 
 export const store = configureStore({
         reducer: {
@@ -45,6 +46,7 @@ export const store = configureStore({
                 discountSlice: discountReducer,
                 orderRequestSlice: orderRequestReducer,
                 customerOrderSlice: customerOrderReducer,
-                storeOrderSlice: storeOrderReducer
+                storeOrderSlice: storeOrderReducer,
+                inventoriesSlice: inventoriesReducer
         },
 });
