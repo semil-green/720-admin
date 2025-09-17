@@ -47,9 +47,12 @@ export default function Inventory() {
     const [selectedFinishedProductId, setSelectedFinishedProductId] = useState("");
 
     const [searchRawMaterial, setSearchRawMaterial] = useState("")
+    const [appliedSearch, setAppliedSearch] = useState("");
     const [rawItemSort, setRawItemSort] = useState("")
 
+
     const [searchFinishedProduct, setSearchFinishedProduct] = useState("")
+    const [appliedFinishedSearch, setAppliedFinishedSearch] = useState("");
     const [finishedProductSort, setFinishedProductSort] = useState("")
 
     const dispatch = useDispatch();
@@ -149,9 +152,20 @@ export default function Inventory() {
         }
     };
 
+
     useEffect(() => {
-        fetchAllRawITemsData(rawItemPage, rawItemsLimit, selectedRawMaterialId);
-    }, [rawItemPage, selectedRawMaterialId, rawItemSort]);
+        fetchAllRawITemsData(
+            rawItemPage,
+            rawItemsLimit,
+            selectedRawMaterialId,
+            appliedSearch,
+            rawItemSort?.sortBy,
+            rawItemSort?.sortOrder
+        );
+    }, [rawItemPage, selectedRawMaterialId, rawItemSort, appliedSearch]);
+
+
+
 
     const rawItemColumns = [
         { label: "Raw item", value: "raw_item" },
@@ -208,9 +222,12 @@ export default function Inventory() {
         fetchAllFinishedProductData(
             finishedProductPage,
             finishedProductLimit,
-            selectedFinishedProductId
+            selectedFinishedProductId,
+            appliedFinishedSearch,
+            finishedProductSort?.sortBy,
+            finishedProductSort?.sortOrder
         );
-    }, [finishedProductPage, selectedFinishedProductId, finishedProductSort]);
+    }, [finishedProductPage, selectedFinishedProductId, finishedProductSort, appliedFinishedSearch]);
 
     const finishedProductColumns = [
         { label: "Product", value: "title" },
@@ -287,16 +304,28 @@ export default function Inventory() {
                                     value={searchRawMaterial}
                                 />
                                 <Button
-                                    onClick={() => fetchAllRawITemsData(rawItemPage, rawItemsLimit, "", searchRawMaterial)}
+                                    onClick={() => {
+                                        setAppliedSearch(searchRawMaterial);
+                                        setRawItemPage(1);
+                                        fetchAllRawITemsData(
+                                            1,
+                                            rawItemsLimit,
+                                            selectedRawMaterialId,
+                                            searchRawMaterial,
+                                            rawItemSort?.sortBy,
+                                            rawItemSort?.sortOrder
+                                        );
+                                    }}
                                 >
                                     Search
                                 </Button>
                                 <Button
                                     onClick={() => {
                                         setSearchRawMaterial("");
+                                        setAppliedSearch("");
                                         setRawItemPage(1);
                                         setRawItemSort("");
-                                        fetchAllRawITemsData(1, rawItemsLimit, "", "");
+                                        fetchAllRawITemsData(1, rawItemsLimit, selectedRawMaterialId, "");
                                     }}
                                     variant={"link"}
                                 >
@@ -375,23 +404,34 @@ export default function Inventory() {
                             <div className="flex justify-between">
                                 <div className="flex gap-4">
                                     <Input
-                                        placeholder="Search Raw Material"
+                                        placeholder="Search Finished Product"
                                         className="w-2xl"
                                         onChange={(e) => setSearchFinishedProduct(e.target.value)}
                                         value={searchFinishedProduct}
                                     />
                                     <Button
-                                        onClick={() => fetchAllFinishedProductData(finishedProductPage, finishedProductLimit, "", searchFinishedProduct)}
-
+                                        onClick={() => {
+                                            setAppliedFinishedSearch(searchFinishedProduct);
+                                            setFinishedProductPage(1);
+                                            fetchAllFinishedProductData(
+                                                1,
+                                                finishedProductLimit,
+                                                selectedFinishedProductId,
+                                                searchFinishedProduct,
+                                                finishedProductSort?.sortBy,
+                                                finishedProductSort?.sortOrder
+                                            );
+                                        }}
                                     >
                                         Search
                                     </Button>
                                     <Button
                                         onClick={() => {
                                             setSearchFinishedProduct("");
+                                            setAppliedFinishedSearch("");
                                             setFinishedProductPage(1);
                                             setFinishedProductSort("");
-                                            fetchAllFinishedProductData(1, finishedProductLimit, "", "");
+                                            fetchAllFinishedProductData(1, finishedProductLimit, selectedFinishedProductId, "");
                                         }}
                                         variant={"link"}
                                     >
@@ -400,7 +440,6 @@ export default function Inventory() {
                                 </div>
                                 <div className="flex justify-end">
                                     <FilterDropdown
-                                        // columns={orderRequestColumns}
                                         columns={finishedProductColumns}
                                         onSortChange={handleFinishedProductSortChange}
                                     />
@@ -423,7 +462,7 @@ export default function Inventory() {
                                 }
                             >
                                 <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select Finished Product" />
+                                    <SelectValue placeholder="Select Dark Store" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {allDarkStores?.map((store) => (
@@ -439,20 +478,32 @@ export default function Inventory() {
                                     <Input
                                         placeholder="Search Finished Product"
                                         className="w-2xl"
-                                        onChange={(e) => setSearchRawMaterial(e.target.value)}
-                                        value={searchRawMaterial}
+                                        onChange={(e) => setSearchFinishedProduct(e.target.value)}
+                                        value={searchFinishedProduct}
                                     />
                                     <Button
-                                    // onClick={() => fetchALlOrderRequestData(page, limit, search)}
+                                        onClick={() => {
+                                            setAppliedFinishedSearch(searchFinishedProduct);
+                                            setFinishedProductPage(1);
+                                            fetchAllFinishedProductData(
+                                                1,
+                                                finishedProductLimit,
+                                                selectedFinishedProductId,
+                                                searchFinishedProduct,
+                                                finishedProductSort?.sortBy,
+                                                finishedProductSort?.sortOrder
+                                            );
+                                        }}
                                     >
                                         Search
                                     </Button>
                                     <Button
                                         onClick={() => {
-                                            // setSearch("");
-                                            // setPage(1);
-                                            // setSort("");
-                                            // fetchALlOrderRequestData(1, limit, "");
+                                            setSearchFinishedProduct("");
+                                            setAppliedFinishedSearch("");
+                                            setFinishedProductPage(1);
+                                            setFinishedProductSort("");
+                                            fetchAllFinishedProductData(1, finishedProductLimit, selectedFinishedProductId, "");
                                         }}
                                         variant={"link"}
                                     >
@@ -460,10 +511,10 @@ export default function Inventory() {
                                     </Button>
                                 </div>
                                 <div className="flex justify-end">
-                                    {/* <FilterDropdown
-                                    columns={orderRequestColumns}
-                                    onSortChange={handleOrderRequestSortChange}
-                                /> */}
+                                    <FilterDropdown
+                                        columns={finishedProductColumns}
+                                        onSortChange={handleFinishedProductSortChange}
+                                    />
                                 </div>
                             </div>
                         </>
@@ -488,6 +539,6 @@ export default function Inventory() {
                         />
                     )}
             </div>
-        </MainLayout>
+        </MainLayout >
     );
 }
