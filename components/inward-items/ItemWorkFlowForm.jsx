@@ -414,7 +414,7 @@ export default function ItemWorkFlowForm({ editData }) {
                                             </Select>
                                         </div>
 
-                                        {index === 0 ? (
+                                        {/* {index === 0 ? (
                                             <div
                                                 className="rounded-lg size-9 flex justify-center items-center bg-secondary cursor-pointer"
                                                 onClick={addNewOutputProduct}
@@ -428,7 +428,7 @@ export default function ItemWorkFlowForm({ editData }) {
                                             >
                                                 <MinusIcon className="text-secondary-foreground" />
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </Fragment>
                             ))}
