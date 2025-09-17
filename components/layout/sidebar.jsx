@@ -33,6 +33,7 @@ export const fullMenuItems = [
   { label: "Users", href: "/users", icon: Users },
   { label: "State", href: "/state", icon: Globe },
   { label: "City", href: "/city", icon: Building2 },
+  { label: "Customer Feedback", href: "/feedback", icon: Building2 },
 ];
 
 export default function Sidebar() {

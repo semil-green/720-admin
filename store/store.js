@@ -21,6 +21,7 @@ import discountReducer from "./slices/discount/discount.slice"
 import orderRequestReducer from "./slices/order-request/order-request.slice"
 import customerOrderReducer from "./slices/cutomer-order/cutomer-order.slice"
 import storeOrderReducer from "./slices/store-order/store-order.slice"
+import feedbackReducer from "./slices/feedback/feedback.slice"
 import inventoriesReducer from "./slices/inventories/inventories.slice"
 
 export const store = configureStore({
@@ -47,6 +48,7 @@ export const store = configureStore({
                 orderRequestSlice: orderRequestReducer,
                 customerOrderSlice: customerOrderReducer,
                 storeOrderSlice: storeOrderReducer,
+                feedbackSlice: feedbackReducer,
                 inventoriesSlice: inventoriesReducer
         },
 });

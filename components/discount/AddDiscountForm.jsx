@@ -114,56 +114,64 @@ const AddDiscountForm = () => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        const min_purchase_amount =
-            formData.min_requirement_type === "AMOUNT"
-                ? sanitizeNumber(formData.min_purchase_amount)
-                : null;
 
-        const min_purchase_quantity =
-            formData.min_requirement_type === "QUANTITY"
-                ? sanitizeNumber(formData.min_purchase_quantity)
-                : null;
+        try {
+            e.preventDefault();
+            setLoading(true);
+            const min_purchase_amount =
+                formData.min_requirement_type === "AMOUNT"
+                    ? sanitizeNumber(formData.min_purchase_amount)
+                    : null;
 
-        const max_discount_cap =
-            formData.discount_type === "percent"
-                ? sanitizeNumber(formData.max_discount_cap)
-                : null;
+            const min_purchase_quantity =
+                formData.min_requirement_type === "QUANTITY"
+                    ? sanitizeNumber(formData.min_purchase_quantity)
+                    : null;
 
-        const payload = {
-            discount_code: formData.discount_code,
-            discount_type: formData.discount_type,
-            discount_value: sanitizeNumber(formData.discount_value),
-            max_discount_cap,
-            eligibility_type: formData.eligibility_type,
-            min_requirement_type: formData.min_requirement_type,
-            min_purchase_amount,
-            min_purchase_quantity,
-            has_usage_limit: formData.has_usage_limit,
-            usage_limit: sanitizeNumber(formData.usage_limit),
-            is_single_use: formData.is_single_use,
-            start_date: formData.start_date,
-            start_time: formatTime(formData.start_time),
-            end_date: formData.end_date,
-            end_time: formatTime(formData.end_time),
-            products: selectedProduct.length > 0 ? selectedProduct : null,
-            collections: selectedCollection.length > 0 ? selectedCollection : null,
-        };
+            const max_discount_cap =
+                formData.discount_type === "percent"
+                    ? sanitizeNumber(formData.max_discount_cap)
+                    : null;
 
+            const payload = {
+                discount_code: formData.discount_code,
+                discount_type: formData.discount_type,
+                discount_value: sanitizeNumber(formData.discount_value),
+                max_discount_cap,
+                eligibility_type: formData.eligibility_type,
+                min_requirement_type: formData.min_requirement_type,
+                min_purchase_amount,
+                min_purchase_quantity,
+                has_usage_limit: formData.has_usage_limit,
+                usage_limit: sanitizeNumber(formData.usage_limit),
+                is_single_use: formData.is_single_use,
+                start_date: formData.start_date,
+                start_time: formatTime(formData.start_time),
+                end_date: formData.end_date ?? null,
+                end_time: formatTime(formData.end_time),
+                products: selectedProduct.length > 0 ? selectedProduct : null,
+                collections: selectedCollection.length > 0 ? selectedCollection : null,
+            };
 
+            const res = await addNewDiscount(payload);
 
-        const res = await addNewDiscount(payload);
-
-        if (res?.status === 200) {
-            toast.success("Discount added successfully");
-            router.push("/discount");
-            setLoading(false);
+            if (res?.status === 200) {
+                toast.success("Discount added successfully");
+                router.push("/discount");
+                setLoading(false);
+            }
+            else {
+                setLoading(false);
+                toast.error("Failed to add discount");
+            }
         }
-        else {
-            setLoading(false);
+        catch (error) {
             toast.error("Failed to add discount");
         }
+        finally {
+            setLoading(false);
+        }
+
     };
 
 
