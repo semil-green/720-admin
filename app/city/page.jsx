@@ -62,12 +62,12 @@ const Page = () => {
 
 
     useEffect(() => {
-        fetchCities(page, limit, searchCity, sortCity);
+        fetchCities(page, limit, searchCity,);
     }, [page, limit]);
 
     useEffect(() => {
         if (sortCity) {
-            fetchCities(1, limit, searchCity, sortCity);
+            fetchCities(1, limit, searchCity, sortCity?.sortBy, sortCity?.sortOrder);
             setPage(1);
         }
     }, [sortCity]);

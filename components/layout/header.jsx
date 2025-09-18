@@ -26,9 +26,9 @@ export default function Header() {
             </div>
 
             <div className="flex items-center gap-3">
-                <SunMoon className='size-7 cursor-pointer' onClick={changeTheme} />
+                {/* <SunMoon className='size-7 cursor-pointer' onClick={changeTheme} /> */}
 
-                <Popover>
+                {/* <Popover>
                     <PopoverTrigger variant="outline">
                         <div className="border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground p-2 rounded-full cursor-pointer relative">
                             <BellIcon className="size-5" />
@@ -60,7 +60,7 @@ export default function Header() {
                             </div>
                         </div>
                     </PopoverContent>
-                </Popover>
+                </Popover> */}
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

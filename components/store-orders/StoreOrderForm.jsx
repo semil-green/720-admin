@@ -133,68 +133,132 @@ const StoreOrderForm = ({
 
     return (
         <form className="grid gap-4" >
-            <div>
-                <Label className="pb-2">Select Store</Label>
-                <Select
-                    key={formData.dark_store_id || "store"}
-                    value={formData.dark_store_id || ""}
-                    onValueChange={(value) => handleChange("dark_store_id", value)}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a store" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {(allDarkStoresOfUser || []).map((item) => (
-                            <SelectItem key={item.id} value={item.id.toString()}>
-                                {item.store_name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
 
-            <div>
-                <Label className="pb-2">Packaging Center</Label>
-                <Select
-                    key={formData.packaging_center_id || "packaging"}
-                    value={formData.packaging_center_id}
-                    onValueChange={(value) => handleChange("packaging_center_id", value)}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a packaging center" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {packagingCenterData?.map((item) => (
-                            <SelectItem key={item.id} value={item.id.toString()}>
-                                {item.store_name}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
+            {
+                !displayTransferFields &&
+                <div>
+                    <Label className="pb-2">Select Store</Label>
+                    <Select
+                        key={formData.dark_store_id || "store"}
+                        value={formData.dark_store_id || ""}
+                        onValueChange={(value) => handleChange("dark_store_id", value)}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a store" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {(allDarkStoresOfUser || []).map((item) => (
+                                <SelectItem key={item.id} value={item.id.toString()}>
+                                    {item.store_name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            }
 
-            <div>
-                <Label className="pb-2">Product</Label>
-                <Select
-                    key={formData.product_id || "product"}
-                    value={formData.product_id}
-                    onValueChange={(value) => handleChange("product_id", value)}
-                >
-                    <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select a product" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {(allProductsData || []).map((item) => (
-                            <SelectItem
-                                key={item.product_id}
-                                value={item.product_id.toString()}
-                            >
-                                {item.title}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
+
+            {
+                !displayTransferFields &&
+                <div>
+                    <Label className="pb-2">Packaging Center</Label>
+                    <Select
+                        key={formData.packaging_center_id || "packaging"}
+                        value={formData.packaging_center_id}
+                        onValueChange={(value) => handleChange("packaging_center_id", value)}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a packaging center" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {packagingCenterData?.map((item) => (
+                                <SelectItem key={item.id} value={item.id.toString()}>
+                                    {item.store_name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+
+            }
+
+
+            {
+                !displayTransferFields &&
+                <div>
+                    <Label className="pb-2">Product</Label>
+                    <Select
+                        key={formData.product_id || "product"}
+                        value={formData.product_id}
+                        onValueChange={(value) => handleChange("product_id", value)}
+                    >
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a product" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {(allProductsData || []).map((item) => (
+                                <SelectItem
+                                    key={item.product_id}
+                                    value={item.product_id.toString()}
+                                >
+                                    {item.title}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                </div>
+            }
+
+
+            {
+                displayTransferFields &&
+
+                <div>
+                    <Label className="pb-2">Store</Label>
+                    <Input
+                        name="Store"
+                        type="text"
+                        value={editData?.dark_store?.store_name}
+                        required
+                        disabled={displayTransferFields}
+                    />
+                </div>
+
+            }
+
+            {
+                displayTransferFields &&
+
+                <div>
+                    <Label className="pb-2">Packaging Center</Label>
+                    <Input
+                        name="Store"
+                        type="text"
+                        value={editData?.packaging_center?.store_name}
+                        required
+                        disabled={displayTransferFields}
+                    />
+                </div>
+
+            }
+
+
+            {
+                displayTransferFields &&
+
+                <div>
+                    <Label className="pb-2">Product</Label>
+                    <Input
+                        name="Store"
+                        type="text"
+                        value={editData?.product?.title}
+                        required
+                        disabled={displayTransferFields}
+                    />
+                </div>
+
+            }
 
             <div>
                 <Label className="pb-2">Quantity</Label>
@@ -204,7 +268,7 @@ const StoreOrderForm = ({
                     value={formData.quantity}
                     onChange={(e) => handleChange("quantity", e.target.value)}
                     required
-                    disabled
+                    disabled={displayTransferFields}
                 />
             </div>
 
@@ -214,7 +278,7 @@ const StoreOrderForm = ({
                     name="remarks"
                     value={formData.remarks}
                     onChange={(e) => handleChange("remarks", e.target.value)}
-                    disabled
+                    disabled={displayTransferFields}
                 />
             </div>
 

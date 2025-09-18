@@ -4,6 +4,17 @@ export const getAllDarkStorePackagingCenter = async (queryParams) => {
 
     const auth_token = localStorage.getItem("token")
 
+    // const params = {};
+
+    // if (queryParams.type) params.type = queryParams.type;
+    // if (queryParams.page) params.page = queryParams.page;
+    // if (queryParams.limit) params.limit = queryParams.limit;
+    // if (queryParams.sortBy) params.sortBy = queryParams.sortBy;
+    // if (queryParams.sortType) params.sortType = queryParams.sortType;
+    // if (queryParams.search && queryParams.search.trim() !== "") {
+    //     params.search = queryParams.search.trim();
+    // }
+
     try {
 
         const response = await axios.get(

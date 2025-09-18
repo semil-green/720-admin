@@ -46,7 +46,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">10</div>
+                    <div className="">{item?.quantity}</div>
                 )
             }
         },
@@ -96,7 +96,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">Gram</div>
+                    <div className="">{item?.unit}</div>
                 )
             }
         },

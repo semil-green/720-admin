@@ -69,15 +69,30 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
             header: "Payment Status",
             cell: ({ row }) => {
                 const status = row.original.payment_status_name;
+
+                let statusClass = "text-gray-500";
+                switch (status) {
+                    case "Pending":
+                        statusClass = "text-yellow-600";
+                        break;
+                    case "Success":
+                        statusClass = "text-emerald-500";
+                        break;
+                    case "Failed":
+                        statusClass = "text-red-600";
+                        break;
+                    case "RefundInitiated":
+                        statusClass = "text-orange-500";
+                        break;
+                    case "Refunded":
+                        statusClass = "text-blue-600";
+                        break;
+                    default:
+                        statusClass = "text-gray-500";
+                }
+
                 return (
-                    <div
-                        className={`text-sm  px-4 ${status === "Pending"
-                            ? "text-yellow-600"
-                            : status === "Success"
-                                ? "text-emerald-500"
-                                : "text-red-600"
-                            }`}
-                    >
+                    <div className={`text-sm px-4 ${statusClass}`}>
                         {status || "Null"}
                     </div>
                 );
