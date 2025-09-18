@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     allCollections: [],
+    allCollectionsData: []
 };
 
 const collectionsSlice = createSlice({
@@ -10,6 +11,9 @@ const collectionsSlice = createSlice({
     reducers: {
         setCollections: (state, action) => {
             state.allCollections = action.payload;
+        },
+        setAllCollectionsData: (state, action) => {
+            state.allCollectionsData = action.payload
         },
         deleteCollection: (state, action) => {
             state.allCollections = state.allCollections.filter(
@@ -20,5 +24,5 @@ const collectionsSlice = createSlice({
     },
 });
 
-export const { setCollections, deleteCollection } = collectionsSlice.actions;
+export const { setCollections, setAllCollectionsData, deleteCollection } = collectionsSlice.actions;
 export default collectionsSlice.reducer;

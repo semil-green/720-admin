@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { getAllItemsService } from "@/service/items/items.service";
 import { getAllItemsData } from "@/store/slices/items/items.slice";
 import { getAllCollectionsService } from "@/service/collections/collections.service";
-import { setCollections } from "@/store/slices/collections/collections.slice";
+import { setAllCollectionsData, setCollections } from "@/store/slices/collections/collections.slice";
 import { Label } from "@/components/ui/label";
 import { MultiSelect } from "@/components/shadcn/MultiSelect";
 import { addNewDiscount, getDiscountByIdService, updateDiscountService } from "@/service/discount/discount.service";
@@ -52,7 +52,7 @@ const AddDiscountForm = () => {
         (state) => state.allItemsSlice.allItemsData
     );
     const allCollectionsData = useSelector(
-        (state) => state.collectionsSlice.allCollections
+        (state) => state.collectionsSlice.allCollectionsData
     );
 
     useEffect(() => {
@@ -68,9 +68,9 @@ const AddDiscountForm = () => {
     useEffect(() => {
         const fetchCollectionData = async () => {
             try {
-                const res = await getAllCollectionsService();
+                const res = await getAllCollectionsService(1, 1000000);
                 if (res?.data) {
-                    dispatch(setCollections(res?.data));
+                    dispatch(setAllCollectionsData(res?.data));
                 }
             } catch (error) {
                 toast.error("Error in fetching collections");
@@ -400,7 +400,7 @@ const AddDiscountForm = () => {
                         </div>
                     </div>
 
-                    <div className="mt-4 bg-white border rounded-md shadow px-4 py-3">
+                    {/* <div className="mt-4 bg-white border rounded-md shadow px-4 py-3">
                         <h5 className="text-gray-500 font-semibold">Eligibility</h5>
                         <p className="text-gray-500 font-medium mt-2">
                             Redeemable on all sales code you have set up
@@ -428,7 +428,7 @@ const AddDiscountForm = () => {
                                 </label>
                             ))}
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="mt-4 bg-white border rounded-md shadow px-4 py-3">
                         <h5 className="text-gray-500 font-semibold">

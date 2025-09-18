@@ -89,7 +89,7 @@ export default function ItemTable({
             header: "Quantity/Unit",
             cell: ({ row }) => (
                 <div className="whitespace-nowrap">
-                    {row.original?.quantity} in stock
+                    {row.original?.quantity}
                 </div>
             ),
         },

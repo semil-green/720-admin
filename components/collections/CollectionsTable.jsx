@@ -20,14 +20,7 @@ import { toast } from "sonner";
 import { deleteCollection } from '@/store/slices/collections/collections.slice';
 import { useDispatch } from "react-redux";
 
-export default function CollectionsTable({ allCollectionsData }) {
-    const [page, setPage] = React.useState(1);
-    const pageSize = 3;
-
-    const paginatedData = React.useMemo(() => {
-        const start = (page - 1) * pageSize;
-        return allCollectionsData.slice(start, start + pageSize);
-    }, [page, allCollectionsData]);
+export default function CollectionsTable({ allCollectionsData, totalPage, page, setPage }) {
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -113,12 +106,11 @@ export default function CollectionsTable({ allCollectionsData }) {
     ];
 
     const table = useReactTable({
-        data: paginatedData,
+        data: allCollectionsData,
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
 
-    const totalPages = Math.ceil(allCollectionsData.length / pageSize);
 
     return (
         <div className="p-4">
@@ -180,12 +172,12 @@ export default function CollectionsTable({ allCollectionsData }) {
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {page} of {totalPages}
+                    Page {page} of {totalPage}
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.min(p + 1, totalPages))}
-                    disabled={page === totalPages}
+                    onClick={() => setPage(p => Math.min(p + 1, totalPage))}
+                    disabled={page === totalPage}
                 >
                     Next
                 </Button>

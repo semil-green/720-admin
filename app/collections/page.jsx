@@ -14,9 +14,11 @@ import { setCollections } from '@/store/slices/collections/collections.slice';
 export default function Collections() {
 
     const [loading, setLoading] = useState(false);
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(5);
+    const [totalPage, setTotalPage] = useState(0);
 
     const dispatch = useDispatch();
-
 
     const allCollectionsData = useSelector((state) => state.collectionsSlice.allCollections)
 
@@ -24,9 +26,10 @@ export default function Collections() {
         const fetchCollectionData = async () => {
             setLoading(true)
             try {
-                const res = await getAllCollectionsService()
+                const res = await getAllCollectionsService(page, limit)
 
                 if (res?.data) {
+                    setTotalPage(Math.ceil(res?.total / limit))
                     dispatch(setCollections(res?.data))
                     setLoading(false)
                 }
@@ -37,7 +40,7 @@ export default function Collections() {
         }
 
         fetchCollectionData()
-    }, [])
+    }, [page])
 
     return (
         <MainLayout>
@@ -64,7 +67,12 @@ export default function Collections() {
                         </div>
                     </div>
                 )}
-                <CollectionsTable allCollectionsData={allCollectionsData} />
+                <CollectionsTable
+                    allCollectionsData={allCollectionsData}
+                    totalPage={totalPage}
+                    page={page}
+                    setPage={setPage}
+                />
             </div>
         </MainLayout>
     )

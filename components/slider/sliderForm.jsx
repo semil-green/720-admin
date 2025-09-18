@@ -39,7 +39,7 @@ export default function SliderForm({ editId }) {
     useEffect(() => {
         if (allCollections?.length == 0) {
             const fetchCollectionData = async () => {
-                const res = await getAllCollectionsService();
+                const res = await getAllCollectionsService(1, 100000);
                 if (res?.data) {
                     setAllCollections(res?.data);
                 } else {

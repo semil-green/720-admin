@@ -10,7 +10,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { setDarkStores } from "@/store/slices/dark-store/dark-store.slice";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"
-
+import { Input } from "@/components/ui/input";
+import FilterDropdown from "@/components/items/FilterDropDown";
 export default function DarkStores() {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -21,45 +22,64 @@ export default function DarkStores() {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
-    const [sortBy, setSortBy] = useState("");
-    const [sortType, setSortType] = useState("ASC");
+    const [sort, setSort] = useState("");
+    const [search, setSearch] = useState("");
+    const [appliedSearch, setAppliedSearch] = useState("");
+
+    const fetchDarkStores = async ({ page, limit, sort, search }) => {
+        try {
+            setLoading(true);
+            const result = await getAllDarkStorePackagingCenter({
+                type: "dark_store",
+                page,
+                limit,
+                sortBy: sort?.sortBy,
+                sortOrder: sort?.sortOrder,
+                search: search?.trim() || "",
+            });
+
+            const storeList = result?.data?.data || [];
+            const totalCount = result?.data?.total || 0;
+
+            if (result?.status === 200) {
+
+                dispatch(setDarkStores(storeList));
+                setTotalPages(Math.ceil(totalCount / limit));
+            } else {
+                toast.error("Error fetching Packaging Centers", {
+                    description: result?.data?.message || "Something went wrong",
+                });
+            }
+        } catch (error) {
+            toast.error("Error fetching Packaging Centers", {
+                description: "Something went wrong",
+            })
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchDarkStores = async () => {
-            try {
-                setLoading(true);
-                const result = await getAllDarkStorePackagingCenter({
-                    type: "dark_store",
-                    page,
-                    limit,
-                    sortBy: sortBy ? `dsp.${sortBy}` : undefined,
-                    sortType,
-                });
+        fetchDarkStores({ page, limit, sort, search: appliedSearch });
+    }, [page, limit, sort, appliedSearch, dispatch]);
 
+    const packagingCenterColumns = [
+        { label: "Store", value: "store_name" },
+        { label: "Store Code", value: "store_code" },
+        { label: "Store Pincode", value: "store_pincode" },
+        { label: "Address", value: "address" },
+    ];
 
-                const storeList = result?.data?.data || [];
-                const totalCount = result?.data?.total || 0;
+    const handleSearch = () => {
+        setPage(1);
+        setAppliedSearch(search);
+    };
 
-                if (result?.status === 200) {
-
-                    dispatch(setDarkStores(storeList));
-                    setTotalPages(Math.ceil(totalCount / limit));
-                }
-                else {
-                    toast.error("Error fetching dark stores", {
-                        description: result?.data?.message || "Something went wrong",
-                    });
-                }
-
-            } catch (error) {
-                console.error("Error fetching dark stores:");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchDarkStores();
-    }, [page, limit, sortBy, sortType, dispatch]);
+    const handleClear = () => {
+        setSearch("");
+        setAppliedSearch("");
+        setPage(1);
+    };
 
     return (
         <MainLayout>
@@ -77,31 +97,27 @@ export default function DarkStores() {
                         Create Store
                     </Button>
 
-                    <div className="flex items-center gap-2">
-                        <label className="text-sm">Sort by:</label>
-                        <select
-                            value={sortBy}
-                            onChange={(e) => {
-                                setSortBy(e.target.value);
-                                setPage(1);
-                            }}
-                            className="border px-2 py-1 rounded text-sm"
-                        >
-                            <option value="">Default</option>
-                            <option value="store_name">Store Name</option>
-                            <option value="store_code">Store Code</option>
-                            <option value="store_pincode">Pincode</option>
-                            <option value="address">Address</option>
-                        </select>
+                </div>
 
-                        <Button
-                            variant="outline"
-                            onClick={() =>
-                                setSortType((prev) => (prev === "ASC" ? "DESC" : "ASC"))
-                            }
-                        >
-                            {sortType === "DESC" ? "Descending" : "Ascending"}
+                <div className="flex justify-between">
+                    <div className="flex gap-4">
+                        <Input
+                            placeholder="Search Packaging Center"
+                            className="w-2xl"
+                            onChange={(e) => setSearch(e.target.value)}
+                            value={search}
+                        />
+                        <Button onClick={handleSearch}>Search</Button>
+                        <Button onClick={handleClear} variant="link">
+                            Clear
                         </Button>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <FilterDropdown
+                            columns={packagingCenterColumns}
+                            onSortChange={setSort}
+                        />
                     </div>
                 </div>
 
@@ -113,10 +129,6 @@ export default function DarkStores() {
                         setLimit={setLimit}
                         setPage={setPage}
                         totalPages={totalPages}
-                        sortBy={sortBy}
-                        setSortBy={setSortBy}
-                        sortType={sortType}
-                        setSortType={setSortType}
                     />
                 )}
             </div>

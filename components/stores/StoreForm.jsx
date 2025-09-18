@@ -66,7 +66,7 @@ export default function StoreForm({ editId, type }) {
     useEffect(() => {
         const fetchCities = async () => {
             if (!allCities?.data?.length) {
-                const data = await getALlCitiesService();
+                const data = await getALlCitiesService(1, 1000000000);
                 if (data?.status === 200) {
 
                     dispatch(setAllCities(data?.data?.data));

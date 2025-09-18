@@ -47,6 +47,7 @@ export default function StoreOrders() {
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("");
+    const [displayTransferFields, setDisplayTransferFields] = useState(false);
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -288,6 +289,8 @@ export default function StoreOrders() {
                             packagingCenterData={allPackagingCentersData}
                             allDarkStoresOfUser={userType == "admin" ? adminDarkStores : allDarkStoresOfUser}
                             editData={editData}
+                            displayTransferFields={displayTransferFields}
+                            setDisplayTransferFields={setDisplayTransferFields}
                         />
                     </div>
                 </DialogContent>

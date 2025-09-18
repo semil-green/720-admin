@@ -28,6 +28,7 @@ const page = () => {
     const [sortState, setSortState] = useState(null);
     const [editingState, setEditingState] = useState(null);
 
+    console.log("editingState :", editingState)
     const [isCityModalOpen, setIsCityModalOpen] = useState(false);
 
     const dispatch = useDispatch();
@@ -52,7 +53,7 @@ const page = () => {
     };
 
     useEffect(() => {
-        fetchStates(page, limit, searchState, sortState);
+        fetchStates(page, limit, searchState, sortState?.sortBy, sortState?.sortOrder);
     }, [page, limit, sortState]);
 
     const openAddCity = () => {
@@ -113,7 +114,10 @@ const page = () => {
                 </div>
             </div>
 
-            <Dialog open={isCityModalOpen} onOpenChange={setIsCityModalOpen}>
+            <Dialog open={isCityModalOpen} onOpenChange={(open) => {
+                setIsCityModalOpen(open);
+                if (!open) setEditingState(null);
+            }}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
@@ -127,7 +131,8 @@ const page = () => {
                     <div className="flex flex-col gap-2">
                         <StateForm
                             editStateData={editingState}
-                            handleClose={() => setIsCityModalOpen(false)}
+                            handleClose={() => { setIsCityModalOpen(false); setEditingState(null) }}
+
                         />
                     </div>
                 </DialogContent>
