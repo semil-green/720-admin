@@ -26,6 +26,7 @@ const StoreOrderForm = ({
     editData,
     displayTransferFields,
     setDisplayTransferFields,
+    setEditData
 }) => {
     const router = useRouter();
     const dispatch = useDispatch();
@@ -65,6 +66,32 @@ const StoreOrderForm = ({
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.dark_store_id) {
+            toast.error("Dark store is required");
+            return;
+        }
+        if (!formData.packaging_center_id) {
+            toast.error("Packaging center is required");
+            return;
+        }
+        if (!formData.product_id) {
+            toast.error("Product is required");
+            return;
+        }
+        if (!formData.quantity || Number(formData.quantity) <= 0) {
+            toast.error("Quantity must be greater than 0");
+            return;
+        }
+        if (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0) {
+            toast.error("Transferred quantity must be greater than 0");
+            return;
+        }
+        if (!formData.transferred_remarks?.trim()) {
+            toast.error("Transferred remarks are required");
+            return;
+        }
+
         setLoading(true);
         try {
             const payload = {
@@ -97,6 +124,32 @@ const StoreOrderForm = ({
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        if (!formData.dark_store_id) {
+            toast.error("Dark store is required");
+            return;
+        }
+        if (!formData.packaging_center_id) {
+            toast.error("Packaging center is required");
+            return;
+        }
+        if (!formData.product_id) {
+            toast.error("Product is required");
+            return;
+        }
+        if (!formData.quantity || Number(formData.quantity) <= 0) {
+            toast.error("Quantity must be greater than 0");
+            return;
+        }
+        if (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0) {
+            toast.error("Transferred quantity must be greater than 0");
+            return;
+        }
+        if (!formData.transferred_remarks?.trim()) {
+            toast.error("Transferred remarks are required");
+            return;
+        }
+
         try {
             setLoading(true);
             const payload = {
@@ -316,6 +369,7 @@ const StoreOrderForm = ({
                     onClick={() => {
                         handleCose();
                         setDisplayTransferFields(false);
+                        setEditData({});
                     }}
                     disabled={loading}
 

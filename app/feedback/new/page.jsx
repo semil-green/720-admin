@@ -48,6 +48,22 @@ const Page = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.feedback?.trim()) {
+            toast.error("Feedback is required!");
+            return;
+        }
+
+        if (!formData.customer_name?.trim()) {
+            toast.error("Customer name is required!");
+            return;
+        }
+
+        if (!formData.feedback_upload) {
+            toast.error("Image is required!");
+            return;
+        }
+
         try {
             setLoading(true);
 
@@ -141,7 +157,7 @@ const Page = () => {
                 </div>
             )}
 
-            <form className="grid gap-4 w-[50%] py-4" >
+            <form className=" w-[50%]  px-4 bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm flex-1" >
                 {!feedbackId ? (
                     <h4 className="font-semibold text-lg my-2 text-center">
                         Add New Feedback
@@ -188,15 +204,25 @@ const Page = () => {
                     )}
                 </div>
 
-                {!feedbackId ? (
-                    <Button type="submit" disabled={loading} onClick={handleSubmit}>
-                        {loading ? "Submitting..." : "Submit"}
+                <div className="flex gap-4 justify-end">
+                    <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => router.push("/feedback")}
+                        disabled={loading}
+                    >
+                        Back to list
                     </Button>
-                ) : (
-                    <Button type="submit" disabled={loading} onClick={handleUpdate}>
-                        {loading ? "Updating..." : "Update"}
-                    </Button>
-                )}
+                    {!feedbackId ? (
+                        <Button type="submit" disabled={loading} onClick={handleSubmit}>
+                            {loading ? "Submitting..." : "Submit"}
+                        </Button>
+                    ) : (
+                        <Button type="submit" disabled={loading} onClick={handleUpdate}>
+                            {loading ? "Updating..." : "Update"}
+                        </Button>
+                    )}
+                </div>
             </form>
         </MainLayout>
     );

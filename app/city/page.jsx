@@ -16,11 +16,14 @@ import {
 import CityForm from "@/components/city/cityForm";
 import { Input } from "@/components/ui/input";
 import FilterDropdown from "@/components/items/FilterDropDown";
+import { Loader2 } from "lucide-react";
+
 
 const Page = () => {
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(20);
     const [total, settotal] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const [editCityData, setEditCityData] = useState({});
     const [isCityModalOpen, setIsCityModalOpen] = useState(false);
@@ -40,6 +43,7 @@ const Page = () => {
         sortBy = sortCity?.sortBy,
         sortOrder = sortCity?.sortOrder
     ) => {
+        setLoading(true);
         try {
             const data = await getALlCitiesService(
                 currentPage,
@@ -57,6 +61,9 @@ const Page = () => {
             }
         } catch (error) {
             toast.error("Something went wrong");
+        }
+        finally {
+            setLoading(false);
         }
     };
 
@@ -90,6 +97,13 @@ const Page = () => {
 
     return (
         <MainLayout>
+            {loading && (
+                <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            )}
             <div className="flex justify-end mb-4">
                 <Button onClick={openAddCity}>Add City</Button>
             </div>
@@ -102,7 +116,7 @@ const Page = () => {
                         onChange={(e) => setSearchCity(e.target.value)}
                         value={searchCity}
                     />
-                    <Button onClick={() => fetchCities(1, limit, searchCity, sortCity)}>
+                    <Button onClick={() => fetchCities(1, limit, searchCity, sortCity?.sortBy, sortCity?.sortOrder)}>
                         Search
                     </Button>
                     <Button

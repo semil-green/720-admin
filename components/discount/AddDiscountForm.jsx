@@ -180,6 +180,7 @@ const AddDiscountForm = () => {
 
         const fetchDiscountData = async (editId) => {
             setLoading(true);
+
             const res = await getDiscountByIdService(editId);
 
             if (res?.status === 200 && res?.data) {
@@ -203,7 +204,10 @@ const AddDiscountForm = () => {
                     end_time: data.end_time || "",
                     products: data.products?.map((p) => p.product_id) || [],
                     collections: data.collections?.map((c) => c.collection_id) || [],
+
                 });
+
+                setDiscountType(data.discount_type || "fixed");
 
                 setSelectedProduct(
                     data.products?.map((p) => p.product_id.toString()) || []
@@ -212,6 +216,18 @@ const AddDiscountForm = () => {
                 setSelectedCollection(
                     data.collections?.map((c) => c.collection_id.toString()) || []
                 );
+
+                if (data.end_date || data.end_time) {
+                    setShowExtraEndDate(true);
+                }
+
+                if (data.products && data.products.length > 0) {
+                    setSelectedAppliedTo("product");
+                } else if (data.collections && data.collections.length > 0) {
+                    setSelectedAppliedTo("collection");
+                } else {
+                    setSelectedAppliedTo("collection");
+                }
 
                 setLoading(false);
             }

@@ -122,7 +122,7 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={() => handleClose()}
+                    onClick={() => { handleClose(); setEditRawItem }}
                     disabled={loading}
                 >
                     Cancel

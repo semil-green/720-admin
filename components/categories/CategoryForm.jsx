@@ -65,8 +65,19 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setLoading(true);
 
+        if (!formData.category_name?.trim()) {
+            toast.error("Category name is required");
+
+            return;
+        }
+
+        if (!(formData.category_image instanceof File)) {
+            toast.error("Category image is required");
+            return;
+        }
+
+        setLoading(true);
         const formDataToSend = new FormData();
         formDataToSend.append("category_name", formData.category_name);
 
@@ -86,6 +97,18 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+
+        if (!formData.category_name?.trim()) {
+            toast.error("Category name is required");
+            return;
+        }
+
+        if (!(formData.category_image instanceof File)) {
+            toast.error("Category image is required");
+            return;
+        }
+
         setLoading(true);
 
         const formDataToSend = new FormData();

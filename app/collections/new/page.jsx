@@ -109,6 +109,17 @@ const Page = () => {
 
     const handleSubmit = async () => {
         try {
+
+            if (!formData.title?.trim()) {
+                toast.error("Title is required");
+                return;
+            }
+
+            if (!productDisplayImageFile) {
+                toast.error("Image is required");
+                return;
+            }
+
             const dataToSend = new FormData();
 
             dataToSend.append("title", formData.title);
@@ -139,6 +150,15 @@ const Page = () => {
 
     const handleUpdate = async () => {
         try {
+            if (!formData.title?.trim()) {
+                toast.error("Title is required");
+                return;
+            }
+
+            if (!productDisplayImageFile) {
+                toast.error("Image is required");
+                return;
+            }
             const dataToSend = new FormData();
 
             dataToSend.append("title", formData.title);
@@ -274,20 +294,30 @@ const Page = () => {
                                                 className="rounded object-cover"
                                             />
                                             <span className="text-sm text-gray-900">{product.full_product_name}</span>
-                                            <Button type="submit" className='cursor-pointer' size="sm"
+
+
+                                            <Button
+                                                type="button"
+                                                className="cursor-pointer"
+                                                size="sm"
                                                 onClick={(e) => {
                                                     e.stopPropagation();
 
                                                     setProducts((prev) => {
                                                         if (prev.some((p) => p.product_id === product.product_id)) {
+                                                            toast.error("This product is already added");
                                                             return prev;
                                                         }
+                                                        toast.success("Product added successfully",);
                                                         return [...prev, product];
                                                     });
+
+
                                                 }}
                                             >
                                                 Add
                                             </Button>
+
                                         </div>
                                     ))}
                                 </div>
@@ -317,7 +347,12 @@ const Page = () => {
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    <button className="text-gray-500 hover:text-red-500 text-lg font-semibold">
+                                    <button className="text-gray-500 hover:text-red-500 text-lg font-semibold"
+                                        onClick={() => {
+                                            setProducts((prev) => prev.filter((p) => p.product_id !== product.product_id));
+                                            toast.success("Product removed successfully");
+                                        }}
+                                    >
                                         ×
                                     </button>
                                 </div>

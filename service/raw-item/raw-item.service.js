@@ -1,18 +1,23 @@
 import axios from "axios";
 
-export const getAllRawItemsService = async (page, limit, searchRawItem, sortBy, sortOrder) => {
+export const getAllRawItemsService = async (page, limit, search, sortBy, sortOrder) => {
     try {
         const auth_token = localStorage.getItem("token");
 
-        const url = searchRawItem
-            ? `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?search=${searchRawItem}&page=${page}&limit=${limit}&sortBy=${sortBy}&sortOrder=${sortOrder}` :
-            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?page=${page}&limit=${limit}`
+        const params = new URLSearchParams();
 
-        const result = await axios.get(url, {
-            headers: {
-                Authorization: auth_token,
-            },
-        });
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+        if (search) params.append("search", search);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+
+
+
+        const result = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem?${params.toString()}`,
+            { headers: { Authorization: auth_token } }
+        );
 
         return result?.data?.data;
     } catch (error) {

@@ -47,6 +47,7 @@ const CityForm = ({ editCityData, handleClose }) => {
         if (!formData.city_name.trim() || !formData.state_id) {
             toast.error("Validation Error", {
                 description: "City name and state are required",
+                duration: 3000,
             });
             return;
         }

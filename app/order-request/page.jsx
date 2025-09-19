@@ -289,6 +289,7 @@ export default function StoreOrders() {
                             packagingCenterData={allPackagingCentersData}
                             allDarkStoresOfUser={userType == "admin" ? adminDarkStores : allDarkStoresOfUser}
                             editData={editData}
+                            setEditData={setEditData}
                             displayTransferFields={displayTransferFields}
                             setDisplayTransferFields={setDisplayTransferFields}
                         />
