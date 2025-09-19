@@ -124,7 +124,7 @@ export default function Users() {
                 <div className="flex justify-between">
                     <div className="flex gap-4">
                         <Input
-                            placeholder="Search Order Request"
+                            placeholder="Search User"
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}

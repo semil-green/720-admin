@@ -33,6 +33,7 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
 
     const roles = useSelector((state) => state.roleMasterSlice.value);
     const editData = useSelector((state) => state.userSlice.editUserData);
+
     const alPackagingCenterDarkStore = useSelector(
         (state) => state.pincodeWiseSlotSlice.allDarkStorePackagingCenter
     );
@@ -188,18 +189,19 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
 
             if (formData.profile_image instanceof File) {
                 formDataToSend.append("profile_image", formData.profile_image);
+            } else if (typeof formData.profile_image === "string" && formData.profile_image !== "") {
+                const fileName = formData.profile_image.split("/").pop();
+                formDataToSend.append("profile_image", fileName);
             }
 
             const response = await updateUserService(userEditId, formDataToSend);
 
-
             if (response?.status === 200) {
                 toast.success("Updated", {
                     description: "User updated successfully",
-                })
+                });
                 router.push("/users");
             }
-
         } catch (error) {
             toast.error("Update failed", {
                 description: error?.message || "An error occurred",
@@ -208,6 +210,7 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
             setLoading(false);
         }
     };
+
 
     return (
         <form className="grid gap-4">

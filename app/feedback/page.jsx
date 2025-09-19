@@ -50,7 +50,9 @@ const page = () => {
     };
 
     useEffect(() => {
-        fetchFeedbackData(page, limit);
+
+        fetchFeedbackData(page, limit, search, feedbackSort?.sortBy, feedbackSort?.sortOrder);
+
     }, [page, feedbackSort]);
 
     const feedbackColumns = [
@@ -79,13 +81,13 @@ const page = () => {
             <div className="flex justify-between">
                 <div className="flex gap-4">
                     <Input
-                        placeholder="Search Order Request"
+                        placeholder="Search feedback"
                         className="w-2xl"
                         onChange={(e) => setSearch(e.target.value)}
                         value={search}
                     />
                     <Button
-                        onClick={() => fetchFeedbackData(page, limit, search, "", "")}
+                        onClick={() => fetchFeedbackData(page, limit, search, feedbackSort?.sortBy, feedbackSort?.sortOrder)}
                     >
                         Search
                     </Button>

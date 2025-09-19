@@ -81,6 +81,22 @@ export default function ItemWorkFlowForm({ editData }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!workflowName?.trim()) {
+            toast.error("Workflow name is required");
+            return;
+        }
+
+        if (!nutrients || nutrients.length === 0) {
+            toast.error("At least one input is required");
+            return;
+        }
+
+        if (!outputItem || outputItem.length === 0) {
+            toast.error("At least one output is required");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -182,6 +198,22 @@ export default function ItemWorkFlowForm({ editData }) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        if (!workflowName?.trim()) {
+            toast.error("Workflow name is required");
+            return;
+        }
+
+        if (!nutrients || nutrients.length === 0) {
+            toast.error("At least one input is required");
+            return;
+        }
+
+        if (!outputItem || outputItem.length === 0) {
+            toast.error("At least one output is required");
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -306,6 +338,7 @@ export default function ItemWorkFlowForm({ editData }) {
                                                 onValueChange={(value) =>
                                                     handleNutrientChange(index, "Unit", value)
                                                 }
+                                                disabled
                                             >
                                                 <SelectTrigger className="w-full">
                                                     <SelectValue placeholder="Select a Unit" />

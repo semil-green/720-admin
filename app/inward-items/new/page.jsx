@@ -140,6 +140,31 @@ function CreateInwardItem() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.packagingstore_id) {
+            toast.error("Packaging store is required");
+            return;
+        }
+
+        if (!formData.rawitem_id) {
+            toast.error("Raw item is required");
+            return;
+        }
+
+        if (!formData.vendor_id) {
+            toast.error("Vendor is required");
+            return;
+        }
+
+        if (!formData.batch?.trim()) {
+            toast.error("Batch is required");
+            return;
+        }
+
+        if (!formData.quantity) {
+            toast.error("Quantity is required");
+            return;
+        }
+
         if (!formData.batch) {
             toast.error("Batch is required");
             return
@@ -168,6 +193,36 @@ function CreateInwardItem() {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        if (!formData.packagingstore_id) {
+            toast.error("Packaging store is required");
+            return;
+        }
+
+        if (!formData.rawitem_id) {
+            toast.error("Raw item is required");
+            return;
+        }
+
+        if (!formData.vendor_id) {
+            toast.error("Vendor is required");
+            return;
+        }
+
+        if (!formData.batch?.trim()) {
+            toast.error("Batch is required");
+            return;
+        }
+
+        if (!formData.quantity) {
+            toast.error("Quantity is required");
+            return;
+        }
+
+        if (!formData.batch) {
+            toast.error("Batch is required");
+            return
+        }
 
         const payload = {
             packagingstore_id: parseInt(formData.packagingstore_id),

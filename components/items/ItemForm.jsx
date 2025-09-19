@@ -293,6 +293,51 @@ export default function ItemForm({ editItemId }) {
 
         try {
 
+            if (!formData.title?.trim()) {
+                toast.error("Title is required");
+                return setLoading(false);
+            }
+
+            if (!formData.description?.trim()) {
+                toast.error("Description is required");
+                return setLoading(false);
+            }
+
+            if (!formData.unit_id || Number(formData.unit_id) <= 0) {
+                toast.error("Unit is required");
+                return setLoading(false);
+            }
+
+            if (!selectedCategories || selectedCategories.length === 0) {
+                toast.error("Please select at least one category");
+                return setLoading(false);
+            }
+
+            if (!formData.quantity || Number(formData.quantity) <= 0) {
+                toast.error("Quantity is required");
+                return setLoading(false);
+            }
+
+            if (!formData.price || Number(formData.price) <= 0) {
+                toast.error("Price is required");
+                return setLoading(false);
+            }
+
+            if (!formData.compare_price || Number(formData.compare_price) <= 0) {
+                toast.error("Compare price is required");
+                return setLoading(false);
+            }
+
+            if (!productDisplayImageFile) {
+                toast.error("Product display image is required");
+                return setLoading(false);
+            }
+
+            if (!images || images.length === 0) {
+                toast.error("At least one product image is required");
+                return setLoading(false);
+            }
+
             const categoriesPayload = selectedCategories.map((cat) => ({
                 category_id: Number(cat.value ?? cat),
             }));
@@ -510,6 +555,51 @@ export default function ItemForm({ editItemId }) {
         setLoading(true);
 
         try {
+
+            if (!formData.title?.trim()) {
+                toast.error("Title is required");
+                return setLoading(false);
+            }
+
+            if (!formData.description?.trim()) {
+                toast.error("Description is required");
+                return setLoading(false);
+            }
+
+            if (!formData.unit_id || Number(formData.unit_id) <= 0) {
+                toast.error("Unit is required");
+                return setLoading(false);
+            }
+
+            if (!selectedCategories || selectedCategories.length === 0) {
+                toast.error("Please select at least one category");
+                return setLoading(false);
+            }
+
+            if (!formData.quantity || Number(formData.quantity) <= 0) {
+                toast.error("Quantity is required");
+                return setLoading(false);
+            }
+
+            if (!formData.price || Number(formData.price) <= 0) {
+                toast.error("Price is required");
+                return setLoading(false);
+            }
+
+            if (!formData.compare_price || Number(formData.compare_price) <= 0) {
+                toast.error("Compare price is required");
+                return setLoading(false);
+            }
+
+            if (!productDisplayImageFile) {
+                toast.error("Product display image is required");
+                return setLoading(false);
+            }
+
+            if (!images || images.length === 0) {
+                toast.error("At least one product image is required");
+                return setLoading(false);
+            }
 
             const categoriesPayload = selectedCategories.map((cat) => ({
                 category_id: Number(cat.value ?? cat),

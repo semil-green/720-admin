@@ -111,7 +111,7 @@ export default function Items() {
     };
 
     useEffect(() => {
-        fetchALlRawItems();
+        fetchALlRawItems(rawItemPage, rawItemLimit, searchRawItem, rawItemSortState?.sortBy, rawItemSortState?.sortOrder);
     }, [rawItemPage, rawItemLimit, rawItemSortState]);
 
 
