@@ -267,7 +267,7 @@ export default function StoreOrders() {
                 open={!!isStoreOrderModalOpen > 0}
                 onOpenChange={() => setIsStoreOrderModalOpen(false)}
             >
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md md:max-w-2xl">
                     <DialogHeader>
                         <DialogTitle>
                             {StoreOrder.StoreOrderId > 0

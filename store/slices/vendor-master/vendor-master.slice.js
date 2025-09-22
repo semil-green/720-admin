@@ -13,10 +13,12 @@ const vendorMasterSlice = createSlice({
             state.allVendors = action.payload;
         },
         setAllVendorsData: (state, action) => {
-            if (Array.isArray(action.payload)) {
-                state.allVendorsData = [...state.allVendorsData, ...action.payload];
-            } else {
-                state.allVendorsData = [...state.allVendorsData, action.payload];
+            state.allVendorsData = action.payload;
+        },
+        addNewVendorsData: (state, action) => {
+            const exists = state.allVendorsData.find(v => v.id === action.payload.id);
+            if (!exists) {
+                state.allVendorsData.unshift(action.payload);
             }
         },
         deleteVendor: (state, action) => {
@@ -32,5 +34,5 @@ const vendorMasterSlice = createSlice({
     },
 });
 
-export const { setVendors, setAllVendorsData, deleteVendor } = vendorMasterSlice.actions;
+export const { setVendors, setAllVendorsData, addNewVendorsData, deleteVendor } = vendorMasterSlice.actions;
 export default vendorMasterSlice.reducer;
