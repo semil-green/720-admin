@@ -233,7 +233,6 @@ export default function Items() {
                             limit={limit}
                             setPage={setPage}
                             totalItems={totalItems}
-                            openEditModal={openAddRawItem}
                         />
                     </div>
                 </TabsContent>

@@ -27,7 +27,7 @@ export const fetchAllRawMaterialService = async (page, limit, storeId, search, s
     }
 }
 
-export const fetchFinishedMaterialService = async (page, limit, store_id, search, sort, sortBy) => {
+export const fetchFinishedMaterialService = async (page, limit, storeId, search, sort, sortBy) => {
     try {
 
         const auth_token = localStorage.getItem("token")
@@ -36,7 +36,7 @@ export const fetchFinishedMaterialService = async (page, limit, store_id, search
 
         if (page) params.append("page", page);
         if (limit) params.append("limit", limit);
-        if (store_id) params.append("store_id", store_id);
+        if (storeId) params.append("storeId", storeId);
         if (search) params.append("search", search);
         if (sort) params.append("sort", sort);
         if (sortBy) params.append("sortBy", sortBy);

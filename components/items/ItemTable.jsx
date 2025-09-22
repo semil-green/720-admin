@@ -29,7 +29,6 @@ export default function ItemTable({
     limit,
     setPage,
     totalItems,
-    openEditModal,
 }) {
     const router = useRouter()
     const handleEdit = (item) => {
@@ -86,7 +85,7 @@ export default function ItemTable({
         },
         {
             accessorKey: "Quantity",
-            header: "Quantity/Unit",
+            header: "Quantity : ( gram / piece )",
             cell: ({ row }) => (
                 <div className="whitespace-nowrap">
                     {row.original?.quantity}
@@ -118,7 +117,6 @@ export default function ItemTable({
                             <DropdownMenuItem
                                 onClick={() => {
                                     handleEdit?.(item.product_id)
-                                    openEditModal()
                                 }}
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit

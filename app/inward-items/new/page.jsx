@@ -104,17 +104,19 @@ function CreateInwardItem() {
     }, []);
 
     useEffect(() => {
-        if (!allVendorsData || allVendorsData.length === 0) {
-            const fetchVendors = async () => {
+        const fetchVendors = async () => {
+            try {
                 const result = await getAllVendorsService(vendorPage, vendorLimit);
-
                 if (result?.status === 200) {
                     dispatch(setAllVendorsData(result?.data?.data));
                 }
-            };
-            fetchVendors();
-        }
-    }, []);
+            } catch (error) {
+                toast.error("Failed to fetch vendors");
+            }
+        };
+
+        fetchVendors();
+    }, [dispatch]);
 
     useEffect(() => {
         if (!allRawItemsData || allRawItemsData.length === 0) {

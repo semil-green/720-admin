@@ -45,13 +45,9 @@ const StoreOrderForm = ({
     useEffect(() => {
         if (editData) {
             setFormData({
-                dark_store_id: editData.dark_store_id
-                    ? editData.dark_store_id.toString()
-                    : "",
-                packaging_center_id: editData.packaging_center_id
-                    ? editData.packaging_center_id.toString()
-                    : "",
-                product_id: editData.product_id ? editData.product_id.toString() : "",
+                dark_store_id: editData.dark_store?.id?.toString() || "",
+                packaging_center_id: editData.packaging_center?.id?.toString() || "",
+                product_id: editData.product?.product_id?.toString() || "",
                 quantity: editData.quantity?.toString() || "",
                 remarks: editData.remarks || "",
                 transferred_quantity: editData.transferred_quantity?.toString() || "",
@@ -59,6 +55,7 @@ const StoreOrderForm = ({
             });
         }
     }, [editData]);
+
 
     const handleChange = (name, value) => {
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -83,15 +80,15 @@ const StoreOrderForm = ({
             toast.error("Quantity must be greater than 0");
             return;
         }
-        if (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0) {
+
+        if (displayTransferFields && (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0)) {
             toast.error("Transferred quantity must be greater than 0");
             return;
         }
-        if (!formData.transferred_remarks?.trim()) {
+        if (displayTransferFields && !formData.transferred_remarks?.trim()) {
             toast.error("Transferred remarks are required");
             return;
         }
-
         setLoading(true);
         try {
             const payload = {
@@ -141,11 +138,12 @@ const StoreOrderForm = ({
             toast.error("Quantity must be greater than 0");
             return;
         }
-        if (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0) {
+
+        if (displayTransferFields && (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0)) {
             toast.error("Transferred quantity must be greater than 0");
             return;
         }
-        if (!formData.transferred_remarks?.trim()) {
+        if (displayTransferFields && !formData.transferred_remarks?.trim()) {
             toast.error("Transferred remarks are required");
             return;
         }
@@ -369,7 +367,6 @@ const StoreOrderForm = ({
                     onClick={() => {
                         handleCose();
                         setDisplayTransferFields(false);
-                        setEditData({});
                     }}
                     disabled={loading}
 

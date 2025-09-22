@@ -591,10 +591,11 @@ export default function ItemForm({ editItemId }) {
                 return setLoading(false);
             }
 
-            if (!productDisplayImageFile) {
+            if (!productDisplayImageFile && !productDisplayImagePreview) {
                 toast.error("Product display image is required");
                 return setLoading(false);
             }
+
 
             if (!images || images.length === 0) {
                 toast.error("At least one product image is required");

@@ -155,7 +155,7 @@ const Page = () => {
                 return;
             }
 
-            if (!productDisplayImageFile) {
+            if (!productDisplayImageFile && !productDisplayImagePreview && !formData.image) {
                 toast.error("Image is required");
                 return;
             }
