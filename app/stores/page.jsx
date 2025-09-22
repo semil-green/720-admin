@@ -102,7 +102,7 @@ export default function DarkStores() {
                 <div className="flex justify-between">
                     <div className="flex gap-4">
                         <Input
-                            placeholder="Search Packaging Center"
+                            placeholder="Search Dark Store"
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}

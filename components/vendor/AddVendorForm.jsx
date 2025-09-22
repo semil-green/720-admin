@@ -9,9 +9,13 @@ import Link from "next/link";
 import { toast } from "sonner"
 import { addNewVendorService, updateVendorService } from "@/service/vendor-master/vendor-master.service";
 import { useSelector } from "react-redux";
+import { setAllVendorsData, setVendors } from "@/store/slices/vendor-master/vendor-master.slice";
+import { useDispatch } from "react-redux";
 
 export default function VendorForm({ editId }) {
     const router = useRouter()
+    const dispatch = useDispatch()
+
     const [loading, setLoading] = useState(false)
     const [attachment, setAttachment] = useState(null);
 
@@ -114,7 +118,8 @@ export default function VendorForm({ editId }) {
 
             const res = await addNewVendorService(formDataToSend);
 
-            if (res?.status === 200 || res?.status === 201) {
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(setAllVendorsData(res?.data))
                 toast.success("Vendor added successfully");
                 setFormData({
                     vendor_name: "",
@@ -132,11 +137,8 @@ export default function VendorForm({ editId }) {
                 router.push("/vendors");
                 setAttachment(null);
                 setImages([]);
-            } else {
-                toast.error("Failed to add vendor");
             }
         } catch (error) {
-            console.error("Error adding vendor:", error);
             toast.error("Failed to add vendor");
         } finally {
             setLoading(false);
@@ -192,7 +194,6 @@ export default function VendorForm({ editId }) {
                 toast.error("Failed to update vendor");
             }
         } catch (error) {
-            console.error("Error updating vendor:", error);
             toast.error("Error updating vendor");
         } finally {
             setLoading(false);

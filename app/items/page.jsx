@@ -290,7 +290,7 @@ export default function Items() {
 
             <Dialog
                 open={isRawItemModalOpen}
-                onOpenChange={(open) => setIsRawItemModalOpen(open)}
+                onOpenChange={(open) => { setIsRawItemModalOpen(open); setEditRawItem({}); }}
             >
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>

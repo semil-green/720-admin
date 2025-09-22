@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -19,13 +19,24 @@ import {
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addNewRawItem, setRawItems, updateRawItem } from "@/store/slices/raw-ittem/raw-item.store";
+
 const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
-        raw_item: setEditRawItem ? setEditRawItem.raw_item : "",
-        sku: setEditRawItem ? setEditRawItem.sku : "",
-        unit_id: setEditRawItem ? setEditRawItem.unit_id : "",
+        raw_item: setEditRawItem?.raw_item || "",
+        sku: setEditRawItem?.sku || "",
+        unit_id: setEditRawItem?.unit_id || "",
     });
+
+    useEffect(() => {
+        if (setEditRawItem) {
+            setFormData({
+                raw_item: setEditRawItem.raw_item || "",
+                sku: setEditRawItem.sku || "",
+                unit_id: setEditRawItem.unit_id || "",
+            });
+        }
+    }, [setEditRawItem]);
 
     const dispatch = useDispatch();
 
@@ -43,9 +54,8 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
             toast.success("Created", {
                 description: "Raw Item created successfully",
             });
-            const newRawItem = { ...formData, raw_id: res.data.raw_id };
 
-            dispatch(addNewRawItem(newRawItem));
+            dispatch(addNewRawItem(res?.data));
             handleClose();
         }
     };
@@ -73,7 +83,7 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
     return (
         <form className="grid gap-4">
             <div>
-                <input type="hidden" name="ItemId" value={formData.ItemId} />
+                <input type="hidden" name="ItemId" value={formData?.ItemId} />
                 <Label className="pb-2">Raw Item</Label>
                 <Input
                     name="raw_item"
@@ -85,7 +95,7 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
             </div>
 
             <div>
-                <input type="hidden" name="ItemId" value={formData.ItemId} />
+                <input type="hidden" name="sku" value={formData.ItemId} />
                 <Label className="pb-2">SKU</Label>
                 <Input
                     name="sku"
@@ -122,7 +132,7 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
                 <Button
                     type="button"
                     variant="outline"
-                    onClick={() => { handleClose(); setEditRawItem }}
+                    onClick={() => handleClose()}
                     disabled={loading}
                 >
                     Cancel
