@@ -63,7 +63,7 @@ export const deleteVendorService = async (id) => {
     try {
         const auth_token = localStorage.getItem("token")
 
-        const result = await axios.delete(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master/delete/${id}`, {
+        const result = await axios.delete(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/vendor-master/${id}`, {
             headers: {
                 Authorization: auth_token
             }

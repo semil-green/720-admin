@@ -13,7 +13,11 @@ const vendorMasterSlice = createSlice({
             state.allVendors = action.payload;
         },
         setAllVendorsData: (state, action) => {
-            state.allVendorsData = action.payload
+            if (Array.isArray(action.payload)) {
+                state.allVendorsData = [...state.allVendorsData, ...action.payload];
+            } else {
+                state.allVendorsData = [...state.allVendorsData, action.payload];
+            }
         },
         deleteVendor: (state, action) => {
             const idToDelete = action.payload;
