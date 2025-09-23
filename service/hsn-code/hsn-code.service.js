@@ -19,3 +19,24 @@ export const getAllHSNCodeService = async () => {
         return error
     }
 }
+
+export const addNewHSnCoddeService = async (data) => {
+    try {
+
+        const auth_token = localStorage.getItem("token")
+
+        const addHsn = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/hsncode`, data,
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
+
+        return addHsn?.data
+    }
+
+    catch (error) {
+        return error
+    }
+}

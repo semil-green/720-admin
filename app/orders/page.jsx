@@ -85,11 +85,11 @@ export default function Orders() {
             )}
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center gap-2">
+                {/* <div className="flex justify-end items-center gap-2">
                     <Link href={"/orders/new"}>
                         <Button className="cursor-pointer">New Order</Button>
                     </Link>
-                </div>
+                </div> */}
 
                 <div className="flex justify-between">
                     <div className="flex gap-4">

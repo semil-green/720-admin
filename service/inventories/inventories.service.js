@@ -9,7 +9,7 @@ export const fetchAllRawMaterialService = async (page, limit, storeId, search, s
 
         if (page) params.append("page", page);
         if (limit) params.append("limit", limit);
-        if (storeId) params.append("store_id", storeId);
+        if (storeId) params.append("storeId", storeId);
         if (search) params.append("search", search);
         if (sort) params.append("sort", sort);
         if (sortBy) params.append("sortBy", sortBy);

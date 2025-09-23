@@ -28,7 +28,6 @@ const page = () => {
     const [sortState, setSortState] = useState(null);
     const [editingState, setEditingState] = useState(null);
 
-    console.log("editingState :", editingState)
     const [isCityModalOpen, setIsCityModalOpen] = useState(false);
 
     const dispatch = useDispatch();
