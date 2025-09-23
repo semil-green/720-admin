@@ -35,6 +35,7 @@ export default function ItemTable({
         router.push(`/items/new?id=${item}`)
     }
 
+    console.log("data123", JSON.stringify(data, null, 2))
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",
@@ -85,10 +86,10 @@ export default function ItemTable({
         },
         {
             accessorKey: "Quantity",
-            header: "Quantity : ( gram / piece )",
+            header: "Quantity / Unit",
             cell: ({ row }) => (
                 <div className="whitespace-nowrap">
-                    {row.original?.quantity}
+                    {row.original?.quantity} {row.original?.unit}
                 </div>
             ),
         },

@@ -7,7 +7,7 @@ import {
   ChartColumnStacked, ShoppingCartIcon, FileDown,
   Truck, Wallet, ArrowDownUp, ShoppingBasket,
   UsersRound, BookText, ClockArrowUp, CirclePercent,
-  Menu, MapPin, PencilLine, SlidersHorizontal, Globe, Building2
+  Menu, MapPin, PencilLine, SlidersHorizontal, Globe, Building2, FileText
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -34,6 +34,7 @@ export const fullMenuItems = [
   { label: "State", href: "/state", icon: Globe },
   { label: "City", href: "/city", icon: Building2 },
   { label: "Customer Feedback", href: "/feedback", icon: Building2 },
+  { label: "HSN Codes", href: "/hsn-code", icon: FileText },
 ];
 
 export default function Sidebar() {

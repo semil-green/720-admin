@@ -25,7 +25,7 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
             header: "Order ID",
             cell: ({ row }) => {
                 const order = row.original;
-                return <Link href={`/orders/${order.order_id}`}>{order?.order_id}</Link>;
+                return <Link href={`/orders/${order.order_id}`} className="underline underline-offset-4">{order?.order_id}</Link>;
             },
         },
         {
@@ -54,7 +54,7 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
             accessorKey: "customer_name",
             header: "Customer",
             cell: ({ row }) => (
-                <Link href={`/orders/${row.original.order_id}`}>
+                <Link href={`/orders/${row.original.order_id}`} className="underline underline-offset-4">
                     <span className="text-md">{row.original?.customer_name}</span>
                 </Link>
             ),

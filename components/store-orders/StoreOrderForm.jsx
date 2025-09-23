@@ -152,11 +152,11 @@ const StoreOrderForm = ({
             setLoading(true);
             const payload = {
                 id: editData?.id,
-                dark_store_id: editData?.dark_store?.id,
-                packaging_center_id: editData?.packaging_center?.id,
-                product_id: editData?.product?.product_id,
-                quantity: editData?.quantity,
-                remarks: editData?.remarks,
+                dark_store_id: Number(formData.dark_store_id),
+                packaging_center_id: Number(formData.packaging_center_id),
+                product_id: Number(formData.product_id),
+                quantity: Number(formData.quantity),
+                remarks: formData.remarks,
                 created_by: editData?.created_by,
                 transferred_quantity: Number(formData?.transferred_quantity),
                 transferred_remarks: formData?.transferred_remarks,
@@ -164,14 +164,28 @@ const StoreOrderForm = ({
                 updated_by: ""
             };
 
-            const res = await handleStoreOrderTransferService(payload);
+            if (displayTransferFields) {
+                const res = await handleStoreOrderTransferService(payload);
 
-            if (res?.status == 200) {
-                dispatch(updateStoreOrderRequest(res?.data?.data))
-                toast.success("Updated", {
-                    description: "Order request updated successfully",
-                })
-                handleCose();
+
+                if (res?.status == 200) {
+                    dispatch(updateStoreOrderRequest(res?.data?.data))
+                    toast.success("Updated", {
+                        description: "Order request updated successfully",
+                    })
+                    handleCose();
+                }
+            }
+            else {
+                const res = await updateOrderRequestService(editData?.id, payload);
+
+                if (res?.status == 200) {
+                    dispatch(updateOrderRequest(res?.data))
+                    toast.success("Updated", {
+                        description: "Order request updated successfully",
+                    })
+                    handleCose();
+                }
             }
         }
         catch (error) {
