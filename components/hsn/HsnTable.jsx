@@ -32,8 +32,10 @@ import { useDispatch } from "react-redux";
 import { deleteStateService } from "@/service/state/state.service";
 import { deleteState } from "@/store/slices/state/state.slice";
 import { toast } from "sonner";
+import { deleteHsnCodeService } from "@/service/hsn-code/hsn-code.service";
+import { deleteHsnCode } from "@/store/slices/hsn-code/hsn-code.slice";
 
-const HsnTable = ({ data, setEditingState, setIsCityModalOpen }) => {
+const HsnTable = ({ data, setEditData, isHsnModalOpen }) => {
 
     const dispatch = useDispatch();
     const handleSetPage = (newPage) => {
@@ -46,16 +48,15 @@ const HsnTable = ({ data, setEditingState, setIsCityModalOpen }) => {
 
     const handleDelete = async (id) => {
 
-        const res = await deleteStateService(id);
+        const res = await deleteHsnCodeService(id);
 
-        if (res?.status === 200) {
-            dispatch(deleteState(id));
+        if (res?.status === 200 || res?.status === 201) {
+            dispatch(deleteHsnCode(id));
             toast.success("Deleted", { description: "State deleted successfully" });
         }
         else {
             toast.error("Failed to delete state");
         }
-
 
     };
 
@@ -79,8 +80,8 @@ const HsnTable = ({ data, setEditingState, setIsCityModalOpen }) => {
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem
                                 onClick={() => {
-                                    setIsCityModalOpen(true);
-                                    setEditingState(state);
+                                    isHsnModalOpen(true);
+                                    setEditData(state);
                                 }}
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
@@ -102,7 +103,7 @@ const HsnTable = ({ data, setEditingState, setIsCityModalOpen }) => {
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(state.id)}>
+                                        <AlertDialogAction onClick={() => handleDelete(state.hsn_id)}>
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>

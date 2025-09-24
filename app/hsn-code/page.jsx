@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import HsnTable from '@/components/hsn/HsnTable';
 const page = () => {
     const [isHsnModalOpen, setIsHsnModalOpen] = useState(false);
+    const [editData, setEditData] = useState({})
 
     const dispatch = useDispatch();
     const openHsnModal = () => {
@@ -45,7 +46,7 @@ const page = () => {
 
             <Dialog open={isHsnModalOpen} onOpenChange={(open) => {
                 setIsHsnModalOpen(open);
-                // if (!open) setEditingState(null);
+                if (!open) setEditData({});
             }}>
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
@@ -57,9 +58,9 @@ const page = () => {
 
                     <div className="flex flex-col gap-2">
                         <HsnForm
-                            // editStateData={editingState}
                             handleClose={() => { setIsHsnModalOpen(false) }}
-
+                            editStateData={editData}
+                            setEditData={setEditData}
                         />
                     </div>
                 </DialogContent>
@@ -68,6 +69,8 @@ const page = () => {
             <div>
                 <HsnTable
                     data={allHsnCodes}
+                    setEditData={setEditData}
+                    isHsnModalOpen={setIsHsnModalOpen}
                 />
             </div>
         </MainLayout>
