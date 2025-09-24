@@ -7,6 +7,7 @@ import {
     flexRender,
 } from '@tanstack/react-table';
 import Link from 'next/link';
+import { Button } from '../ui/button';
 
 const data = [
     {
@@ -33,55 +34,36 @@ const data = [
 ];
 
 const columns = [
-    {
-        id: 'select',
-        header: () => <input type="checkbox" />,
-        cell: () => <input type="checkbox" />,
-    },
+
     {
         header: 'Customer name',
-        accessorKey: 'name',
+        accessorKey: 'customer_name',
         cell: info => {
             const value = info.getValue();
             return (
-                <Link href={`/customer/${value.replace(/\s+/g, '-').toLowerCase()}`} >
+                <Link
+                    href={`/customer/${value.replace(/\s+/g, '-').toLowerCase()}`}
+                >
                     {value}
                 </Link>
             );
         },
     },
     {
-        header: 'Email subscription',
-        accessorKey: 'emailStatus',
-        cell: info => {
-            const value = info.getValue();
-            return (
-                <span
-                    className={`px-2 py-1 text-sm rounded-full font-medium ${value === 'Subscribed'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-200 text-gray-700'
-                        }`}
-                >
-                    {value}
-                </span>
-            );
-        },
+        header: 'Contact Number',
+        accessorKey: 'mobile_no',
     },
     {
-        header: 'Location',
-        accessorKey: 'location',
-    },
-    {
-        header: 'Orders',
-        accessorKey: 'orders',
+        header: 'Total orders',
+        accessorKey: 'total_orders',
     },
     {
         header: 'Amount spent',
-        accessorKey: 'amount',
+        accessorKey: 'total_spent',
     },
 ];
 
-export default function CustomerTable() {
+export default function CustomerTable({ data, page, setPage, totalPages }) {
     const table = useReactTable({
         data,
         columns,
@@ -89,7 +71,7 @@ export default function CustomerTable() {
     });
 
     return (
-        <div className="p-4">
+        <div className="py-4">
             <div className="overflow-x-auto rounded-lg shadow border">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-50 text-left">
@@ -106,7 +88,7 @@ export default function CustomerTable() {
                             </tr>
                         ))}
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    {/* <tbody className="divide-y divide-gray-100">
                         {table.getRowModel().rows.map(row => (
                             <tr key={row.id}>
                                 {row.getVisibleCells().map(cell => (
@@ -116,8 +98,57 @@ export default function CustomerTable() {
                                 ))}
                             </tr>
                         ))}
+                    </tbody> */}
+
+                    <tbody className="divide-y divide-gray-100">
+                        {table.getRowModel().rows.length > 0 ? (
+                            table.getRowModel().rows.map((row) => (
+                                <tr key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <td
+                                            key={cell.id}
+                                            className="px-4 py-3 text-sm text-gray-800"
+                                        >
+                                            {flexRender(
+                                                cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey,
+                                                cell.getContext()
+                                            )}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td
+                                    colSpan={table.getAllColumns().length}
+                                    className="px-4 py-6 text-center text-gray-500"
+                                >
+                                    No records found
+                                </td>
+                            </tr>
+                        )}
+
                     </tbody>
                 </table>
+                <div className="flex items-center justify-between mt-4 px-4 py-4">
+                    <Button
+                        variant="outline"
+                        onClick={() => setPage((p) => Math.max(1, p - 1))}
+                        disabled={page <= 1}
+                    >
+                        Previous
+                    </Button>
+                    <span className="text-sm">
+                        Page {page} of {totalPages}
+                    </span>
+                    <Button
+                        variant="outline"
+                        onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                        disabled={page >= totalPages}
+                    >
+                        Next
+                    </Button>
+                </div>
             </div>
         </div>
     );

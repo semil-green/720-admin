@@ -7,22 +7,18 @@ import { addNewStateService, updateStateService } from "@/service/state/state.se
 import { addNewState, updateSlice, updateState } from "@/store/slices/state/state.slice";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { addNewHSnCoddeService } from "@/service/hsn-code/hsn-code.service";
+import { addNewHSnCoddeService, updateHsnCodeService } from "@/service/hsn-code/hsn-code.service";
+import { addHsnCode, updateHsnCode } from "@/store/slices/hsn-code/hsn-code.slice";
 
+const HsnForm = ({ editStateData, handleClose, setEditData }) => {
 
-const HsnForm = ({ editStateData, handleClose }) => {
+    const [loading, setloading] = useState(false);
     const [formData, setFormData] = useState({
         hsn_code: "",
         gst_percentage: "",
         hsn_no: "",
         remarks: ""
     });
-
-    // useEffect(() => {
-    //     if (editStateData) {
-    //         setFormData(editStateData);
-    //     }
-    // }, [editStateData]);
 
     useEffect(() => {
         if (editStateData) {
@@ -63,16 +59,72 @@ const HsnForm = ({ editStateData, handleClose }) => {
             return;
         }
 
-
+        setloading(true);
         try {
 
             const res = await addNewHSnCoddeService(formData)
 
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Created", {
+                    description: "HSN Code created successfully",
+                })
+                dispatch(addHsnCode(res?.data))
+                setEditData(null);
+            }
             handleClose();
         } catch (err) {
             toast.error("Something went wrong");
         }
+        finally {
+            setloading(false);
+        }
     };
+
+    const handleUpdate = async (e) => {
+        e.preventDefault();
+
+        if (!formData.hsn_no.trim()) {
+            toast.error("Validation Error", {
+                description: "HSN Number is required",
+            });
+            return;
+        }
+
+        if (!formData.gst_percentage.trim()) {
+            toast.error("Validation Error", {
+                description: "GST Percentage is required",
+            });
+            return;
+        }
+
+        if (!formData.hsn_code.trim()) {
+            toast.error("Validation Error", {
+                description: "HSN Code is required",
+            });
+            return;
+        }
+
+        setloading(true);
+        try {
+            const res = await updateHsnCodeService(editStateData?.hsn_id, formData)
+
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Updated", {
+                    description: "HSN Code updated successfully",
+                })
+                dispatch(updateHsnCode(res?.data))
+                setEditData(null);
+
+            }
+            handleClose();
+        }
+        catch (eror) {
+            toast.error("Something went wrong")
+        }
+        finally {
+            setloading(false);
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
@@ -122,13 +174,13 @@ const HsnForm = ({ editStateData, handleClose }) => {
                 className="border rounded px-2 py-1"
             />
 
-            {formData?.id > 0 ? (
-                <Button type="submit" className="mt-3">
-                    Update
+            {editStateData?.hsn_id > 0 ? (
+                <Button type="submit" className="mt-3" onClick={handleUpdate} disabled={loading}>
+                    {loading ? "Updating..." : "Update"}
                 </Button>
             ) : (
-                <Button type="submit" className="mt-3" onClick={handleSubmit}>
-                    Add
+                <Button type="submit" className="mt-3" onClick={handleSubmit} disabled={loading}>
+                    {loading ? "Saving..." : "Save"}
                 </Button>
             )}
         </form>

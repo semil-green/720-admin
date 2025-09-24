@@ -24,7 +24,8 @@ const Page = () => {
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        image: {}
+        image: {},
+        display_homepage: false
     });
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState([])
@@ -42,7 +43,8 @@ const Page = () => {
                 setFormData({
                     title: editData?.title || "",
                     description: editData?.description || "",
-                    image: editData?.image || {}
+                    image: editData?.image || {},
+                    display_homepage: editData?.display_homepage || false
                 });
 
                 if (editData?.image) {
@@ -127,6 +129,7 @@ const Page = () => {
 
             const productIds = product.map((p) => p.product_id);
             dataToSend.append("product_ids", JSON.stringify(productIds));
+            dataToSend.append("display_homepage", formData.display_homepage);
 
             if (productDisplayImageFile) {
                 dataToSend.append("image", productDisplayImageFile);
@@ -166,6 +169,7 @@ const Page = () => {
 
             const productIds = product.map((p) => p.product_id);
             dataToSend.append("product_ids", JSON.stringify(productIds));
+            dataToSend.append("display_homepage", formData.display_homepage);
 
             if (productDisplayImageFile) {
                 dataToSend.append("image", productDisplayImageFile);
@@ -229,6 +233,37 @@ const Page = () => {
                                 required
                             />
                         </div>
+
+
+                        <div className="flex gap-4 mt-4">
+                            <Label className="pb-1 font-medium">Display Home Page</Label>
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="display_homepage"
+                                    value="true"
+                                    checked={formData.display_homepage === true}
+                                    onChange={() =>
+                                        setFormData({ ...formData, display_homepage: true })
+                                    }
+                                />
+                                Yes
+                            </label>
+                            <label className="flex items-center gap-2">
+                                <input
+                                    type="radio"
+                                    name="display_homepage"
+                                    value="false"
+                                    checked={formData.display_homepage === false}
+                                    onChange={() =>
+                                        setFormData({ ...formData, display_homepage: false })
+                                    }
+                                />
+                                No
+                            </label>
+                        </div>
+
+
                     </div>
 
 
@@ -269,12 +304,21 @@ const Page = () => {
                     <label className='font-medium'>Products</label>
                     <div className="grid grid-cols-5 gap-2 mb-6 mt-4 relative">
                         <div className="col-span-2">
-                            <input
-                                type="text"
-                                placeholder="Search products"
-                                className="w-full rounded-md border shadow h-10 px-4"
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                            />
+                            <div className='flex gap-4'>
+                                <input
+                                    type="text"
+                                    placeholder="Search products"
+                                    className="w-full rounded-md border shadow h-10 px-4"
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    value={searchQuery}
+                                />
+                                <Button
+                                    onClick={() => setSearchQuery("")}
+                                    variant={"link"}
+                                >
+                                    Clear
+                                </Button>
+                            </div>
 
                             {searchResults.length > 0 && (
                                 <div className="absolute mt-1 w-full max-h-64 overflow-y-auto bg-white rounded-md shadow-lg z-20">
@@ -311,7 +355,7 @@ const Page = () => {
                                                         toast.success("Product added successfully",);
                                                         return [...prev, product];
                                                     });
-
+                                                    setSearchQuery("");
 
                                                 }}
                                             >
