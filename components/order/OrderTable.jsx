@@ -38,13 +38,12 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
                 const date = new Date(rawDate);
 
                 const formatted = date.toLocaleString("en-GB", {
-                    timeZone: "UTC",
                     day: "2-digit",
                     month: "2-digit",
                     year: "2-digit",
                     hour: "2-digit",
                     minute: "2-digit",
-                    hour12: false,
+                    hour12: true,
                 });
 
                 return <span className="text-md">{formatted}</span>;
