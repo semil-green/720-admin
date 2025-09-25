@@ -190,7 +190,11 @@ const OrderDetailTable = ({ order_id }) => {
                         <div>
                             <div>
                                 <div className="font-semibold text-gray-500">Customer Name</div>
-                                <div className="text-gray-500">{orderData?.customer_name}</div>
+                                <Link href={`/customer?search=${encodeURIComponent(orderData?.customer_name)}`}>
+                                    <div className="text-gray-500 cursor-pointer underline">
+                                        {orderData?.customer_name}
+                                    </div>
+                                </Link>
                             </div>
                             <div className="mt-2">
                                 <div className="font-semibold text-gray-500">Location</div>

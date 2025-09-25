@@ -11,11 +11,15 @@ import { Input } from "@/components/ui/input";
 import FilterDropdown from "@/components/items/FilterDropDown";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
+
 const page = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
     const [search, setSearch] = useState('')
+    const searchParams = useSearchParams();
+    const searchFromUrl = searchParams.get("search");
     const [totalPages, setTotalPages] = useState(0)
     const [loading, setLoading] = useState(false)
     const [sort, setSort] = useState('')
@@ -43,8 +47,13 @@ const page = () => {
     };
 
     useEffect(() => {
-        fetchCustomers(page, limit, search, sort?.sortBy, sort?.sortOrder);
-    }, [page, limit, sort]);
+        if (searchFromUrl) {
+            setSearch(searchFromUrl);
+            fetchCustomers(1, limit, searchFromUrl, sort?.sortBy, sort?.sortOrder);
+        } else {
+            fetchCustomers(page, limit, search, sort?.sortBy, sort?.sortOrder);
+        }
+    }, [page, limit, sort, searchFromUrl]);
 
 
 
