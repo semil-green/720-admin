@@ -1,7 +1,7 @@
 "use client"
 import MainLayout from '@/components/layout/mainLayout'
 import { Button } from '@/components/ui/button'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { Users } from 'lucide-react';
 import CustomerTable from '@/components/customers/CustomerTable';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,7 +13,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 
-const page = () => {
+const CustomerPage = () => {
 
     const [page, setPage] = useState(1)
     const [limit, setLimit] = useState(10)
@@ -134,4 +134,10 @@ const page = () => {
     )
 }
 
-export default page
+export default function page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CustomerPage />
+        </Suspense>
+    );
+}
