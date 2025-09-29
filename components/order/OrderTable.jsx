@@ -17,8 +17,34 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+import { toast } from "sonner"
+import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
+import { fetchOrderStatusTypesService } from "@/service/cutomer-order/cutomer-order.service";
 export default function OrderTable({ data, totalPages, page, setPage }) {
+
+    const dispatch = useDispatch();
+    const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
+
+    console.log("data112", JSON.stringify(data, null, 2))
+    console.log("orderStatus321", JSON.stringify(orderStatus, null, 2))
+    const fetchOrderStatus = async () => {
+        try {
+            const res = await fetchOrderStatusTypesService();
+
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(setOrderStatus(res?.data))
+            }
+        } catch (error) {
+            toast.error("Failed to fetch order status");
+        }
+    };
+    useEffect(() => {
+        if (!orderStatus || orderStatus.length === 0) {
+            fetchOrderStatus();
+        }
+    }, [orderStatus]);
     const storeColumns = () => [
         {
             accessorKey: "order_id",
@@ -62,6 +88,15 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
             accessorKey: "final_price",
             header: "Total",
             cell: ({ row }) => <div className="text-md">₹ {row?.original?.final_price}</div>,
+        },
+        {
+            accessorKey: "order_status",
+            header: "Order Status",
+            cell: ({ row }) => {
+                const statusValue = row?.original?.order_status;
+                const statusLabel = orderStatus.find(s => s.value === statusValue)?.label || "Unknown";
+                return <div className="text-md">{statusLabel}</div>;
+            },
         },
         {
             accessorKey: "payment_status_name",

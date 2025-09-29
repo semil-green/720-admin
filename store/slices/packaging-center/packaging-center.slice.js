@@ -22,15 +22,17 @@ const packagingCenterSlice = createSlice({
             const idToDelete = action.payload;
             state.packagingCenters = state.packagingCenters.filter(store => store.id !== idToDelete);
         },
-
         addPincodeToPackagingCenter: (state, action) => {
             const { storeId, pincodeData } = action.payload;
+
             const store = state.packagingCenters.find(item => item.id === storeId);
             if (store) {
                 if (!Array.isArray(store.pincodes)) {
                     store.pincodes = [];
                 }
-                store.pincodes.push(pincodeData);
+
+                const newPincodes = Array.isArray(pincodeData) ? pincodeData : [pincodeData];
+                store.pincodes = [...store.pincodes, ...newPincodes];
             }
         },
         updatePincodeInPackagingCenter: (state, action) => {

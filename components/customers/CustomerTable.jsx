@@ -35,16 +35,30 @@ const data = [
 
 const columns = [
 
+    // {
+    //     header: 'Customer name',
+    //     accessorKey: 'customer_name',
+    //     cell: info => {
+    //         const value = info.getValue();
+    //         return (
+    //             <Link
+    //                 href={`/customer/${value.replace(/\s+/g, '-').toLowerCase()}`}
+    //             >
+    //                 {value}
+    //             </Link>
+    //         );
+    //     },
+    // },
     {
         header: 'Customer name',
         accessorKey: 'customer_name',
-        cell: info => {
-            const value = info.getValue();
+        cell: ({ row }) => {
+            const customerName = row.original.customer_name;
+            const customerId = row.original.customer_id;
+
             return (
-                <Link
-                    href={`/customer/${value.replace(/\s+/g, '-').toLowerCase()}`}
-                >
-                    {value}
+                <Link href={`/customer/${customerId}`} className=" underline underline-offset-2">
+                    {customerName}
                 </Link>
             );
         },

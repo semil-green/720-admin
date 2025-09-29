@@ -4,12 +4,23 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import Image from "next/image";
-import { getCustomerOrderByIdService } from "@/service/cutomer-order/cutomer-order.service";
+import {
+    fetchOrderStatusTypesService,
+    getCustomerOrderByIdService,
+    updateOrderStatusService,
+} from "@/service/cutomer-order/cutomer-order.service";
 import { toast } from "sonner";
 import printJS from "print-js";
+import { useDispatch, useSelector } from "react-redux";
+import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
 
 const OrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState("0");
+
+    const dispatch = useDispatch()
+
+    const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
 
     useEffect(() => {
         const fetchOrderData = async () => {
@@ -28,6 +39,24 @@ const OrderDetailTable = ({ order_id }) => {
             fetchOrderData();
         }
     }, [order_id]);
+
+    const fetchOrderStatus = async () => {
+        try {
+            const res = await fetchOrderStatusTypesService();
+
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(setOrderStatus(res?.data))
+            }
+        } catch (error) {
+            toast.error("Failed to fetch order status");
+        }
+    };
+    useEffect(() => {
+        if (!orderStatus || orderStatus.length === 0) {
+            fetchOrderStatus();
+        }
+    }, [orderStatus]);
+
 
     const handlePrint = (storeItems) => {
         if (!storeItems || storeItems.length === 0) return;
@@ -89,7 +118,8 @@ const OrderDetailTable = ({ order_id }) => {
               <p style="margin:0;">Ship To:</p>
               <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
               <p style="margin:5px 0 0 0;">${orderData.address}</p>
-              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no}</p>
+              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no
+            }</p>
               <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
             </div>
     
@@ -159,17 +189,42 @@ const OrderDetailTable = ({ order_id }) => {
         });
     };
 
+
+    const handleOrderStatus = async () => {
+        try {
+
+            const res = await updateOrderStatusService(order_id, selectedStatus);
+
+
+            if (res?.status == 200 || res?.status == 201) {
+
+                setOrderData((prev) => ({
+                    ...prev,
+                    order_status: res?.data?.order_status
+                }))
+                toast.success("Order status updated successfully");
+            }
+        }
+        catch (error) {
+            toast.error("Failed to update order status");
+        }
+    }
+
+    const currentStatus = orderStatus.find(
+        (s) => s.value === orderData?.order_status
+    );
+
     return (
         <>
             <div className="grid grid-cols-3 gap-4 bg-sidebar">
                 <div className="col-span-3 bg-white px-3 border shadow py-4">
-                    {/* <div className="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                    <div className="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
                         <AlertCircle size={16} className="stroke-yellow-700" />
-                        <span>Unfulfilled</span>
-                    </div> */}
+                        <span>{currentStatus?.label || "Unknown"}</span>
+
+                    </div>
 
                     <div className="px-4 py-3 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-
                         <div className="space-y-3">
                             <div>
                                 <div className="font-semibold text-gray-500">Order Number</div>
@@ -177,7 +232,9 @@ const OrderDetailTable = ({ order_id }) => {
                             </div>
 
                             <div className="mt-2">
-                                <div className="font-semibold text-gray-500">Delivery Method</div>
+                                <div className="font-semibold text-gray-500">
+                                    Delivery Method
+                                </div>
                                 <div className="text-gray-500">Standard Shipping</div>
                             </div>
 
@@ -190,7 +247,11 @@ const OrderDetailTable = ({ order_id }) => {
                         <div>
                             <div>
                                 <div className="font-semibold text-gray-500">Customer Name</div>
-                                <Link href={`/customer?search=${encodeURIComponent(orderData?.customer_name)}`}>
+                                <Link
+                                    href={`/customer?search=${encodeURIComponent(
+                                        orderData?.customer_name
+                                    )}`}
+                                >
                                     <div className="text-gray-500 cursor-pointer underline">
                                         {orderData?.customer_name}
                                     </div>
@@ -201,97 +262,98 @@ const OrderDetailTable = ({ order_id }) => {
                                 <div className="text-gray-500">{orderData?.address}</div>
                             </div>
                             <div className="mt-2">
-                                <div className="font-semibold text-gray-500">Customer Contact</div>
+                                <div className="font-semibold text-gray-500">
+                                    Customer Contact
+                                </div>
                                 <div className="text-gray-500">{orderData?.mobile_no}</div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
                 {orderData?.items &&
-                    Object.entries(orderData.items).map(([storeId, storeItems], shipmentIndex) => (
-                        <div
-                            key={storeId}
-                            className="col-span-3 bg-white px-3 border shadow py-4"
-                        >
-                            <div className="flex justify-between items-center border-b pb-2 mb-3">
-                                <p className="font-semibold text-gray-700 px-7">
-                                    Shipment: {shipmentIndex + 1}
-                                </p>
-                                <p className="text-sm text-gray-500 px-7">
-                                    Status: {storeItems[0]?.tracking_status || "-"}
-                                </p>
-                            </div>
-
-                            {storeItems.map((food, index) => (
-                                <div
-                                    key={index}
-                                    className="grid grid-cols-12 items-start py-3 border-b last:border-b-0"
-                                >
-                                    {food?.product_display_image && (
-                                        <div className="col-span-1 flex justify-center">
-                                            <Image
-                                                src={food?.product_display_image}
-                                                alt="image"
-                                                width={40}
-                                                height={40}
-                                                className="rounded"
-                                            />
-                                        </div>
-                                    )}
-
-                                    <div className="col-span-5">
-                                        <div className="flex flex-col gap-2">
-                                            <p className="font-medium">{food?.title}</p>
-                                            {food?.sku && (
-                                                <p className="text-sm text-gray-500">
-                                                    SKU: {food?.sku}
-                                                </p>
-                                            )}
-                                            {food?.free_product && (
-                                                <p className="text-xs text-gray-500">
-                                                    Free Product: true
-                                                </p>
-                                            )}
-                                            {food?.kite_promo_name && (
-                                                <p className="text-xs text-gray-500">
-                                                    Kite Promo Name: {food?.kite_promo_name}
-                                                </p>
-                                            )}
-                                            {food?.rule_id && (
-                                                <p className="text-xs text-gray-500">
-                                                    Rule Id: {food?.rule_id}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <p className="col-span-3 text-center">
-                                        ₹{food?.price} × {food?.item_quantity}
+                    Object.entries(orderData.items).map(
+                        ([storeId, storeItems], shipmentIndex) => (
+                            <div
+                                key={storeId}
+                                className="col-span-3 bg-white px-3 border shadow py-4"
+                            >
+                                <div className="flex justify-between items-center border-b pb-2 mb-3">
+                                    <p className="font-semibold text-gray-700 px-7">
+                                        Shipment: {shipmentIndex + 1}
                                     </p>
-
-                                    <p className="col-span-1 text-center">
-                                        ₹
-                                        {(parseFloat(food?.price) || 0) *
-                                            (food?.item_quantity || 0)}
-                                    </p>
-
-                                    <p className="col-span-1 text-center">
-                                        {food?.tracking_status || "-"}
+                                    <p className="text-sm text-gray-500 px-7">
+                                        Status: {storeItems[0]?.tracking_status || "-"}
                                     </p>
                                 </div>
-                            ))}
 
-                            <div className="flex justify-center mt-4">
-                                <Button type="button" onClick={() => handlePrint(storeItems)}>
-                                    Print
-                                </Button>
+                                {storeItems.map((food, index) => (
+                                    <div
+                                        key={index}
+                                        className="grid grid-cols-12 items-start py-3 border-b last:border-b-0"
+                                    >
+                                        {food?.product_display_image && (
+                                            <div className="col-span-1 flex justify-center">
+                                                <Image
+                                                    src={food?.product_display_image}
+                                                    alt="image"
+                                                    width={40}
+                                                    height={40}
+                                                    className="rounded"
+                                                />
+                                            </div>
+                                        )}
+
+                                        <div className="col-span-5">
+                                            <div className="flex flex-col gap-2">
+                                                <p className="font-medium">{food?.title}</p>
+                                                {food?.sku && (
+                                                    <p className="text-sm text-gray-500">
+                                                        SKU: {food?.sku}
+                                                    </p>
+                                                )}
+                                                {food?.free_product && (
+                                                    <p className="text-xs text-gray-500">
+                                                        Free Product: true
+                                                    </p>
+                                                )}
+                                                {food?.kite_promo_name && (
+                                                    <p className="text-xs text-gray-500">
+                                                        Kite Promo Name: {food?.kite_promo_name}
+                                                    </p>
+                                                )}
+                                                {food?.rule_id && (
+                                                    <p className="text-xs text-gray-500">
+                                                        Rule Id: {food?.rule_id}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <p className="col-span-3 text-center">
+                                            ₹{food?.price} × {food?.item_quantity}
+                                        </p>
+
+                                        <p className="col-span-1 text-center">
+                                            ₹
+                                            {(parseFloat(food?.price) || 0) *
+                                                (food?.item_quantity || 0)}
+                                        </p>
+
+                                        <p className="col-span-1 text-center">
+                                            {food?.tracking_status || "-"}
+                                        </p>
+                                    </div>
+                                ))}
+
+                                <div className="flex justify-center mt-4">
+                                    <Button type="button" onClick={() => handlePrint(storeItems)}>
+                                        Print
+                                    </Button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-
-
+                        )
+                    )}
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
@@ -320,7 +382,10 @@ const OrderDetailTable = ({ order_id }) => {
                             </p>
                             <p className="col-span-1 text-right">
                                 {" "}
-                                {` -₹ ${orderData?.discount_value == null ? "0" : orderData?.discount_value}` || "0"}
+                                {` -₹ ${orderData?.discount_value == null
+                                    ? "0"
+                                    : orderData?.discount_value
+                                    }` || "0"}
                             </p>
                         </div>
                     </div>
@@ -372,12 +437,37 @@ const OrderDetailTable = ({ order_id }) => {
                     </div>
                 </div>
             </div>
-            <div className="flex justify-center items-center gap-4 mt-4">
-                <Link href={"/orders"}>
-                    <Button type="button" variant="outline">
-                        Back to list
+
+            <div className="grid grid-cols-3 items-center mt-4 gap-4">
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-gray-700">
+                        Order Status:
+                    </span>
+                    <select className="border rounded-md px-3 py-2"
+                        value={selectedStatus}
+                        onChange={(e) => setSelectedStatus(e.target.value)}
+                    >
+                        {orderStatus.map((status) => (
+                            <option key={status.value} value={status.value}>
+                                {status.label}
+                            </option>
+                        ))}
+                    </select>
+
+                    <Button type="submit" variant="default" onClick={handleOrderStatus}>
+                        Submit
                     </Button>
-                </Link>
+                </div>
+
+                <div className="flex justify-center">
+                    <Link href="/orders">
+                        <Button type="button" variant="outline">
+                            Back to list
+                        </Button>
+                    </Link>
+                </div>
+
+                <div></div>
             </div>
         </>
     );

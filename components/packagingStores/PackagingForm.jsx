@@ -109,6 +109,16 @@ export default function PackagingForm({ editId, type }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!formData?.latitude) {
+            toast.error("Latitude is required");
+            return;
+        }
+
+        if (!formData?.longitude) {
+            toast.error("Longitude is required");
+            return;
+        }
+
         setLoading(true);
         const payload = { ...formData, type };
         const res = await addNewDarkStorePackagingCenter(payload);
@@ -127,6 +137,15 @@ export default function PackagingForm({ editId, type }) {
     const handleUpdate = async (editId, data, e) => {
 
         e.preventDefault();
+        if (!formData?.latitude) {
+            toast.error("Latitude is required");
+            return;
+        }
+
+        if (!formData?.longitude) {
+            toast.error("Longitude is required");
+            return;
+        }
         const payload = { ...formData, type };
         const res = await updateDarkStorePackagingCenter(editId, payload)
 
