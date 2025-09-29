@@ -85,7 +85,7 @@ export default function AvailablePincodes({
             setPincode("");
             setDeliveryCharge("");
         }
-        if (res?.status == 409) {
+        else if (res?.status == 409) {
             toast.error("Pincode already exists");
         }
         else {
