@@ -50,7 +50,6 @@ export default function AvailablePincodes({
     const dispatch = useDispatch();
 
     const allDarkStores = useSelector((state) => state.darkStoreSlice.darkStores);
-
     const filterDarkStoreById = allDarkStores?.filter(
         (item) => item.id == editId
     );
@@ -61,13 +60,6 @@ export default function AvailablePincodes({
         if (!pincode.trim() || !deliveryCharge.trim()) {
             toast.error("Validation Error", {
                 description: "Both pincode and delivery charge are required",
-            });
-            return;
-        }
-
-        if (isNaN(Number(pincode)) || isNaN(Number(deliveryCharge))) {
-            toast.error("Validation Error", {
-                description: "Pincode and delivery charge must be numbers",
             });
             return;
         }
@@ -164,7 +156,7 @@ export default function AvailablePincodes({
                 toast.error("Failed to delete pincode");
             }
         } catch (err) {
-            console.error("Delete failed", err);
+            toast.error("Failed to delete pincode");
         }
     };
 

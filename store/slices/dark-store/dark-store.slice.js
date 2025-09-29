@@ -26,7 +26,6 @@ const darkStoreSlice = createSlice({
             const idToDelete = action.payload;
             state.darkStores = state.darkStores.filter(store => store.id !== idToDelete);
         },
-
         addPincodeToDarkStore: (state, action) => {
             const { storeId, pincodeData } = action.payload;
 
@@ -35,10 +34,11 @@ const darkStoreSlice = createSlice({
                 if (!Array.isArray(store.pincodes)) {
                     store.pincodes = [];
                 }
-                store.pincodes.push(pincodeData);
+                const newPincodes = Array.isArray(pincodeData) ? pincodeData : [pincodeData];
+
+                store.pincodes = [...store.pincodes, ...newPincodes];
             }
         },
-
         updatePincodeInDarkStore: (state, action) => {
             const { storeId, updatedPincode } = action.payload;
             const store = state.darkStores.find(store => store.id === storeId);
