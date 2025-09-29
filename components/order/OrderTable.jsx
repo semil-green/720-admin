@@ -27,8 +27,6 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
     const dispatch = useDispatch();
     const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
 
-    console.log("data112", JSON.stringify(data, null, 2))
-    console.log("orderStatus321", JSON.stringify(orderStatus, null, 2))
     const fetchOrderStatus = async () => {
         try {
             const res = await fetchOrderStatusTypesService();
@@ -79,9 +77,7 @@ export default function OrderTable({ data, totalPages, page, setPage }) {
             accessorKey: "customer_name",
             header: "Customer",
             cell: ({ row }) => (
-                <Link href={`/orders/${row.original.order_id}`} className="underline underline-offset-4">
-                    <span className="text-md">{row.original?.customer_name}</span>
-                </Link>
+                <span className="text-md">{row.original?.customer_name}</span>
             ),
         },
         {

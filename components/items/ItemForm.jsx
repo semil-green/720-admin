@@ -27,6 +27,7 @@ import { addNewItemService, allCollectionsService, getitemById, updateItemServic
 import { toast } from "sonner";
 import Link from "next/link";
 import { getAllUnitsService } from "@/service/unit/unit.service";
+import { clearAllItemsData } from "@/store/slices/items/items.slice";
 
 export default function ItemForm({ editItemId }) {
     const router = useRouter();
@@ -422,7 +423,8 @@ export default function ItemForm({ editItemId }) {
 
             const res = await addNewItemService(formDataToSend);
 
-            if (res?.status === 201 || res?.data?.status === 201) {
+            if (res?.status == 201 || res?.data?.status == 200) {
+                dispatch(clearAllItemsData())
                 toast.success("Item added successfully");
                 router.push("/items");
             } else {
@@ -701,6 +703,7 @@ export default function ItemForm({ editItemId }) {
             const res = await updateItemService(editItemId, formDataToSend);
 
             if (res?.status === 200 || res?.data?.status === 200) {
+                dispatch(clearAllItemsData())
                 toast.success("Item updated successfully");
                 router.push("/items");
             } else {

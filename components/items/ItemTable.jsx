@@ -34,8 +34,6 @@ export default function ItemTable({
     const handleEdit = (item) => {
         router.push(`/items/new?id=${item}`)
     }
-
-    console.log("data123", JSON.stringify(data, null, 2))
     const storeColumns = (onEdit, onDelete) => [
         {
             accessorKey: "Title",

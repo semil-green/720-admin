@@ -13,10 +13,12 @@ import { toast } from "sonner";
 import printJS from "print-js";
 import { useDispatch, useSelector } from "react-redux";
 import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
+import { Loader2 } from "lucide-react";
 
 const OrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
+    const [loading, setLoading] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -25,6 +27,7 @@ const OrderDetailTable = ({ order_id }) => {
     useEffect(() => {
         const fetchOrderData = async () => {
             try {
+                setLoading(true)
                 const response = await getCustomerOrderByIdService(order_id);
 
                 if (response?.status == 200) {
@@ -32,6 +35,9 @@ const OrderDetailTable = ({ order_id }) => {
                 }
             } catch (error) {
                 toast.error("Failed to fetch order data");
+            }
+            finally {
+                setLoading(false)
             }
         };
 
@@ -216,6 +222,13 @@ const OrderDetailTable = ({ order_id }) => {
 
     return (
         <>
+            {loading && (
+                <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            )}
             <div className="grid grid-cols-3 gap-4 bg-sidebar">
                 <div className="col-span-3 bg-white px-3 border shadow py-4">
                     <div className="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
@@ -280,7 +293,7 @@ const OrderDetailTable = ({ order_id }) => {
                             >
                                 <div className="flex justify-between items-center border-b pb-2 mb-3">
                                     <p className="font-semibold text-gray-700 px-7">
-                                        Shipment: {shipmentIndex + 1}
+                                        Shipment: {shipmentIndex + 1} ,  {storeItems[0]?.store_name}
                                     </p>
                                     <p className="text-sm text-gray-500 px-7">
                                         Status: {storeItems[0]?.tracking_status || "-"}
@@ -382,7 +395,7 @@ const OrderDetailTable = ({ order_id }) => {
                             </p>
                             <p className="col-span-1 text-right">
                                 {" "}
-                                {` -₹ ${orderData?.discount_value == null
+                                {` ₹ ${orderData?.discount_value == null
                                     ? "0"
                                     : orderData?.discount_value
                                     }` || "0"}
@@ -394,7 +407,7 @@ const OrderDetailTable = ({ order_id }) => {
                         <div className="grid grid-cols-4 items-start">
                             <p className="col-span-1">Shipping</p>
                             <p className="col-span-2 text-gray-600">
-                                Standard Shipping (0.87 kg: Items 0.87 kg, Package 0.0 kg)
+                                -
                             </p>
                             <p className="col-span-1 text-right">
                                 ₹ {orderData?.delivery_charges}
