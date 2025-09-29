@@ -63,6 +63,9 @@ export default function AvailablePincodes({ initialData = {}, onSubmit, editId }
             setDeliveryCharge('');
             toast.success("Added", { description: "Pincode added successfully" });
         }
+        if (res?.status == 409) {
+            toast.error("Pincode already exists");
+        }
         else {
             toast.error("Failed to add pincode");
         }

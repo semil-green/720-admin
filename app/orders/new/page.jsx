@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { fetchCustomersDfService, getUserAddesssByIdService } from "@/service/draft-orders/draft-orders.service";
+import { fetchCustomersDfService, getStoresAvailableForUser, getUserAddesssByIdService } from "@/service/draft-orders/draft-orders.service";
 import { toast } from "sonner";
 
 const page = () => {
@@ -17,6 +17,11 @@ const page = () => {
 
     const [userAddress, setUserAddress] = useState(null);
     const [loadingAddress, setLoadingAddress] = useState(false);
+    const [selectedAddress, setSelectedAddress] = useState({});
+
+    const [storesByPincode, setStoresByPincode] = useState(null);
+    const [loadingStore, setLoadingStore] = useState(false);
+    const [selectedStore, setSelectedStore] = useState({});
 
 
     useEffect(() => {
@@ -45,9 +50,9 @@ const page = () => {
             try {
                 setLoadingAddress(true);
                 const response = await getUserAddesssByIdService(selectedUser.customer_id);
-                setUserAddress(response || null);
+                setUserAddress(response?.data || null);
             } catch (error) {
-                console.error("Error fetching user address:", error);
+                toast.error("Error in fetching user address");
             } finally {
                 setLoadingAddress(false);
             }
@@ -56,6 +61,26 @@ const page = () => {
         fetchAddress();
     }, [selectedUser]);
 
+    useEffect(() => {
+        if (!selectedUser) return;
+        if (!selectedAddress) return;
+
+        const fetchAvailableStore = async () => {
+            try {
+                setLoadingStore(true);
+                const fetchData = await getStoresAvailableForUser(selectedAddress?.pincode)
+                setStoresByPincode(fetchData?.data)
+            }
+            catch (err) {
+                toast.error("Error in fetching available stores")
+            }
+            finally {
+                setLoadingStore(false);
+            }
+        }
+
+        fetchAvailableStore();
+    }, [selectedAddress])
 
     return (
         <MainLayout>
@@ -76,7 +101,7 @@ const page = () => {
                             <div>
                                 <h4 className="font-medium">User</h4>
                                 <div className="grid grid-cols-4 gap-2 mt-2">
-                                    <div className="col-span-2 relative">
+                                    <div className="col-span-4 relative">
                                         <Input
                                             defaultValue=""
                                             placeholder="Search User"
@@ -154,23 +179,13 @@ const page = () => {
 
                                                 <button
                                                     type="button"
-                                                    onClick={() => { setSelectedUser(null); toast.success("User removed successfully") }}
+                                                    onClick={() => { setSelectedUser(null); toast.success("User removed successfully"); setUserAddress(null); setSelectedAddress(null); setStoresByPincode(null) }}
                                                     className="ml-auto text-gray-900 hover:text-red-500 transition"
                                                 >
                                                     ✕
                                                 </button>
                                             </div>
                                         )}
-
-                                    </div>
-
-                                    <div className="col-span-1 ">
-                                        <Button
-                                            className="cursor-pointer w-full border shadow  "
-                                            variant={"secondary"}
-                                        >
-                                            Browse
-                                        </Button>
                                     </div>
                                 </div>
                             </div>
@@ -181,35 +196,70 @@ const page = () => {
                         <div className="border shadow rounded-md px-4 py-4">
                             <h4 className="font-medium">User Address</h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
-                                <div className="col-span-2">
+                                <div className="col-span-4">
                                     {loadingAddress ? (
                                         <div className="p-3 text-sm text-gray-500">Loading addresses...</div>
                                     ) : userAddress && userAddress.length > 0 ? (
                                         <select
                                             className="w-full p-2 border rounded"
-                                            value={selectedAddress || ""}
-                                            onChange={(e) => setSelectedAddress(e.target.value)}
+                                            value={selectedAddress?.address_id || ""}
+                                            onChange={(e) => {
+                                                const selected = userAddress.find(addr => addr.address_id === Number(e.target.value));
+                                                setSelectedAddress(selected);
+                                            }}
                                         >
                                             <option value="" disabled>
                                                 Select Address
                                             </option>
-                                            {userAddress.map((addr, idx) => (
-                                                <option key={idx} value={addr.id || addr.address}>
-                                                    {addr.address} {/* Or any other field your API returns */}
+                                            {userAddress.map((addr) => (
+                                                <option key={addr.address_id} value={addr.address_id}>
+                                                    {addr.address}
                                                 </option>
                                             ))}
                                         </select>
+
                                     ) : (
                                         <div className="p-3 text-sm text-gray-500">
                                             {selectedUser ? "No addresses found for this user" : "Select a user first"}
                                         </div>
                                     )}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
 
-                                <div className="col-span-1">
-                                    <Button className="cursor-pointer w-full border shadow" variant="secondary">
-                                        Browse
-                                    </Button>
+                    <div className="col-span-2 bg-white">
+                        <div className="border shadow rounded-md px-4 py-4">
+                            <h4 className="font-medium">Stores</h4>
+                            <div className="grid grid-cols-4 gap-2 mt-2">
+                                <div className="col-span-4">
+                                    {loadingStore ? (
+                                        <div className="p-3 text-sm text-gray-500">Loading stores...</div>
+                                    ) : storesByPincode && storesByPincode.length > 0 ? (
+                                        <select
+                                            className="w-full p-2 border rounded"
+                                            value={selectedStore?.id || ""}
+                                            onChange={(e) => {
+                                                const selected = storesByPincode.find(
+                                                    (store) => store.id === Number(e.target.value)
+                                                );
+                                                setSelectedStore(selected);
+                                            }}
+                                        >
+                                            <option value="" disabled>
+                                                Select Store
+                                            </option>
+                                            {storesByPincode.map((store) => (
+                                                <option key={store.id} value={store.id}>
+                                                    {store.store_name} (₹{store.delivery_charge})
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <div className="p-3 text-sm text-gray-500">
+                                            {selectedAddress ? "Select an address first" : "No stores available for this pincode"}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -221,14 +271,14 @@ const page = () => {
                             <div>
                                 <h4 className="font-medium">Products</h4>
                                 <div className="grid grid-cols-4 gap-2 mt-2">
-                                    <div className="col-span-2">
+                                    <div className="col-span-4">
                                         <Input
                                             defaultValue=""
                                             placeholder="Search Products"
                                             className=""
                                         />
                                     </div>
-                                    <div className="col-span-1 ">
+                                    {/* <div className="col-span-1 ">
                                         <Button
                                             className="cursor-pointer w-full border shadow  "
                                             variant={"secondary"}
@@ -243,7 +293,7 @@ const page = () => {
                                         >
                                             Add Custom item
                                         </Button>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
 

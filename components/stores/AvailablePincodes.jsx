@@ -84,7 +84,11 @@ export default function AvailablePincodes({
 
             setPincode("");
             setDeliveryCharge("");
-        } else {
+        }
+        if (res?.status == 409) {
+            toast.error("Pincode already exists");
+        }
+        else {
             toast.error("Failed to add pincode");
         }
     };

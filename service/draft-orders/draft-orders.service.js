@@ -33,7 +33,30 @@ export const getUserAddesssByIdService = async (customer_id) => {
         return fetchUserAddress?.data
     }
     catch (error) {
-        console.log("error123", error)
+        return error
+    }
+}
+
+export const getStoresAvailableForUser = async (pincode) => {
+
+    try {
+        const auth_token = localStorage.getItem("token");
+
+        const fetchAvailableStoresData = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getStoreByPincode/${pincode}`, { headers: { Authorization: auth_token } });
+
+        return fetchAvailableStoresData?.data
+    }
+    catch (error) {
+        return error
+    }
+}
+
+export const searchProductForDraftOrderService = async (itemName) => {
+
+    try {
+        const fetchproductData = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/searchProduct/${itemName}`)
+    }
+    catch (error) {
         return error
     }
 }
