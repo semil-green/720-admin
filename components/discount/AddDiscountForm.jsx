@@ -70,7 +70,7 @@ const AddDiscountForm = () => {
             try {
                 const res = await getAllCollectionsService(1, 1000000);
                 if (res?.data) {
-                    dispatch(setAllCollectionsData(res?.data));
+                    dispatch(setAllCollectionsData(res?.data?.data));
                 }
             } catch (error) {
                 toast.error("Error in fetching collections");

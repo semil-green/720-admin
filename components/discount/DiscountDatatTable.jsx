@@ -166,7 +166,7 @@ const DiscountDatatTable = () => {
                 </div>
             </div>
 
-            <div className="overflow-x-auto p-4">
+            <div className="overflow-x-auto py-4">
                 <table className="min-w-full border border-gray-200 divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                         <tr>
