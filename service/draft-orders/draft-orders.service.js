@@ -71,3 +71,58 @@ export const searchProductForDraftOrderService = async (store_id, productName) =
         return error
     }
 }
+
+export const getSlotByPincodeAndStoreIdService = async (pincode, store_id) => {
+
+    try {
+
+        const auth_token = localStorage.getItem("token");
+
+        const fetchSlotData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getSlotByPincodeAndStoreId/${pincode}/${store_id}`,
+            {
+                headers: {
+                    Authorization: auth_token,
+                },
+            }
+        );
+        return fetchSlotData?.data
+    }
+    catch (error) {
+        return error
+    }
+}
+
+export const addNewDraftOrderService = async (data) => {
+
+    try {
+        const auth_token = localStorage.getItem("token");
+
+        const saveDraftOrder = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/addOrderByDraftOrder`, data, {
+            headers: {
+                Authorization: auth_token
+            }
+        });
+        return saveDraftOrder?.data
+    }
+    catch (error) {
+        return error
+    }
+}
+
+export const createNewPidgeOrderService = async (data) => {
+
+    try {
+        const auth_token = localStorage.getItem("token");
+
+        const createPidge = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/createPidgeOrderByDraftOrder`, data, {
+            headers: {
+                Authorization: auth_token
+            }
+        });
+        return createPidge?.data
+    }
+    catch (error) {
+        return error
+    }
+}

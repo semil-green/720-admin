@@ -6,8 +6,17 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { fetchCustomersDfService, getStoresAvailableForUser, getUserAddesssByIdService, searchProductForDraftOrderService } from "@/service/draft-orders/draft-orders.service";
+import {
+    addNewDraftOrderService,
+    createNewPidgeOrderService,
+    fetchCustomersDfService,
+    getSlotByPincodeAndStoreIdService,
+    getStoresAvailableForUser,
+    getUserAddesssByIdService,
+    searchProductForDraftOrderService,
+} from "@/service/draft-orders/draft-orders.service";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const page = () => {
     const [searchUser, setSearchUser] = useState("");
@@ -22,12 +31,14 @@ const page = () => {
     const [storesByPincode, setStoresByPincode] = useState(null);
     const [loadingStore, setLoadingStore] = useState(false);
     const [selectedStore, setSelectedStore] = useState({});
-
     const [searchProduct, setSearchProduct] = useState("");
     const [searchResult, setSearchResult] = useState([]);
 
     const [selectedItems, setSelectedItems] = useState([]);
+    const [slots, setSlots] = useState([]);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
+    const router = useRouter();
     useEffect(() => {
         const handler = setTimeout(() => {
             if (searchUser.trim() !== "") {
@@ -53,7 +64,9 @@ const page = () => {
         const fetchAddress = async () => {
             try {
                 setLoadingAddress(true);
-                const response = await getUserAddesssByIdService(selectedUser.customer_id);
+                const response = await getUserAddesssByIdService(
+                    selectedUser.customer_id
+                );
                 setUserAddress(response?.data || null);
             } catch (error) {
                 toast.error("Error in fetching user address");
@@ -72,27 +85,29 @@ const page = () => {
         const fetchAvailableStore = async () => {
             try {
                 setLoadingStore(true);
-                const fetchData = await getStoresAvailableForUser(selectedAddress?.pincode)
-                setStoresByPincode(fetchData?.data)
-            }
-            catch (err) {
-                toast.error("Error in fetching available stores")
-            }
-            finally {
+                const fetchData = await getStoresAvailableForUser(
+                    selectedAddress?.pincode
+                );
+                setStoresByPincode(fetchData?.data);
+            } catch (err) {
+                toast.error("Error in fetching available stores");
+            } finally {
                 setLoadingStore(false);
             }
-        }
+        };
 
         fetchAvailableStore();
-    }, [selectedAddress])
-
+    }, [selectedAddress]);
 
     useEffect(() => {
         if (!searchProduct) return;
 
         const timeout = setTimeout(async () => {
             try {
-                const res = await searchProductForDraftOrderService(selectedStore?.id, searchProduct);
+                const res = await searchProductForDraftOrderService(
+                    selectedStore?.id,
+                    searchProduct
+                );
                 setSearchResult(res?.data || []);
             } catch (err) {
                 toast.error("Error in searching proucts ");
@@ -102,9 +117,139 @@ const page = () => {
         return () => clearTimeout(timeout);
     }, [searchProduct, selectedStore?.id]);
 
+    useEffect(() => {
+        if (!selectedStore?.id) return;
+        if (!selectedAddress?.pincode) return;
+
+        const fetchSlotByPincode = async () => {
+            try {
+                setLoadingStore(true);
+                const fetchData = await getSlotByPincodeAndStoreIdService(
+                    selectedAddress?.pincode,
+                    selectedStore?.id
+                );
+                setSlots(fetchData?.data);
+            } catch (err) {
+                toast.error("Error in fetching slots for current pincode");
+            } finally {
+                setLoadingStore(false);
+            }
+        };
+
+        fetchSlotByPincode();
+    }, [selectedStore, selectedAddress]);
+
     const handleAdditem = (item) => {
         if (!selectedItems.find((i) => i.product_id === item.product_id)) {
             setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
+        }
+    };
+
+    const handleSubmit = async () => {
+        try {
+            setLoading(true);
+
+            const getFormattedDate = (date) => {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, "0");
+                const day = String(date.getDate()).padStart(2, "0");
+                return `${year}/${month}/${day}`;
+            };
+
+            const getDeliveryDateFromSlot = (slot) => {
+                if (!slot) return getFormattedDate(new Date());
+
+                const now = new Date();
+
+                const [time, modifier] = slot.from_time.split(" ");
+                let [hours, minutes] = time.split(":").map(Number);
+
+                if (modifier === "PM" && hours !== 12) hours += 12;
+                if (modifier === "AM" && hours === 12) hours = 0;
+
+                const slotDate = new Date();
+                slotDate.setHours(hours, minutes, 0, 0);
+
+                if (now > slotDate) {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(now.getDate() + 1);
+                    return getFormattedDate(tomorrow);
+                }
+
+                return getFormattedDate(now);
+            };
+
+            const productDetails = selectedItems.map((item) => ({
+                productId: item.product_id,
+                productQty: item.quantity,
+                storeId: selectedStore?.id,
+                slotId: selectedSlot?.id,
+                expDeliveryDate: getDeliveryDateFromSlot(selectedSlot),
+            }));
+
+            const payload = {
+                productDetails,
+                discount: {},
+                addressId: selectedAddress?.address_id,
+                customerId: selectedUser?.customer_id,
+            };
+
+            const createDraftOrder = await addNewDraftOrderService(payload);
+
+            if (createDraftOrder?.status == 200 || createDraftOrder?.status == 201) {
+                toast.success("Order created successfully", {
+                    description: "New Order created successfully",
+                });
+                const orderId = createDraftOrder?.data?.order_id;
+                const finalPrice = createDraftOrder?.data?.final_price;
+
+                const itemsDetails = selectedItems.map((item) => ({
+                    itemName: item.title,
+                    qty: item.quantity,
+                    amount: Number(item.price) * item.quantity,
+                }));
+
+                const secondPayload = [
+                    {
+                        customerId: selectedUser?.customer_id,
+                        orderId: orderId,
+                        itemsDetails: itemsDetails,
+                        storeId: selectedStore?.id,
+                        slotId: selectedSlot?.id,
+                        slotDate: Math.floor(new Date().getTime() / 1000),
+                        codAmount: finalPrice,
+                        billAmount: finalPrice,
+                        dropDetails: {
+                            lat: selectedAddress?.latitude,
+                            lng: selectedAddress?.longitude,
+                            address: selectedAddress?.address,
+                            pincode: selectedAddress?.pincode,
+                            nearbyLandmark: selectedAddress?.nearby_landmark,
+                        },
+                    },
+                ];
+
+                const createPidgeOrder = await createNewPidgeOrderService(
+                    secondPayload
+                );
+
+                if (
+                    createPidgeOrder?.status == 200 ||
+                    createPidgeOrder?.status == 201
+                ) {
+                    toast.success("Order Pidge created successfully", {
+                        description: "New Order Pidge created successfully",
+                    });
+
+                    router.push("/draft-orders");
+                } else {
+                    toast.error("Error in creating pidge order");
+                }
+            }
+        } catch (err) {
+            toast.error("Error in creating draft order");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -129,7 +274,7 @@ const page = () => {
                                 <div className="grid grid-cols-4 gap-2 mt-2">
                                     <div className="col-span-4 relative">
                                         <Input
-                                            defaultValue=""
+
                                             placeholder="Search User"
                                             value={searchUser}
                                             onChange={(e) => setSearchUser(e.target.value)}
@@ -205,7 +350,13 @@ const page = () => {
 
                                                 <button
                                                     type="button"
-                                                    onClick={() => { setSelectedUser(null); toast.success("User removed successfully"); setUserAddress(null); setSelectedAddress(null); setStoresByPincode(null) }}
+                                                    onClick={() => {
+                                                        setSelectedUser(null);
+                                                        toast.success("User removed successfully");
+                                                        setUserAddress(null);
+                                                        setSelectedAddress(null);
+                                                        setStoresByPincode(null);
+                                                    }}
                                                     className="ml-auto text-gray-900 hover:text-red-500 transition"
                                                 >
                                                     ✕
@@ -224,13 +375,17 @@ const page = () => {
                             <div className="grid grid-cols-4 gap-2 mt-2">
                                 <div className="col-span-4">
                                     {loadingAddress ? (
-                                        <div className="p-3 text-sm text-gray-500">Loading addresses...</div>
+                                        <div className="p-3 text-sm text-gray-500">
+                                            Loading addresses...
+                                        </div>
                                     ) : userAddress && userAddress.length > 0 ? (
                                         <select
                                             className="w-full p-2 border rounded"
                                             value={selectedAddress?.address_id || ""}
                                             onChange={(e) => {
-                                                const selected = userAddress.find(addr => addr.address_id === Number(e.target.value));
+                                                const selected = userAddress.find(
+                                                    (addr) => addr.address_id === Number(e.target.value)
+                                                );
                                                 setSelectedAddress(selected);
                                             }}
                                         >
@@ -243,10 +398,11 @@ const page = () => {
                                                 </option>
                                             ))}
                                         </select>
-
                                     ) : (
                                         <div className="p-3 text-sm text-gray-500">
-                                            {selectedUser ? "No addresses found for this user" : "Select a user first"}
+                                            {selectedUser
+                                                ? "No addresses found for this user"
+                                                : "Select a user first"}
                                         </div>
                                     )}
                                 </div>
@@ -260,7 +416,9 @@ const page = () => {
                             <div className="grid grid-cols-4 gap-2 mt-2">
                                 <div className="col-span-4">
                                     {loadingStore ? (
-                                        <div className="p-3 text-sm text-gray-500">Loading stores...</div>
+                                        <div className="p-3 text-sm text-gray-500">
+                                            Loading stores...
+                                        </div>
                                     ) : storesByPincode && storesByPincode.length > 0 ? (
                                         <select
                                             className="w-full p-2 border rounded"
@@ -283,7 +441,9 @@ const page = () => {
                                         </select>
                                     ) : (
                                         <div className="p-3 text-sm text-gray-500">
-                                            {selectedAddress ? "Select an address first" : "No stores available for this pincode"}
+                                            {selectedAddress
+                                                ? "Select an address first"
+                                                : "No stores available for this pincode"}
                                         </div>
                                     )}
                                 </div>
@@ -291,6 +451,40 @@ const page = () => {
                         </div>
                     </div>
 
+                    <div className="col-span-2 bg-white">
+                        <div className="border shadow rounded-md px-4 py-4">
+                            <h4 className="font-medium">Slots</h4>
+                            <div className="grid grid-cols-4 gap-2 mt-2">
+                                <div className="col-span-4">
+                                    {slots && slots.length > 0 ? (
+                                        <select
+                                            className="w-full p-2 border rounded"
+                                            value={selectedSlot?.id || ""}
+                                            onChange={(e) => {
+                                                const selected = slots.find(
+                                                    (slot) => slot.id === Number(e.target.value)
+                                                );
+                                                setSelectedSlot(selected);
+                                            }}
+                                        >
+                                            <option value="" disabled>
+                                                Select Slot
+                                            </option>
+                                            {slots.map((slot) => (
+                                                <option key={slot.id} value={slot.id}>
+                                                    {slot.from_time} - {slot.to_time}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <div className="p-3 text-sm text-gray-500">
+                                            No slots available
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div className="col-span-2  bg-white ">
                         <div className="border shadow rounded-md px-4 py-4">
@@ -299,16 +493,22 @@ const page = () => {
                                 <div className="grid grid-cols-4 gap-2 mt-2">
                                     <div className="col-span-4">
                                         <div className="flex gap-4">
-
                                             <Input
-                                                defaultValue=""
+
                                                 placeholder="Search Products"
                                                 className=""
                                                 value={searchProduct}
                                                 onChange={(e) => setSearchProduct(e.target.value)}
                                             />
 
-                                            <Button onClick={() => { setSearchProduct(""); setSearchResult([]) }}>clean</Button>
+                                            <Button
+                                                onClick={() => {
+                                                    setSearchProduct("");
+                                                    setSearchResult([]);
+                                                }}
+                                            >
+                                                clear
+                                            </Button>
                                         </div>
 
                                         {searchResult.length > 0 && (
@@ -331,7 +531,10 @@ const page = () => {
                                                         <Button
                                                             variant="outline"
                                                             size="sm"
-                                                            onClick={() => { handleAdditem(item); setSearchResult([]); }}
+                                                            onClick={() => {
+                                                                handleAdditem(item);
+                                                                setSearchResult([]);
+                                                            }}
                                                         >
                                                             Add
                                                         </Button>
@@ -387,7 +590,6 @@ const page = () => {
                                     </div>
                                 ))}
                             </div>
-
                         </div>
 
                         <div className="mt-4 border shadow rounded-md px-4 py-4">
@@ -454,7 +656,6 @@ const page = () => {
                         <div className="border shadow rounded-md px-4 py-4 mt-4 ">
                             <span className="font-semibold"> Customer </span>
                             <Input
-                                defaultValue=""
                                 placeholder="Search or create a customer"
                                 className="mt-2"
                             />
@@ -468,10 +669,20 @@ const page = () => {
 
                         <div className="border shadow rounded-md px-4 py-4 mt-4 ">
                             <span className="font-semibold"> Tags </span>
-                            <Input defaultValue="" placeholder="" className="mt-2" />
+                            <Input placeholder="" className="mt-2" />
                         </div>
                     </div>
                 </div>
+            </div>
+            <div className="flex justify-center mt-4">
+                <Button
+                    className="cursor-pointer  border shadow  "
+                    variant={"default"}
+                    onClick={handleSubmit}
+                    disabled={loading}
+                >
+                    {loading ? "Saving" : "Save"}
+                </Button>
             </div>
         </MainLayout>
     );
