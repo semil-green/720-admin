@@ -16,11 +16,12 @@ const collectionsSlice = createSlice({
             state.allCollectionsData = action.payload
         },
         deleteCollection: (state, action) => {
-            state.allCollections = state.allCollections.filter(
-                collection => collection.collection_id !== action.payload
+            state.allCollections = state.allCollections.map(collection =>
+                collection.collection_id === action.payload
+                    ? { ...collection, status: false }
+                    : collection
             );
-        },
-
+        }
     },
 });
 

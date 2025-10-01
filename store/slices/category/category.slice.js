@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initiealState = {
     allCategories: [],
+    totalCategoriesCount: 0
 };
 
 const categorySlice = createSlice({
@@ -9,7 +10,8 @@ const categorySlice = createSlice({
     initialState: initiealState,
     reducers: {
         setCategoriesData: (state, action) => {
-            state.allCategories = action.payload;
+            state.allCategories = action.payload.data
+            state.totalCategoriesCount = action.payload.total
         },
         addNewCategory: (state, action) => {
             state.allCategories.push(action.payload);
@@ -24,9 +26,12 @@ const categorySlice = createSlice({
         },
         deleteCategory: (state, action) => {
             const idToDelete = action.payload;
-            state.allCategories = state.allCategories.filter((item) => item.category_id !== idToDelete);
-        },
-
+            state.allCategories = state.allCategories.map((item) =>
+                item.category_id === idToDelete
+                    ? { ...item, status: false }
+                    : item
+            );
+        }
     },
 });
 

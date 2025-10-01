@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
 
-export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal }) {
+export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal, totalRecordCount }) {
 
     const storeColumns = (onEdit, onDelete, onOpenSubCategoryModal) => [
         {
@@ -35,6 +35,14 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                     Category
                 </Button>
             ),
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return value ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>;
+            },
         },
         {
             id: "actions",
@@ -141,9 +149,9 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {table.getState().pagination.pageIndex + 1} of{" "}
-                    {table.getPageCount()}
+                    Page {table.getState().pagination.pageIndex + 1} of{" "} {table.getPageCount()} , <span className="ml-4"> Total : {totalRecordCount}</span>
                 </span>
+
                 <Button
                     variant="outline"
                     onClick={() => table.nextPage()}

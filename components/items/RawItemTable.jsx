@@ -15,7 +15,8 @@ import { toast } from "sonner"
 import { useDispatch } from "react-redux"
 import { deleteRawItem } from "@/store/slices/raw-ittem/raw-item.store"
 
-export default function RawItemTable({ data, onDelete, page, limit, setPage, totalPages, setEditRawItem, openEditModal }) {
+export default function RawItemTable({ data, onDelete, page, limit, setPage, totalPages, setEditRawItem, openEditModal, totalRawItemCount }) {
+
     const router = useRouter()
     const dispatch = useDispatch()
     const handleDelete = async (id) => {
@@ -44,6 +45,14 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
         {
             accessorKey: "sku",
             header: "SKU",
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return value ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>;
+            },
         },
         {
             id: "actions",
@@ -150,7 +159,7 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
                 </Button>
 
                 <span className="text-sm">
-                    Page {page} of {totalPages}
+                    Page {page} of {totalPages} , <span>Total : {totalRawItemCount}</span>
                 </span>
 
                 <Button

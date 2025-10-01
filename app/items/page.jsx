@@ -38,6 +38,7 @@ export default function Items() {
     const [limit, setLimit] = useState(5);
     const [totalItems, setTotalItems] = useState(0);
     const [searchProduct, setSearchProduct] = useState("");
+    const [totalProductCount, setTotalProductCount] = useState(0);
 
     const [rawItemSortState, setRawItemSortState] = useState();
     const [rawItemPage, setRawItemPage] = useState(1);
@@ -46,6 +47,7 @@ export default function Items() {
     const [units, setUnits] = useState([]);
     const [editRawItem, setEditRawItem] = useState({});
     const [searchRawItem, setSearchRawItem] = useState("");
+    const [totalRawItemCount, setTotalRawItemCount] = useState(0);
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -69,8 +71,9 @@ export default function Items() {
             setLoading(true);
             const res = await getAllItemsService(page, limit, search, sortBy, sortOrder);
             if (res && res.data) {
-                dispatch(getAllItems(res.data.data || []));
-                setTotalItems(res.data.total ?? 0);
+                setTotalProductCount(res?.data?.total)
+                dispatch(getAllItems(res?.data?.data || []));
+                setTotalItems(res?.data?.total ?? 0);
             } else {
                 dispatch(getAllItems([]));
                 setTotalItems(0);
@@ -100,6 +103,7 @@ export default function Items() {
             setLoading(true);
             const res = await getAllRawItemsService(page, limit, search, sortBy, sortOrder);
             if (res) {
+                setTotalRawItemCount(res?.total)
                 settotalRawItems(res?.total);
                 dispatch(setRawItems(res?.items));
             }
@@ -233,6 +237,7 @@ export default function Items() {
                             limit={limit}
                             setPage={setPage}
                             totalItems={totalItems}
+                            totalProductCount={totalProductCount}
                         />
                     </div>
                 </TabsContent>
@@ -282,6 +287,7 @@ export default function Items() {
                             totalPages={Math.ceil(totalRawItems / rawItemLimit)}
                             setEditRawItem={setEditRawItem}
                             openEditModal={openAddRawItem}
+                            totalRawItemCount={totalRawItemCount}
                         />
                     </div>
                 </TabsContent>

@@ -29,6 +29,7 @@ export default function ItemTable({
     limit,
     setPage,
     totalItems,
+    totalProductCount
 }) {
     const router = useRouter()
     const handleEdit = (item) => {
@@ -99,6 +100,14 @@ export default function ItemTable({
                     {row.original?.serve_person}
                 </div>
             ),
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return value ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>;
+            },
         },
         {
             id: "actions",
@@ -208,7 +217,7 @@ export default function ItemTable({
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {page} of {totalPages}
+                    Page {page} of {totalPages} , <span>Total : {totalProductCount}</span>
                 </span>
                 <Button
                     variant="outline"

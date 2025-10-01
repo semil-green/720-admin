@@ -15,13 +15,13 @@ export default function Collections() {
 
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(10);
     const [totalPage, setTotalPage] = useState(0);
+    const [totalRecordCount, setTotalRecordCount] = useState(0);
 
     const dispatch = useDispatch();
 
     const allCollectionsData = useSelector((state) => state.collectionsSlice.allCollections)
-
     useEffect(() => {
         const fetchCollectionData = async () => {
             setLoading(true)
@@ -29,8 +29,10 @@ export default function Collections() {
                 const res = await getAllCollectionsService(page, limit)
 
                 if (res?.data) {
-                    setTotalPage(Math.ceil(res?.total / limit))
-                    dispatch(setCollections(res?.data))
+                    setTotalPage(Math.ceil(res?.data?.total / limit))
+                    setTotalRecordCount(res?.data?.total)
+                    dispatch(setCollections(res?.data?.data))
+
                     setLoading(false)
                 }
             }
@@ -72,6 +74,7 @@ export default function Collections() {
                     totalPage={totalPage}
                     page={page}
                     setPage={setPage}
+                    totalRecordCount={totalRecordCount}
                 />
             </div>
         </MainLayout>

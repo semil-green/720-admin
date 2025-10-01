@@ -56,6 +56,8 @@ export default function ItemForm({ editItemId }) {
         chemical_free: false,
         natural: false,
         no_antibiotic: false,
+        seo_title: "",
+        seo_description: ""
     });
 
     const [images, setImages] = useState([]);
@@ -88,7 +90,7 @@ export default function ItemForm({ editItemId }) {
             if (allCollections.length === 0) {
                 try {
                     const res = await allCollectionsService();
-                    setAllCollections(res?.data || []);
+                    setAllCollections(res?.data?.data || []);
                 } catch (error) {
                     toast.error("Failed to fetch collections");
                 }
@@ -387,6 +389,8 @@ export default function ItemForm({ editItemId }) {
                     product_display_image: productDisplayImageFile
                         ? productDisplayImageFile.name
                         : "",
+                    seo_title: formData.seo_title,
+                    seo_description: formData.seo_description,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -467,6 +471,8 @@ export default function ItemForm({ editItemId }) {
                     natural: editData.natural || false,
                     no_antibiotic: editData.no_antibiotic || false,
                     hsn_id: editData.hsn_id || null,
+                    seo_title: editData.seo_title || "",
+                    seo_description: editData.seo_description || "",
                 });
 
                 if (editData.categories) {
@@ -670,6 +676,8 @@ export default function ItemForm({ editItemId }) {
                     product_display_image: productDisplayImageFile
                         ? productDisplayImageFile.name
                         : productDisplayImagePreview?.split("/").pop() || "",
+                    seo_title: formData.seo_title,
+                    seo_description: formData.seo_description,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -870,6 +878,33 @@ export default function ItemForm({ editItemId }) {
                 </div>
             </div>
 
+            <div className="flex gap-3">
+                <div className="flex-1">
+                    <Label className="pb-1">Seo Title</Label>
+                    <Input
+                        name="seo_title"
+                        value={formData.seo_title}
+                        onChange={handleChange}
+                        placeholder="Enter SEO Title"
+                        required
+                    />
+
+
+                </div>
+
+                <div className="flex-1">
+                    <Label className="pb-1">Seo Description</Label>
+                    <Textarea
+                        name="seo_description"
+                        className="min-h-[110px]"
+                        value={formData.seo_description}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter SEO Description"
+                    />
+                </div>
+            </div>
+
             <label className="flex items-center space-x-2 mt-1">
                 <input
                     type="checkbox"
@@ -885,7 +920,7 @@ export default function ItemForm({ editItemId }) {
                 <div className="flex-1">
                     <Label className="pb-1">Collections</Label>
                     <MultiSelect
-                        options={allCollections.map((item) => ({
+                        options={allCollections?.map((item) => ({
                             label: item.title,
                             value: item.collection_id.toString(),
                         }))}

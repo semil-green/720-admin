@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { fetchCustomersDfService, getStoresAvailableForUser, getUserAddesssByIdService } from "@/service/draft-orders/draft-orders.service";
+import { fetchCustomersDfService, getStoresAvailableForUser, getUserAddesssByIdService, searchProductForDraftOrderService } from "@/service/draft-orders/draft-orders.service";
 import { toast } from "sonner";
 
 const page = () => {
@@ -23,6 +23,10 @@ const page = () => {
     const [loadingStore, setLoadingStore] = useState(false);
     const [selectedStore, setSelectedStore] = useState({});
 
+    const [searchProduct, setSearchProduct] = useState("");
+    const [searchResult, setSearchResult] = useState([]);
+
+    const [selectedItems, setSelectedItems] = useState([]);
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -81,6 +85,28 @@ const page = () => {
 
         fetchAvailableStore();
     }, [selectedAddress])
+
+
+    useEffect(() => {
+        if (!searchProduct) return;
+
+        const timeout = setTimeout(async () => {
+            try {
+                const res = await searchProductForDraftOrderService(selectedStore?.id, searchProduct);
+                setSearchResult(res?.data || []);
+            } catch (err) {
+                toast.error("Error in searching proucts ");
+            }
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [searchProduct, selectedStore?.id]);
+
+    const handleAdditem = (item) => {
+        if (!selectedItems.find((i) => i.product_id === item.product_id)) {
+            setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
+        }
+    };
 
     return (
         <MainLayout>
@@ -272,28 +298,48 @@ const page = () => {
                                 <h4 className="font-medium">Products</h4>
                                 <div className="grid grid-cols-4 gap-2 mt-2">
                                     <div className="col-span-4">
-                                        <Input
-                                            defaultValue=""
-                                            placeholder="Search Products"
-                                            className=""
-                                        />
+                                        <div className="flex gap-4">
+
+                                            <Input
+                                                defaultValue=""
+                                                placeholder="Search Products"
+                                                className=""
+                                                value={searchProduct}
+                                                onChange={(e) => setSearchProduct(e.target.value)}
+                                            />
+
+                                            <Button onClick={() => { setSearchProduct(""); setSearchResult([]) }}>clean</Button>
+                                        </div>
+
+                                        {searchResult.length > 0 && (
+                                            <div className="border rounded-md mt-2 bg-white shadow-md max-h-64 overflow-y-auto">
+                                                {searchResult.map((item) => (
+                                                    <div
+                                                        key={item.product_id}
+                                                        className="flex items-center justify-between p-2 hover:bg-gray-50"
+                                                    >
+                                                        <div className="flex items-center gap-2">
+                                                            <Image
+                                                                src={item.thumbnail_image}
+                                                                alt={item.title}
+                                                                width={50}
+                                                                height={40}
+                                                                className="rounded-md"
+                                                            />
+                                                            <span className="text-sm">{item.title}</span>
+                                                        </div>
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => { handleAdditem(item); setSearchResult([]); }}
+                                                        >
+                                                            Add
+                                                        </Button>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
-                                    {/* <div className="col-span-1 ">
-                                        <Button
-                                            className="cursor-pointer w-full border shadow  "
-                                            variant={"secondary"}
-                                        >
-                                            Browse
-                                        </Button>
-                                    </div>
-                                    <div className="col-span-1">
-                                        <Button
-                                            className="cursor-pointer border shadow"
-                                            variant={"secondary"}
-                                        >
-                                            Add Custom item
-                                        </Button>
-                                    </div> */}
                                 </div>
                             </div>
 
@@ -303,21 +349,45 @@ const page = () => {
                                 <div className="col-span-1 font-semibold px-2"> Total</div>
                             </div>
 
-                            <div className="grid grid-cols-4 mt-4">
-                                <div className="col-span-2 font-semibold flex gap-2">
-                                    <Image
-                                        src={"/images/fish-image.png"}
-                                        height={20}
-                                        width={50}
-                                    />
-
-                                    <p>Achari sole boneless cubes nt Wt 300g(7-9 pcs)</p>
-                                </div>
-                                <div className="col-span-1 font-semibold px-2">
-                                    <Input defaultValue="" placeholder="2" className="" />
-                                </div>
-                                <div className="col-span-1 font-semibold px-2 ">₹ 750.00</div>
+                            <div className="mt-4 space-y-2">
+                                {selectedItems.map((item) => (
+                                    <div
+                                        key={item.product_id}
+                                        className="grid grid-cols-4 items-center gap-2 border p-2 rounded-md"
+                                    >
+                                        <div className="col-span-2 font-semibold flex gap-2 items-center">
+                                            <Image
+                                                src={item.thumbnail_image}
+                                                height={40}
+                                                width={50}
+                                                alt={item.title}
+                                                className="rounded-md"
+                                            />
+                                            <p className="text-sm">{item.title}</p>
+                                        </div>
+                                        <div className="col-span-1 font-semibold px-2">
+                                            <Input
+                                                type="number"
+                                                min="1"
+                                                value={item.quantity}
+                                                onChange={(e) =>
+                                                    setSelectedItems((prev) =>
+                                                        prev.map((i) =>
+                                                            i.product_id === item.product_id
+                                                                ? { ...i, quantity: Number(e.target.value) }
+                                                                : i
+                                                        )
+                                                    )
+                                                }
+                                            />
+                                        </div>
+                                        <div className="col-span-1 font-semibold px-2">
+                                            ₹ {Number(item.price) * item.quantity}
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
+
                         </div>
 
                         <div className="mt-4 border shadow rounded-md px-4 py-4">

@@ -70,6 +70,8 @@ export default function Categories() {
         (state) => state.categoeySlice.allCategories
     );
 
+    const totalRecordCount = useSelector((state) => state.categoeySlice.totalCategoriesCount)
+
     useEffect(() => {
         const fetchCategories = async () => {
             if (!allCategoriesData || allCategoriesData.length == 0) {
@@ -88,7 +90,6 @@ export default function Categories() {
 
         fetchCategories();
     }, []);
-
 
     return (
         <MainLayout>
@@ -112,6 +113,7 @@ export default function Categories() {
                     onEdit={handleEdit}
                     onDelete={handleDelete}
                     onOpenSubCategoryModal={onOpenSubCategoryModal}
+                    totalRecordCount={totalRecordCount}
                 />
             </div>
 

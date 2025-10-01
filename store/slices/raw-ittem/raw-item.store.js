@@ -24,7 +24,9 @@ const rawItemSlice = createSlice({
         },
         deleteRawItem: (state, action) => {
             const id = action.payload;
-            state.allRawItems = state.allRawItems.filter((item) => item.raw_id !== id);
+            state.allRawItems = state.allRawItems.map(item =>
+                item.raw_id === id ? { ...item, status: false } : item
+            );
         }
     },
 });
