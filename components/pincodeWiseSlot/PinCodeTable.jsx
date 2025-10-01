@@ -68,6 +68,10 @@ export default function SlotTable({ allSlotsOfPincode, isLoading, onEdit }) {
             header: "To",
         },
         {
+            accessorKey: "cut_off_time",
+            header: "Cut Off",
+        },
+        {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {

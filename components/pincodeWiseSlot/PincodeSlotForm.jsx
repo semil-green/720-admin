@@ -33,6 +33,7 @@ const PincodeSlotForm = () => {
     const [slotName, setSlotName] = useState("");
     const [fromTime, setFromTime] = useState("");
     const [toTime, setToTime] = useState("");
+    const [cutOffTime, setCutOffTime] = useState("");
     const [isEdit, setisEdit] = useState(false)
     const [editSlotId, setEditSlotId] = useState(null)
 
@@ -110,6 +111,7 @@ const PincodeSlotForm = () => {
             slot_name: slotName,
             from_time: fromTime,
             to_time: toTime,
+            cut_off_time: cutOffTime,
             dark_store_packaging_center_id,
             pincode_id,
         };
@@ -121,6 +123,7 @@ const PincodeSlotForm = () => {
             setSlotName("");
             setFromTime("");
             setToTime("");
+            setCutOffTime("");
         }
         else {
             toast.error("Failed to add slot");
@@ -131,6 +134,7 @@ const PincodeSlotForm = () => {
         setSlotName(slot.slot_name || "");
         setFromTime(slot.from_time || "");
         setToTime(slot.to_time || "");
+        setCutOffTime(slot.cut_off_time || "");
         setisEdit(true)
         setEditSlotId(slot.id)
     };
@@ -141,6 +145,7 @@ const PincodeSlotForm = () => {
             slot_name: slotName,
             from_time: fromTime,
             to_time: toTime,
+            cut_off_time: cutOffTime,
             dark_store_packaging_center_id,
             pincode_id,
         };
@@ -152,6 +157,7 @@ const PincodeSlotForm = () => {
             setSlotName("");
             setFromTime("");
             setToTime("");
+            setCutOffTime("");
             setisEdit(false)
         }
         else {
@@ -247,6 +253,16 @@ const PincodeSlotForm = () => {
                         onChange={(e) => setToTime(e.target.value)}
                     />{" "}
                 </div>
+                <div>
+                    <Label className="pb-1">Cut-Off</Label>
+                    <Input
+                        name="cut_off_time"
+                        placeholder="Cut Off Time"
+                        type="time"
+                        value={cutOffTime}
+                        onChange={(e) => setCutOffTime(e.target.value)}
+                    />{" "}
+                </div>
             </div>
 
 
@@ -265,6 +281,7 @@ const PincodeSlotForm = () => {
                             setSlotName("")
                             setFromTime("")
                             setToTime("")
+                            setCutOffTime("");
                             setisEdit(false)
                         }}>
                             Cancel

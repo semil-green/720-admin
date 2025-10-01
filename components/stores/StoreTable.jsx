@@ -9,7 +9,7 @@ import {
   AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
   AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
-import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { ArrowUpDown, MoreVertical, Pencil, Trash2, ShieldClose } from "lucide-react"
 import { useDispatch } from "react-redux"
 import { deleteDarkStorePackagingCenterService } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service"
 import { deleteDarkStore, deletePincodeFromDarkStore } from "@/store/slices/dark-store/dark-store.slice"
@@ -26,6 +26,7 @@ export default function StoreDataTable({
   setSortBy,
   sortType,
   setSortType,
+  setDayOff
 }) {
   const router = useRouter();
   const dispatch = useDispatch();
@@ -45,7 +46,7 @@ export default function StoreDataTable({
     setSortType((prev) => (prev === "asc" ? "desc" : "asc"));
   };
 
-  const storeColumns = (onEdit) => [
+  const storeColumns = (onEdit, setDayOff) => [
     {
       accessorKey: "store_name",
       header: "Name",
@@ -96,6 +97,9 @@ export default function StoreDataTable({
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              <DropdownMenuItem onClick={() => setDayOff(store.id)}>
+                <ShieldClose className="mr-2 h-4 w-4" /> Set Day Off
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -105,7 +109,10 @@ export default function StoreDataTable({
 
   const table = useReactTable({
     data,
-    columns: storeColumns((store) => router.push(`/stores/new?id=${store.id}`)),
+    columns: storeColumns(
+      (store) => router.push(`/stores/new?id=${store.id}`),
+      setDayOff
+    ),
     manualPagination: true,
     manualSorting: true,
     pageCount: totalPages,
