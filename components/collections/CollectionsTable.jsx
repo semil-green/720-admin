@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { deleteCollection } from '@/store/slices/collections/collections.slice';
 import { useDispatch } from "react-redux";
 
-export default function CollectionsTable({ allCollectionsData, totalPage, page, setPage }) {
+export default function CollectionsTable({ allCollectionsData, totalPage, page, setPage, totalRecordCount }) {
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -57,6 +57,14 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
         {
             header: 'Products',
             accessorKey: 'no_of_products',
+        },
+        {
+            accessorKey: "status",
+            header: "Status",
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return value ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>;
+            },
         },
         {
             id: "actions",
@@ -172,7 +180,7 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {page} of {totalPage}
+                    Page {page} of {totalPage} , <span className='ml-4'>  Total : {totalRecordCount}</span>
                 </span>
                 <Button
                     variant="outline"

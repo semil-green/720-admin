@@ -20,7 +20,9 @@ const itemsSlice = createSlice({
         },
         deleteItem: (state, action) => {
             const idToDelete = action.payload;
-            state.allItems = state.allItems.filter(item => item.product_id !== idToDelete)
+            state.allItems = state.allItems.map(item =>
+                item.product_id === idToDelete ? { ...item, status: false } : item
+            );
             state.allItemsData = state.allItemsData.filter(item => item.product_id !== idToDelete)
         }
     }

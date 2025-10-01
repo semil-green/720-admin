@@ -51,10 +51,21 @@ export const getStoresAvailableForUser = async (pincode) => {
     }
 }
 
-export const searchProductForDraftOrderService = async (itemName) => {
+export const searchProductForDraftOrderService = async (store_id, productName) => {
 
     try {
-        const fetchproductData = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/searchProduct/${itemName}`)
+
+        const auth_token = localStorage.getItem("token");
+
+        const fetchproductData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getProductsByStore/${store_id}?search=${productName}`,
+            {
+                headers: {
+                    Authorization: auth_token,
+                },
+            }
+        );
+        return fetchproductData?.data
     }
     catch (error) {
         return error
