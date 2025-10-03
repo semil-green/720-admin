@@ -107,3 +107,20 @@ export const updateCollectionService = async (collectionId, data) => {
         return error
     }
 }
+
+export const activateCollectionsService = async (collection_id, status) => {
+
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/collection/update-status`, { collection_id, status }, {
+            headers: {
+                Authorization: auth_token
+            }
+        })
+        return result?.data
+    }
+    catch (error) {
+        return error
+    }
+}

@@ -31,9 +31,19 @@ const categorySlice = createSlice({
                     ? { ...item, status: false }
                     : item
             );
+        },
+        activateCategory: (state, action) => {
+            const updatedCategory = action.payload;
+
+            state.allCategories = state.allCategories.map((item) =>
+                item.category_id === updatedCategory.category_id
+                    ? { ...item, ...updatedCategory }
+                    : item
+            );
         }
+
     },
 });
 
-export const { setCategoriesData, addNewCategory, updateCategory, deleteCategory } = categorySlice.actions;
+export const { setCategoriesData, addNewCategory, updateCategory, deleteCategory, activateCategory } = categorySlice.actions;
 export default categorySlice.reducer;

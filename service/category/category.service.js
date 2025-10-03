@@ -75,3 +75,24 @@ export const deleteCategoryService = async (id) => {
         return error
     }
 }
+
+export const activateCateoryService = async (category_id, status) => {
+
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/category/update-status`, { category_id, status },
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
+
+        return result?.data
+    }
+
+    catch (error) {
+        return error
+    }
+}

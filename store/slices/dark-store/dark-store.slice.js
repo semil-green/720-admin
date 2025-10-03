@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
     darkStores: [],
     allDarkStoresOfUser: [],
-    allDarkStores: []
+    allDarkStores: [],
+    darkStorePaginatedPincodes: []
 };
 
 const darkStoreSlice = createSlice({
@@ -18,6 +19,21 @@ const darkStoreSlice = createSlice({
         },
         setAllDarkStores: (state, action) => {
             state.allDarkStores = action.payload
+        },
+        setDarkStorePaginatedPincodeData: (state, action) => {
+            state.darkStorePaginatedPincodes = action.payload
+        },
+        updateDarkStorePaginatedPincodeData: (state, action) => {
+            const updatedPincode = action.payload;
+            state.darkStorePaginatedPincodes = state.darkStorePaginatedPincodes.map((item) =>
+                item.id === updatedPincode.id ? { ...item, ...updatedPincode } : item
+            );
+        },
+        addDarkStorePaginatedPincodeData: (state, action) => {
+            state.darkStorePaginatedPincodes = [
+                ...state.darkStorePaginatedPincodes,
+                action.payload.pincodeData
+            ];
         },
         addDarkStore: (state, action) => {
             state.darkStores.push(action.payload);
@@ -67,11 +83,14 @@ export const {
     setDarkStores,
     setAllDarkStoresOfUser,
     setAllDarkStores,
+    setDarkStorePaginatedPincodeData,
+    addDarkStorePaginatedPincodeData,
     addDarkStore,
     deleteDarkStore,
     addPincodeToDarkStore,
     updatePincodeInDarkStore,
-    deletePincodeFromDarkStore
+    deletePincodeFromDarkStore,
+    updateDarkStorePaginatedPincodeData
 } = darkStoreSlice.actions;
 
 export default darkStoreSlice.reducer;

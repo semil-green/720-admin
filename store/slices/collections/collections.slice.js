@@ -21,9 +21,16 @@ const collectionsSlice = createSlice({
                     ? { ...collection, status: false }
                     : collection
             );
+        },
+        activateCollection: (state, action) => {
+            state.allCollections = state.allCollections.map(collection =>
+                collection.collection_id === action.payload.collection_id
+                    ? { ...collection, ...action.payload }
+                    : collection
+            );
         }
     },
 });
 
-export const { setCollections, setAllCollectionsData, deleteCollection } = collectionsSlice.actions;
+export const { setCollections, setAllCollectionsData, deleteCollection, activateCollection } = collectionsSlice.actions;
 export default collectionsSlice.reducer;

@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     packagingCenters: [],
-    allPackagingCenters: []
+    allPackagingCenters: [],
+    packagingCenterPaginatedPincodes: []
 };
 
 const packagingCenterSlice = createSlice({
@@ -15,6 +16,7 @@ const packagingCenterSlice = createSlice({
         setAllPackagingCenter: (state, action) => {
             state.allPackagingCenters = action.payload;
         },
+
         addPackagingCenter: (state, action) => {
             state.packagingCenters.push(action.payload);
         },
@@ -52,8 +54,26 @@ const packagingCenterSlice = createSlice({
             if (store && Array.isArray(store.pincodes)) {
                 store.pincodes = store.pincodes.filter(p => p.id !== pincodeId);
             }
-        }
+        },
 
+        setPackagingCenterPaginatedPincodeData: (state, action) => {
+            state.packagingCenterPaginatedPincodes = action.payload
+        },
+
+        updatePackagingCenterPaginatedPincodeData: (state, action) => {
+            const updatedPincode = action.payload;
+            state.packagingCenterPaginatedPincodes = state.packagingCenterPaginatedPincodes.map((item) =>
+                item.id === updatedPincode.id ? { ...item, ...updatedPincode } : item
+            );
+        },
+
+
+        addPackagingCenterPaginatedPincodeData: (state, action) => {
+            state.packagingCenterPaginatedPincodes = [
+                ...state.packagingCenterPaginatedPincodes,
+                action.payload.pincodeData
+            ];
+        },
     }
 });
 
@@ -64,7 +84,10 @@ export const {
     deletePackagingCenter,
     addPincodeToPackagingCenter,
     updatePincodeInPackagingCenter,
-    deletePincodeFromPackagingCenter
+    deletePincodeFromPackagingCenter,
+    setPackagingCenterPaginatedPincodeData,
+    updatePackagingCenterPaginatedPincodeData,
+    addPackagingCenterPaginatedPincodeData
 } = packagingCenterSlice.actions;
 
 export default packagingCenterSlice.reducer;
