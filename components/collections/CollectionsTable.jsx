@@ -13,11 +13,11 @@ import {
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog";
 import { Button } from '../ui/button';
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { deleteCollectionService } from '@/service/collections/collections.service';
+import { activateCollectionsService, deleteCollectionService } from '@/service/collections/collections.service';
 import { toast } from "sonner";
-import { deleteCollection } from '@/store/slices/collections/collections.slice';
+import { activateCollection, deleteCollection } from '@/store/slices/collections/collections.slice';
 import { useDispatch } from "react-redux";
 
 export default function CollectionsTable({ allCollectionsData, totalPage, page, setPage, totalRecordCount }) {
@@ -34,6 +34,29 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
             toast.success("Deleted", { description: "Collection deleted successfully" });
         }
     }
+
+    const handleCollectionActivate = async (collection) => {
+
+        try {
+
+            const { collection_id, status } = collection
+
+            const updatedStatus = status == true ? false : true
+
+            const res = await activateCollectionsService(collection_id, updatedStatus)
+
+            if (res?.status == 200 || res?.status == 201) {
+
+                const updatedCollection = { ...collection, status: updatedStatus };
+                dispatch(activateCollection(updatedCollection));
+            }
+        }
+        catch (error) {
+            toast.error("Failed to update status");
+        }
+
+    }
+
     const columns = [
         {
             header: 'Product',
@@ -105,6 +128,29 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                            Activate
+                                        </div>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Activate Collection?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to activate this Collection?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleCollectionActivate(collection)}>
+
+                                                Confirm Activate
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
                             </AlertDialog>
                         </DropdownMenuContent>
                     </DropdownMenu>

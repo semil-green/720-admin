@@ -105,3 +105,30 @@ export const allDarkStoresOfUserService = async () => {
         return error
     }
 }
+
+export const getAllPincodesOfStoreOrPackagingCenter = async (storeId, page, limit, search, sortBy, sortOrder) => {
+
+    try {
+
+        const auth_token = localStorage.getItem("token")
+
+        const params = new URLSearchParams();
+
+        if (storeId) params.append("storeId", storeId);
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+        if (search) params.append("search", search);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+        if (sortBy) params.append("sortBy", sortBy);
+
+        const fetchData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/ds-pc/get-pincode?${params.toString()}`,
+            { headers: { Authorization: auth_token } }
+        );
+
+        return fetchData?.data;
+    }
+    catch (error) {
+        return error
+    }
+}
