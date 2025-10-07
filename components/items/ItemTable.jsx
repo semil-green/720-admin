@@ -18,9 +18,12 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { MoreVertical, Pencil, Trash2 } from "lucide-react"
+import { MoreVertical, Pencil, Trash2, Copy } from "lucide-react"
 import { useRouter } from "next/navigation";
-
+import { duplicateProductService } from "@/service/items/items.service"
+import { toast } from "sonner"
+import { useDispatch } from "react-redux"
+import { duplicateItem } from "@/store/slices/items/items.slice"
 export default function ItemTable({
     data,
     onDelete,
@@ -32,8 +35,26 @@ export default function ItemTable({
     totalProductCount
 }) {
     const router = useRouter()
+    const dispatch = useDispatch()
     const handleEdit = (item) => {
         router.push(`/items/new?id=${item}`)
+    }
+
+    const handleDuplicate = async (product_id) => {
+
+        try {
+
+            const res = await duplicateProductService(product_id)
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Product duplicated successfully")
+                dispatch(duplicateItem({ oldId: product_id, newId: res?.data?.product_id }));
+
+            }
+
+        }
+        catch (error) {
+            toast.error("Failed to duplicate product")
+        }
     }
     const storeColumns = (onEdit, onDelete) => [
         {
@@ -153,6 +174,32 @@ export default function ItemTable({
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-blue-600 hover:text-white hover:bg-blue-600 rounded-sm">
+                                        <Copy className="mr-2 h-4 w-4" />
+                                        Duplicate
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Duplicate Item?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to duplicate this item? A copy will be created with the same details.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={() => handleDuplicate(item.product_id)}
+                                        >
+                                            Confirm Duplicate
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )

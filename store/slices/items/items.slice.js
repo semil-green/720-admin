@@ -24,9 +24,26 @@ const itemsSlice = createSlice({
                 item.product_id === idToDelete ? { ...item, status: false } : item
             );
             state.allItemsData = state.allItemsData.filter(item => item.product_id !== idToDelete)
+        },
+        duplicateItem: (state, action) => {
+            const { oldId, newId } = action.payload;
+
+            const originalItem = state.allItems.find(
+                (item) => item.product_id === oldId
+            );
+
+            if (originalItem) {
+                const duplicatedItem = {
+                    ...originalItem,
+                    product_id: newId,
+                    status: 'draft',
+                };
+
+                state.allItems = [duplicatedItem, ...state.allItems];
+            }
         }
     }
 })
 
-export const { getAllItems, getAllItemsData, deleteItem, clearAllItemsData } = itemsSlice.actions;
+export const { getAllItems, getAllItemsData, deleteItem, clearAllItemsData, duplicateItem } = itemsSlice.actions;
 export default itemsSlice.reducer

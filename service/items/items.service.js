@@ -107,3 +107,21 @@ export const updateItemService = async (id, data) => {
         return error
     }
 }
+
+export const duplicateProductService = async (product_id) => {
+
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/product/duplicate/${product_id}`, {}, {
+            headers: {
+                Authorization: auth_token
+            }
+        })
+
+        return result?.data
+    }
+    catch (error) {
+        return error
+    }
+}

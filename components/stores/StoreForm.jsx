@@ -19,12 +19,14 @@ import { getAllStatesService } from "@/service/state/state.service";
 import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { addDarkStore } from "@/store/slices/dark-store/dark-store.slice";
+import { addDarkStore, setDarkStorePaginatedPincodeData } from "@/store/slices/dark-store/dark-store.slice";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 
 export default function StoreForm({ editId, type }) {
     const router = useRouter();
     const dispatch = useDispatch();
+    const pathname = usePathname();
 
     const allStates = useSelector((state) => state.stateSlice.allStates);
     const allCities = useSelector((state) => state.citySlice.allCities);
@@ -46,6 +48,19 @@ export default function StoreForm({ editId, type }) {
     });
 
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+    useEffect(() => {
+        dispatch(setDarkStorePaginatedPincodeData([]));
+
+        const handlePopState = () => {
+            dispatch(setDarkStorePaginatedPincodeData([]));
+        };
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [dispatch, pathname]);
 
     useEffect(() => {
         const fetchStates = async () => {
@@ -263,7 +278,7 @@ export default function StoreForm({ editId, type }) {
                 </div>
             </div>
             <div className="flex justify-center gap-4 mt-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/stores")}>
+                <Button type="button" variant="outline" onClick={() => { router.push("/stores"); dispatch(setDarkStorePaginatedPincodeData([])); }}>
                     Back to list
                 </Button>
                 {editId ? <Button type="button" onClick={(e) => handleUpdate(editId, formData, e)}>

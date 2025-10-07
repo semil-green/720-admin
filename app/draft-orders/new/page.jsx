@@ -31,12 +31,22 @@ const page = () => {
     const [storesByPincode, setStoresByPincode] = useState(null);
     const [loadingStore, setLoadingStore] = useState(false);
     const [selectedStore, setSelectedStore] = useState({});
+
+
+    useEffect(() => {
+        setSelectedStore({});
+        setStoresByPincode(null);
+    }, [userAddress]);
+
     const [searchProduct, setSearchProduct] = useState("");
     const [searchResult, setSearchResult] = useState([]);
-
     const [selectedItems, setSelectedItems] = useState([]);
+
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState(null);
+
+    const [subtotal, setSubtotal] = useState(null);
+    const [tax, setTax] = useState(null);
 
     const router = useRouter();
     useEffect(() => {
@@ -68,6 +78,10 @@ const page = () => {
                     selectedUser.customer_id
                 );
                 setUserAddress(response?.data || null);
+
+                setSelectedAddress(response?.data?.[0] || {});
+                setSelectedStore({});
+                setStoresByPincode(null);
             } catch (error) {
                 toast.error("Error in fetching user address");
             } finally {
@@ -79,16 +93,21 @@ const page = () => {
     }, [selectedUser]);
 
     useEffect(() => {
-        if (!selectedUser) return;
-        if (!selectedAddress) return;
+        if (!selectedAddress?.pincode) return;
 
         const fetchAvailableStore = async () => {
             try {
                 setLoadingStore(true);
-                const fetchData = await getStoresAvailableForUser(
-                    selectedAddress?.pincode
-                );
-                setStoresByPincode(fetchData?.data);
+                const fetchData = await getStoresAvailableForUser(selectedAddress.pincode);
+                const stores = fetchData?.data || [];
+                setStoresByPincode(stores);
+
+                if (stores.length > 0) {
+                    setSelectedStore(stores[0]);
+
+                } else {
+                    setSelectedStore({});
+                }
             } catch (err) {
                 toast.error("Error in fetching available stores");
             } finally {
@@ -98,6 +117,7 @@ const page = () => {
 
         fetchAvailableStore();
     }, [selectedAddress]);
+
 
     useEffect(() => {
         if (!searchProduct) return;
@@ -139,11 +159,39 @@ const page = () => {
         fetchSlotByPincode();
     }, [selectedStore, selectedAddress]);
 
+
     const handleAdditem = (item) => {
         if (!selectedItems.find((i) => i.product_id === item.product_id)) {
             setSelectedItems([...selectedItems, { ...item, quantity: 1 }]);
         }
     };
+
+    useEffect(() => {
+        if (selectedItems.length === 0) {
+            setSubtotal(0);
+            setTax(0);
+            return;
+        }
+
+        const { subtotal: newSubtotal, tax: newTax } = selectedItems.reduce(
+            (acc, item) => {
+                const quantity = Number(item.quantity) || 0;
+                const price = Number(item.price) || 0;
+                const gst = Number(item.gst_amount) || 0;
+
+                acc.subtotal += quantity * price;
+                acc.tax += quantity * gst;
+
+                return acc;
+            },
+            { subtotal: 0, tax: 0 }
+        );
+
+        setSubtotal(newSubtotal);
+        setTax(newTax);
+    }, [selectedItems]);
+
+
 
     const handleSubmit = async () => {
         try {
@@ -267,7 +315,7 @@ const page = () => {
                 </div>
 
                 <div className="grid grid-cols-3 mt-6 gap-4">
-                    <div className="col-span-2  bg-white ">
+                    <div className="col-span-3  bg-white ">
                         <div className="border shadow rounded-md px-4 py-4">
                             <div>
                                 <h4 className="font-medium">User</h4>
@@ -369,7 +417,7 @@ const page = () => {
                         </div>
                     </div>
 
-                    <div className="col-span-2 bg-white">
+                    <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
                             <h4 className="font-medium">User Address</h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
@@ -387,6 +435,7 @@ const page = () => {
                                                     (addr) => addr.address_id === Number(e.target.value)
                                                 );
                                                 setSelectedAddress(selected);
+                                                setStoresByPincode(null);
                                             }}
                                         >
                                             <option value="" disabled>
@@ -410,7 +459,7 @@ const page = () => {
                         </div>
                     </div>
 
-                    <div className="col-span-2 bg-white">
+                    <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
                             <h4 className="font-medium">Stores</h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
@@ -451,7 +500,7 @@ const page = () => {
                         </div>
                     </div>
 
-                    <div className="col-span-2 bg-white">
+                    <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
                             <h4 className="font-medium">Slots</h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
@@ -569,20 +618,52 @@ const page = () => {
                                             <p className="text-sm">{item.title}</p>
                                         </div>
                                         <div className="col-span-1 font-semibold px-2">
+
+
                                             <Input
                                                 type="number"
                                                 min="1"
+                                                max={item.available}
                                                 value={item.quantity}
-                                                onChange={(e) =>
+                                                onChange={(e) => {
+                                                    const inputValue = e.target.value;
+
+                                                    if (inputValue === "") {
+                                                        setSelectedItems((prev) =>
+                                                            prev.map((i) =>
+                                                                i.product_id === item.product_id ? { ...i, quantity: "" } : i
+                                                            )
+                                                        );
+                                                        return;
+                                                    }
+
+                                                    const newQty = Number(inputValue);
+
+                                                    if (isNaN(newQty) || newQty < 1) return;
+
+                                                    if (newQty > item.available) {
+                                                        toast.error(`Only ${item.available} units available in stock.`);
+                                                        return;
+                                                    }
+
+
+                                                    setSelectedItems((prev) =>
+                                                        prev.map((i) =>
+                                                            i.product_id === item.product_id ? { ...i, quantity: newQty } : i
+                                                        )
+                                                    );
+                                                }}
+                                                onBlur={() => {
                                                     setSelectedItems((prev) =>
                                                         prev.map((i) =>
                                                             i.product_id === item.product_id
-                                                                ? { ...i, quantity: Number(e.target.value) }
+                                                                ? { ...i, quantity: Number(i.quantity) || 1 }
                                                                 : i
                                                         )
-                                                    )
-                                                }
+                                                    );
+                                                }}
                                             />
+
                                         </div>
                                         <div className="col-span-1 font-semibold px-2">
                                             ₹ {Number(item.price) * item.quantity}
@@ -597,8 +678,8 @@ const page = () => {
 
                             <div className="grid grid-cols-3 px-4 py-2 border rounded-md gap-2 mt-2">
                                 <div className="col-span-1">Subtotal</div>
-                                <div className="col-span-1">1 item</div>
-                                <div className="col-span-1">₹ 750.00</div>
+                                <div className="col-span-1">{selectedItems?.length} item</div>
+                                <div className="col-span-1">₹ {subtotal}</div>
 
                                 <div className="col-span-1">Add Discount</div>
                                 <div className="col-span-1">-</div>
@@ -606,19 +687,19 @@ const page = () => {
 
                                 <div className="col-span-1">Add Shipping or Delivery</div>
                                 <div className="col-span-1">-</div>
-                                <div className="col-span-1">₹ 0.00</div>
+                                <div className="col-span-1">₹ {selectedStore?.delivery_charge ?? 0}</div>
 
                                 <div className="col-span-1">Estimated Tax</div>
                                 <div className="col-span-1">SGST + CGST 12% (included)</div>
-                                <div className="col-span-1">₹ 80.36</div>
+                                <div className="col-span-1">₹ {tax ?? 0}</div>
 
                                 <div className="col-span-1">Total</div>
                                 <div className="col-span-1"></div>
-                                <div className="col-span-1">₹ 750.00</div>
+                                <div className="col-span-1">₹ {Number(subtotal || 0) + Number(tax || 0) + Number(selectedStore?.delivery_charge || 0) ?? 0}</div>
                             </div>
                         </div>
 
-                        <div className="border shadow rounded-md px-4 py-4 mt-4">
+                        {/* <div className="border shadow rounded-md px-4 py-4 mt-4">
                             <div className="flex items-center space-x-4">
                                 <input
                                     type="checkbox"
@@ -643,7 +724,7 @@ const page = () => {
                                     Mark as Paid
                                 </Button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
                     {/* right side content */}
@@ -651,20 +732,6 @@ const page = () => {
                         <div className="border shadow rounded-md px-4 py-4 ">
                             <span className="font-semibold"> Notes </span>
                             <p className="mt-4">No Notes</p>
-                        </div>
-
-                        <div className="border shadow rounded-md px-4 py-4 mt-4 ">
-                            <span className="font-semibold"> Customer </span>
-                            <Input
-                                placeholder="Search or create a customer"
-                                className="mt-2"
-                            />
-                        </div>
-
-                        <div className="border shadow rounded-md px-4 py-4 mt-4 ">
-                            <span className="font-semibold"> Market </span>
-                            <p className="mt-4">Pricing</p>
-                            <p className="mt-4">India (INR ₹) </p>
                         </div>
 
                         <div className="border shadow rounded-md px-4 py-4 mt-4 ">

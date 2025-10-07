@@ -16,18 +16,34 @@ import { Switch } from "@/components/ui/switch";
 import Image from "next/image";
 import { MultiSelect } from "@/components/shadcn/MultiSelect";
 import { Textarea } from "@/components/ui/textarea";
-import { Item_Unit_List } from "@/lib/constants";
 import { PlusIcon, MinusIcon, ImageIcon } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { setCategoriesData } from "@/store/slices/category/category.slice";
 import { getAllCategoriesService } from "@/service/category/category.service";
 import { getAllHSNCodeService } from "@/service/hsn-code/hsn-code.service";
 import { setHsnCodes } from "@/store/slices/hsn-code/hsn-code.slice";
-import { addNewItemService, allCollectionsService, getitemById, updateItemService } from "@/service/items/items.service";
+import {
+    addNewItemService,
+    allCollectionsService,
+    getitemById,
+    updateItemService,
+} from "@/service/items/items.service";
 import { toast } from "sonner";
 import Link from "next/link";
 import { getAllUnitsService } from "@/service/unit/unit.service";
 import { clearAllItemsData } from "@/store/slices/items/items.slice";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import {
+    addNewTagService,
+    fetchAlltagsService,
+} from "@/service/store-order/tags.service";
+import { addNewTag, setTags } from "@/store/slices/tags/tags.slice";
 
 export default function ItemForm({ editItemId }) {
     const router = useRouter();
@@ -35,6 +51,65 @@ export default function ItemForm({ editItemId }) {
 
     const [loading, setLoading] = useState(false);
     const [units, setUnits] = useState([]);
+    const [opentagsModal, setOopentagsModal] = useState(false);
+    const [searchtag, setSearchTag] = useState("");
+    const [selectedTags, setSelectedTags] = useState([]);
+
+    const alltagsData = useSelector((state) => state.tagsSlice.alltagsData);
+
+    useEffect(() => {
+        if (alltagsData?.length === 0) {
+            const fetchData = async () => {
+                try {
+                    const res = await fetchAlltagsService();
+
+                    if (res?.status == 200) {
+                        dispatch(setTags(res?.data));
+                    }
+                } catch (err) {
+                    toast.error("Failed to fetch tags");
+                }
+            };
+
+            fetchData();
+        }
+    }, []);
+
+    const filteredTags = alltagsData.filter((tag) =>
+        tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
+    );
+
+    // const handleTagSelect = (id) => {
+    //     setSelectedTags((prev) =>
+    //         prev.includes(id) ? prev.filter((tagId) => tagId !== id) : [...prev, id]
+    //     );
+    // };
+
+    const handleTagSelect = (tagId) => {
+        setSelectedTags((prev) => {
+            const isSelected = prev.some((t) => t.tag_id === tagId);
+            if (isSelected) {
+                return prev.filter((t) => t.tag_id !== tagId);
+            } else {
+                return [...prev, { tag_id: tagId }];
+            }
+        });
+    };
+
+
+    const handleAddNewTag = async () => {
+        try {
+            const res = await addNewTagService(searchtag);
+
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(addNewTag(res?.data));
+                toast.success("Tag added successfully");
+                setSearchTag("");
+            }
+        } catch (err) {
+            toast.error("Failed to add new tag");
+        }
+    };
 
     // ------------------------------------ ItemForm state ------------------------------------
 
@@ -57,7 +132,7 @@ export default function ItemForm({ editItemId }) {
         natural: false,
         no_antibiotic: false,
         seo_title: "",
-        seo_description: ""
+        seo_description: "",
     });
 
     const [images, setImages] = useState([]);
@@ -65,11 +140,11 @@ export default function ItemForm({ editItemId }) {
     const [selectedCollections, setSelectedCollections] = useState([]);
 
     const [productDisplayImageFile, setProductDisplayImageFile] = useState(null);
-    const [productDisplayImagePreview, setProductDisplayImagePreview] = useState("");
+    const [productDisplayImagePreview, setProductDisplayImagePreview] =
+        useState("");
     const [allCollections, setAllCollections] = useState([]);
 
     useEffect(() => {
-
         if (units.length === 0) {
             const fetchUnitsData = async () => {
                 try {
@@ -79,11 +154,11 @@ export default function ItemForm({ editItemId }) {
                 } catch (error) {
                     toast.error("Failed to fetch units");
                 }
-            }
+            };
 
             fetchUnitsData();
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         const fetchCollections = async () => {
@@ -206,7 +281,6 @@ export default function ItemForm({ editItemId }) {
         setBenefits(updated);
     };
 
-
     const handleBenefitImageChange = (index, e) => {
         const file = e.target.files[0];
         if (file) {
@@ -295,7 +369,6 @@ export default function ItemForm({ editItemId }) {
         setLoading(true);
 
         try {
-
             if (!formData.title?.trim()) {
                 toast.error("Title is required");
                 return setLoading(false);
@@ -350,13 +423,14 @@ export default function ItemForm({ editItemId }) {
             }));
 
             const nutritionalFactsPayload = [...nutrients, ...vitamins, ...minerals]
-                .filter(({ label, value }) => label.trim() !== "" && value.trim() !== "")
+                .filter(
+                    ({ label, value }) => label.trim() !== "" && value.trim() !== ""
+                )
                 .map(({ label, value, nutritional_type_id }) => ({
                     nutritional_type_id,
                     label,
                     value,
                 }));
-
 
             const benefitsPayload = benefits.map((b) => ({
                 benefit_id: b.Id || null,
@@ -365,6 +439,9 @@ export default function ItemForm({ editItemId }) {
                 image: b.image?.file ? b.image.file.name : "",
             }));
 
+            const tagsPayload = selectedTags.map((tag) => ({
+                tag_id: Number(tag.tag_id),
+            }));
 
             const payload = {
                 product: {
@@ -397,6 +474,7 @@ export default function ItemForm({ editItemId }) {
                 images: [], // keep as empty array like in your Postman payload
                 benefits: benefitsPayload,
                 nutritionalFacts: nutritionalFactsPayload,
+                tags: tagsPayload,
             };
 
             // ------------------------------------
@@ -424,11 +502,10 @@ export default function ItemForm({ editItemId }) {
                 }
             });
 
-
             const res = await addNewItemService(formDataToSend);
 
             if (res?.status == 201 || res?.data?.status == 200) {
-                dispatch(clearAllItemsData())
+                dispatch(clearAllItemsData());
                 toast.success("Item added successfully");
                 router.push("/items");
             } else {
@@ -441,14 +518,10 @@ export default function ItemForm({ editItemId }) {
         }
     };
 
-
-
-
     useEffect(() => {
         if (!editItemId) return;
 
         const fetchData = async () => {
-
             try {
                 const editData = await getitemById(editItemId);
 
@@ -485,6 +558,18 @@ export default function ItemForm({ editItemId }) {
                     setSelectedCollections(
                         editData.collections.map((col) => col.collection_id.toString())
                     );
+                }
+
+                if (editData.tags && editData.tags.length > 0) {
+                    setSelectedTags(
+                        editData.tags.map((t) => ({
+                            id: t.id,
+                            product_id: t.product_id,
+                            tag_id: t.tag_id
+                        }))
+                    );
+                } else {
+                    setSelectedTags([]);
                 }
 
                 // Product display image
@@ -548,7 +633,6 @@ export default function ItemForm({ editItemId }) {
                         }))
                     );
                 }
-
             } catch (err) {
                 toast.error("Failed to fetch item");
             }
@@ -557,13 +641,11 @@ export default function ItemForm({ editItemId }) {
         fetchData();
     }, [editItemId]);
 
-
     const handleUpdate = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-
             if (!formData.title?.trim()) {
                 toast.error("Title is required");
                 return setLoading(false);
@@ -604,7 +686,6 @@ export default function ItemForm({ editItemId }) {
                 return setLoading(false);
             }
 
-
             if (!images || images.length === 0) {
                 toast.error("At least one product image is required");
                 return setLoading(false);
@@ -619,14 +700,14 @@ export default function ItemForm({ editItemId }) {
             }));
 
             const nutritionalFactsPayload = [...nutrients, ...vitamins, ...minerals]
-                .filter(({ label, value }) => label.trim() !== "" && value.trim() !== "")
+                .filter(
+                    ({ label, value }) => label.trim() !== "" && value.trim() !== ""
+                )
                 .map(({ label, value, nutritional_type_id }) => ({
                     nutritional_type_id,
                     label,
                     value,
                 }));
-
-
 
             const benefitsPayload = benefits.map((b) => {
                 let imageName = "";
@@ -639,7 +720,9 @@ export default function ItemForm({ editItemId }) {
 
                 return {
                     benefit_id:
-                        typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647 ? b.Id : null,
+                        typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647
+                            ? b.Id
+                            : null,
                     title: b.title,
                     description: b.description,
                     image: imageName || "",
@@ -651,6 +734,10 @@ export default function ItemForm({ editItemId }) {
                 .map((img) => ({
                     image: img.preview.split("/").pop(),
                 }));
+
+            const tagsPayload = selectedTags.map((tag) => ({
+                tag_id: Number(tag.tag_id),
+            }));
 
             const payload = {
                 product: {
@@ -684,6 +771,7 @@ export default function ItemForm({ editItemId }) {
                 images: imagesPayload,
                 benefits: benefitsPayload,
                 nutritionalFacts: nutritionalFactsPayload,
+                tags: tagsPayload,
             };
 
             const formDataToSend = new FormData();
@@ -711,7 +799,7 @@ export default function ItemForm({ editItemId }) {
             const res = await updateItemService(editItemId, formDataToSend);
 
             if (res?.status === 200 || res?.data?.status === 200) {
-                dispatch(clearAllItemsData())
+                dispatch(clearAllItemsData());
                 toast.success("Item updated successfully");
                 router.push("/items");
             } else {
@@ -723,7 +811,6 @@ export default function ItemForm({ editItemId }) {
             setLoading(false);
         }
     };
-
 
     return (
         <form className="grid gap-6">
@@ -786,7 +873,6 @@ export default function ItemForm({ editItemId }) {
                                 </SelectItem>
                             ))}
                         </SelectContent>
-
                     </Select>
                 </div>
 
@@ -889,7 +975,79 @@ export default function ItemForm({ editItemId }) {
                         required
                     />
 
+                    <div className="mt-4">
+                        <Label className="pb-1">Tags</Label>
 
+                        <Button onClick={() => setOopentagsModal(true)} className="mt-2">
+                            Add Tags
+                        </Button>
+
+                        <Dialog open={opentagsModal} onOpenChange={setOopentagsModal}>
+                            <DialogContent className="sm:max-w-md">
+                                <DialogHeader>
+                                    <DialogTitle className="text-center">
+                                        Select or Add Tag
+                                    </DialogTitle>
+                                </DialogHeader>
+
+                                <div className="space-y-4">
+                                    <Input
+                                        placeholder="Search for a tag..."
+                                        value={searchtag}
+                                        onChange={(e) => setSearchTag(e.target.value)}
+                                    />
+
+                                    <div className="max-h-60 overflow-y-auto border rounded-md p-2 space-y-2">
+                                        {filteredTags.length > 0
+                                            ? filteredTags.map((tag) => (
+                                                <div
+                                                    key={tag.id}
+                                                    className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                                                    onClick={() => handleTagSelect(tag.id)}
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={selectedTags.some((t) => t.tag_id === tag.id)}
+                                                        onChange={() => handleTagSelect(tag.id)}
+                                                        className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                                    />
+                                                    <span>{tag.tag_name}</span>
+                                                </div>
+                                            ))
+                                            :
+                                            searchtag && (
+                                                <div className="p-2 text-sm text-center">
+                                                    No tags found.
+                                                    <Button
+                                                        variant="link"
+                                                        className="text-blue-600"
+                                                        onClick={handleAddNewTag}
+                                                    >
+                                                        Add new tag: "{searchtag}"
+                                                    </Button>
+                                                </div>
+                                            )}
+                                    </div>
+                                </div>
+
+                                <DialogFooter>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setOopentagsModal(false)}
+                                    >
+                                        Close
+                                    </Button>
+                                    <Button
+                                        onClick={() => {
+                                            setOopentagsModal(false);
+                                        }}
+                                    >
+                                        Save
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
                 </div>
 
                 <div className="flex-1">
@@ -1112,7 +1270,6 @@ export default function ItemForm({ editItemId }) {
                                         type="file"
                                         accept="image/*"
                                         onChange={(e) => handleBenefitImageChange(index, e)}
-
                                     />
                                     <div className="border rounded-lg h-24 w-24 flex justify-center items-center bg-secondary cursor-pointer">
                                         <ImageIcon className="size-18 text-secondary-foreground" />
@@ -1129,7 +1286,6 @@ export default function ItemForm({ editItemId }) {
                                         accept="image/*"
                                         onChange={(e) => handleBenefitImageChange(index, e)}
                                     />
-
                                 </label>
                             )}
                         </div>
@@ -1308,8 +1464,8 @@ export default function ItemForm({ editItemId }) {
             </div>
 
             <div className="flex justify-center gap-4">
-                <Link href={'/items'}>
-                    <Button type="button" variant="outline" >
+                <Link href={"/items"}>
+                    <Button type="button" variant="outline">
                         Back to list
                     </Button>
                 </Link>
