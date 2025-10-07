@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
     useReactTable,
     getCoreRowModel,
@@ -18,90 +18,87 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import { setOrderStatus } from '@/store/slices/order-status/order-status.slice'
+import { fetchOrderStatusTypesService } from '@/service/cutomer-order/cutomer-order.service'
 
-const DraftOrderTable = () => {
-    const draftOrders = [
-        {
-            orderId: 'D1212',
-            Date: '2022-01-01',
-            Customer: 'John Doe',
-            Status: 'Completed',
-            Total: '₹ 750 INR',
-        },
-        {
-            orderId: 'D1213',
-            Date: '2022-01-02',
-            Customer: 'Jane Smith',
-            Status: 'Open',
-            Total: '₹ 1200 INR',
-        },
-        {
-            orderId: 'D1214',
-            Date: '2022-01-03',
-            Customer: 'Ravi Kumar',
-            Status: 'Completed',
-            Total: '₹ 980 INR',
-        },
-        {
-            orderId: 'D1215',
-            Date: '2022-01-04',
-            Customer: 'Priya Patel',
-            Status: 'Open',
-            Total: '₹ 450 INR',
-        },
-        {
-            orderId: 'D1216',
-            Date: '2022-01-05',
-            Customer: 'Ahmed Khan',
-            Status: 'Completed',
-            Total: '₹ 1320 INR',
-        },
-    ]
+const DraftOrderTable = ({ data, page, setPage, totalPages }) => {
+
+    const dispatch = useDispatch();
+    const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
+    const fetchOrderStatus = async () => {
+        try {
+            const res = await fetchOrderStatusTypesService();
+
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(setOrderStatus(res?.data))
+            }
+        } catch (error) {
+            toast.error("Failed to fetch order status");
+        }
+    };
+    useEffect(() => {
+        if (!orderStatus || orderStatus.length === 0) {
+            fetchOrderStatus();
+        }
+    }, [orderStatus]);
 
     const columns = [
         {
-            accessorKey: 'orderId',
+            accessorKey: 'order_id',
             header: 'Order ID',
-            cell: ({ row }) => <span className="font-medium">{row.original.orderId}</span>,
+            cell: ({ row }) => <span className="font-medium">{row.original.order_id}</span>,
         },
         {
-            accessorKey: 'Date',
-            header: 'Date',
-            cell: ({ row }) => <span>{row.original.Date}</span>,
-        },
-        {
-            accessorKey: 'Customer',
-            header: 'Customer',
-            cell: ({ row }) => <span>{row.original.Customer}</span>,
-        },
-        {
-            accessorKey: 'Status',
-            header: 'Status',
+            accessorKey: "created_date",
+            header: "Created",
             cell: ({ row }) => {
-                const status = row.original.Status
-                return (
-                    <span
-                        className={`text-sm font-medium ${status === 'Open'
-                            ? 'text-yellow-600'
-                            : status === 'Completed'
-                                ? 'text-green-600'
-                                : 'text-gray-600'
-                            }`}
-                    >
-                        {status}
-                    </span>
-                )
+                const rawDate = row.original?.created_date;
+                if (!rawDate) return <span>-</span>;
+
+                const date = new Date(rawDate);
+
+                const formatted = date.toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                });
+
+                return <span className="text-md">{formatted}</span>;
             },
         },
         {
-            accessorKey: 'Total',
+            accessorKey: 'customer_name',
+            header: 'Customer',
+            cell: ({ row }) => <span>{row.original.customer_name}</span>,
+        },
+        {
+            accessorKey: "order_status",
+            header: "Order Status",
+            cell: ({ row }) => {
+                const statusValue = row?.original?.order_status;
+                const statusLabel = orderStatus.find(s => s.value === statusValue)?.label || "Unknown";
+                return <div className="text-md">{statusLabel}</div>;
+            },
+        },
+        {
+            accessorKey: 'order_items_count',
+            header: 'Items',
+            cell: ({ row }) => <span className="font-medium">{row.original.order_items_count}</span>,
+        },
+        {
+            accessorKey: 'item_order_price',
             header: 'Total',
-            cell: ({ row }) => <span className="font-medium">{row.original.Total}</span>,
+            cell: ({ row }) => <span className="font-medium">{row.original.item_order_price}</span>,
         },
     ]
 
     const table = useReactTable({
-        data: draftOrders,
+        data: data,
         columns,
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
@@ -122,11 +119,11 @@ const DraftOrderTable = () => {
                         </TableRow>
                     ))}
                 </TableHeader>
-                <TableBody>
+                <TableBody >
                     {table.getRowModel().rows.map((row) => (
-                        <TableRow key={row.id}>
+                        <TableRow key={row.id} >
                             {row.getVisibleCells().map((cell) => (
-                                <TableCell key={cell.id}>
+                                <TableCell key={cell.id} className="!py-4" >
                                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                 </TableCell>
                             ))}
@@ -134,6 +131,27 @@ const DraftOrderTable = () => {
                     ))}
                 </TableBody>
             </Table>
+
+
+            <div className="flex items-center justify-between mt-4">
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                >
+                    Previous
+                </Button>
+                <span className="text-sm">
+                    Page {page} of {totalPages}
+                </span>
+                <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={page >= totalPages}
+                >
+                    Next
+                </Button>
+            </div>
 
 
         </div>

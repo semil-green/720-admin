@@ -24,37 +24,40 @@ export const fetchCustomersDfService = async (search) => {
 };
 
 export const getUserAddesssByIdService = async (customer_id) => {
-
     try {
         const auth_token = localStorage.getItem("token");
 
-        const fetchUserAddress = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getAddressByCustomer/${customer_id}`, { headers: { Authorization: auth_token } });
+        const fetchUserAddress = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getAddressByCustomer/${customer_id}`,
+            { headers: { Authorization: auth_token } }
+        );
 
-        return fetchUserAddress?.data
+        return fetchUserAddress?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
-    }
-}
+};
 
 export const getStoresAvailableForUser = async (pincode) => {
-
     try {
         const auth_token = localStorage.getItem("token");
 
-        const fetchAvailableStoresData = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getStoreByPincode/${pincode}`, { headers: { Authorization: auth_token } });
+        const fetchAvailableStoresData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/getStoreByPincode/${pincode}`,
+            { headers: { Authorization: auth_token } }
+        );
 
-        return fetchAvailableStoresData?.data
+        return fetchAvailableStoresData?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
-    }
-}
+};
 
-export const searchProductForDraftOrderService = async (store_id, productName) => {
-
+export const searchProductForDraftOrderService = async (
+    store_id,
+    productName
+) => {
     try {
-
         const auth_token = localStorage.getItem("token");
 
         const fetchproductData = await axios.get(
@@ -65,17 +68,14 @@ export const searchProductForDraftOrderService = async (store_id, productName) =
                 },
             }
         );
-        return fetchproductData?.data
+        return fetchproductData?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
-    }
-}
+};
 
 export const getSlotByPincodeAndStoreIdService = async (pincode, store_id) => {
-
     try {
-
         const auth_token = localStorage.getItem("token");
 
         const fetchSlotData = await axios.get(
@@ -86,43 +86,71 @@ export const getSlotByPincodeAndStoreIdService = async (pincode, store_id) => {
                 },
             }
         );
-        return fetchSlotData?.data
+        return fetchSlotData?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
-    }
-}
+};
 
 export const addNewDraftOrderService = async (data) => {
-
     try {
         const auth_token = localStorage.getItem("token");
 
-        const saveDraftOrder = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/addOrderByDraftOrder`, data, {
-            headers: {
-                Authorization: auth_token
+        const saveDraftOrder = await axios.post(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/addOrderByDraftOrder`,
+            data,
+            {
+                headers: {
+                    Authorization: auth_token,
+                },
             }
-        });
-        return saveDraftOrder?.data
+        );
+        return saveDraftOrder?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
-    }
-}
+};
 
 export const createNewPidgeOrderService = async (data) => {
-
     try {
         const auth_token = localStorage.getItem("token");
 
-        const createPidge = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/createPidgeOrderByDraftOrder`, data, {
-            headers: {
-                Authorization: auth_token
+        const createPidge = await axios.post(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/draft-orders/createPidgeOrderByDraftOrder`,
+            data,
+            {
+                headers: {
+                    Authorization: auth_token,
+                },
             }
-        });
-        return createPidge?.data
+        );
+        return createPidge?.data;
+    } catch (error) {
+        return error;
     }
-    catch (error) {
-        return error
+};
+
+export const fetchDraftOrdersService = async (page, limit, search, sortBy, sortOrder) => {
+    try {
+        const auth_token = localStorage.getItem("token");
+
+        const params = new URLSearchParams();
+
+        if (page) params.append("page", page);
+        if (limit) params.append("limit", limit);
+
+        if (search) params.append("search", search);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+
+        const fetchData = await axios.get(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL
+            }/api/v1/draft-orders/getAllDraftOrders?${params.toString()}`,
+            { headers: { Authorization: auth_token } }
+        );
+
+        return fetchData?.data;
+    } catch (error) {
+        return error;
     }
-}
+};

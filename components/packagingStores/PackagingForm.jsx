@@ -19,11 +19,27 @@ import { getAllStatesService } from "@/service/state/state.service";
 import { getALlCitiesService } from "@/service/citiy/city.slice";
 import { setAllCities } from "@/store/slices/city/city.slice";
 import { addNewDarkStorePackagingCenter, updateDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
-import { addPackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice";
+import { addPackagingCenter, setPackagingCenterPaginatedPincodeData } from "@/store/slices/packaging-center/packaging-center.slice";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
+
 export default function PackagingForm({ editId, type }) {
     const router = useRouter();
     const dispatch = useDispatch();
+    const pathname = usePathname();
+
+    useEffect(() => {
+        dispatch(setPackagingCenterPaginatedPincodeData([]));
+
+        const handlePopState = () => {
+            dispatch(setPackagingCenterPaginatedPincodeData([]));
+        };
+        window.addEventListener("popstate", handlePopState);
+
+        return () => {
+            window.removeEventListener("popstate", handlePopState);
+        };
+    }, [dispatch, pathname]);
 
     const allStates = useSelector((state) => state.stateSlice.allStates);
 
@@ -263,7 +279,7 @@ export default function PackagingForm({ editId, type }) {
                 </div>
             </div>
             <div className="flex justify-center gap-4 mt-4">
-                <Button type="button" variant="outline" onClick={() => router.push("/packaging-stores")}>
+                <Button type="button" variant="outline" onClick={() => { router.push("/packaging-stores"); dispatch(setPackagingCenterPaginatedPincodeData([])) }}>
                     Back to list
                 </Button>
                 {editId ? <Button type="button" onClick={(e) => handleUpdate(editId, formData, e)}>
