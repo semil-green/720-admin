@@ -17,16 +17,93 @@ import {
     updateRawItemService,
 } from "@/service/raw-item/raw-item.service";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
 import { addNewRawItem, setRawItems, updateRawItem } from "@/store/slices/raw-ittem/raw-item.store";
+import { useSelector, useDispatch } from "react-redux";
+import { addNewTagService, fetchAlltagsService } from "@/service/store-order/tags.service";
+import { addNewTag, setTags } from "@/store/slices/tags/tags.slice";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
+    const dispatch = useDispatch();
+
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         raw_item: setEditRawItem?.raw_item || "",
         sku: setEditRawItem?.sku || "",
         unit_id: setEditRawItem?.unit_id || "",
     });
+
+    const [selectedTags, setSelectedTags] = useState([]);
+    const [searchtag, setSearchTag] = useState("");
+    const [opentagsModal, setOopentagsModal] = useState(false);
+
+    useEffect(() => {
+        if (setEditRawItem && setEditRawItem.tags) {
+            setSelectedTags(setEditRawItem.tags);
+        }
+    }, [setEditRawItem]);
+
+
+    const alltagsData = useSelector((state) => state.tagsSlice.alltagsData);
+
+    const filteredTags = alltagsData.filter((tag) =>
+        tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
+    );
+
+    const handleTagSelect = (tagId) => {
+        setSelectedTags((prev) => {
+            const isSelected = prev.some((t) => t.tag_id === tagId);
+            if (isSelected) {
+                return prev.filter((t) => t.tag_id !== tagId);
+            } else {
+                return [...prev, { tag_id: tagId }];
+            }
+        });
+    };
+
+    const productTags = filteredTags.filter(tag =>
+        selectedTags.some(selected => selected.tag_id === tag.id)
+    );
+
+    const handleAddNewTag = async () => {
+        try {
+            const res = await addNewTagService(searchtag);
+
+            if (res?.status == 200 || res?.status == 201) {
+                dispatch(addNewTag(res?.data));
+                toast.success("Tag added successfully");
+                setSearchTag("");
+            }
+        } catch (err) {
+            toast.error("Failed to add new tag");
+        }
+    };
+
+    useEffect(() => {
+        if (alltagsData?.length === 0) {
+            const fetchData = async () => {
+                try {
+                    const res = await fetchAlltagsService();
+
+                    if (res?.status == 200) {
+                        dispatch(setTags(res?.data));
+                    }
+                } catch (err) {
+                    toast.error("Failed to fetch tags");
+                }
+            };
+
+            fetchData();
+        }
+    }, []);
+
 
     useEffect(() => {
         if (setEditRawItem) {
@@ -38,7 +115,6 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
         }
     }, [setEditRawItem]);
 
-    const dispatch = useDispatch();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -48,7 +124,14 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await addNewRawItemService(formData);
+        const tagIds = selectedTags.map(tag => tag.tag_id);
+
+        const payload = {
+            ...formData,
+            tag_ids: tagIds,
+        };
+
+        const res = await addNewRawItemService(payload);
 
         if (res?.status == 200 || res?.status == 201) {
             toast.success("Created", {
@@ -63,7 +146,14 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        const res = await updateRawItemService(setEditRawItem?.raw_id, formData)
+        const tagIds = selectedTags.map(tag => tag.tag_id);
+
+        const payload = {
+            ...formData,
+            tag_ids: tagIds,
+        };
+
+        const res = await updateRawItemService(setEditRawItem?.raw_id, payload)
 
         if (res?.status == 200 || res?.status == 200) {
             toast.success("Updated", {
@@ -126,6 +216,94 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
                         ))}
                     </SelectContent>
                 </Select>
+            </div>
+
+            <div className="flex gap-4 items-center ">
+
+                <Label className="pb-1">Tags</Label>
+
+                <Button type="button" onClick={() => setOopentagsModal(true)} className="!h-7" size={"sm"}>
+                    Add Tags
+                </Button>
+
+
+                <Dialog open={opentagsModal} onOpenChange={setOopentagsModal}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="text-center">
+                                Select or Add Tag
+                            </DialogTitle>
+                        </DialogHeader>
+
+                        <div className="space-y-4">
+                            <Input
+                                placeholder="Search for a tag..."
+                                value={searchtag}
+                                onChange={(e) => setSearchTag(e.target.value)}
+                            />
+
+                            <div className="max-h-60 overflow-y-auto border rounded-md p-2 space-y-2">
+                                {filteredTags.length > 0
+                                    ? filteredTags.map((tag) => (
+                                        <div
+                                            key={tag.id}
+                                            className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                                            onClick={() => handleTagSelect(tag.id)}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedTags.some((t) => t.tag_id === tag.id)}
+                                                onChange={() => handleTagSelect(tag.id)}
+                                                className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                            />
+                                            <span>{tag.tag_name}</span>
+                                        </div>
+                                    ))
+                                    :
+                                    searchtag && (
+                                        <div className="p-2 text-sm text-center">
+                                            No tags found.
+                                            <Button
+                                                variant="link"
+                                                className="text-blue-600"
+                                                onClick={handleAddNewTag}
+                                            >
+                                                Add new tag: "{searchtag}"
+                                            </Button>
+                                        </div>
+                                    )}
+                            </div>
+
+
+                        </div>
+
+                        <DialogFooter>
+                            <Button
+                                variant="outline"
+                                onClick={() => setOopentagsModal(false)}
+                            >
+                                Close
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    setOopentagsModal(false);
+                                }}
+                            >
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
+
+            </div>
+
+            <div className="mt-0">
+                <Textarea
+                    name="seo_description"
+                    className="min-h-[110px]"
+                    value={productTags.map(tag => tag.tag_name).join(", ")}
+                    readOnly
+                />
             </div>
 
             <div className="flex justify-end gap-4">

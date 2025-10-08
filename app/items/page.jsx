@@ -59,7 +59,6 @@ export default function Items() {
         (state) => state.rawItemSlice.allRawItems
     );
 
-
     const fetchItems = async (
         page = 1,
         limit = 5,
