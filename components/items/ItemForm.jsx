@@ -54,7 +54,6 @@ export default function ItemForm({ editItemId }) {
     const [opentagsModal, setOopentagsModal] = useState(false);
     const [searchtag, setSearchTag] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
-
     const alltagsData = useSelector((state) => state.tagsSlice.alltagsData);
 
     useEffect(() => {
@@ -79,11 +78,11 @@ export default function ItemForm({ editItemId }) {
         tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
     );
 
-    // const handleTagSelect = (id) => {
-    //     setSelectedTags((prev) =>
-    //         prev.includes(id) ? prev.filter((tagId) => tagId !== id) : [...prev, id]
-    //     );
-    // };
+
+    const productTags = filteredTags.filter(tag =>
+        selectedTags.some(selected => selected.tag_id === tag.id)
+    );
+
 
     const handleTagSelect = (tagId) => {
         setSelectedTags((prev) => {
@@ -976,77 +975,90 @@ export default function ItemForm({ editItemId }) {
                     />
 
                     <div className="mt-4">
-                        <Label className="pb-1">Tags</Label>
+                        <div className="flex gap-4 items-center ">
 
-                        <Button onClick={() => setOopentagsModal(true)} className="mt-2">
-                            Add Tags
-                        </Button>
+                            <Label className="pb-1">Tags</Label>
 
-                        <Dialog open={opentagsModal} onOpenChange={setOopentagsModal}>
-                            <DialogContent className="sm:max-w-md">
-                                <DialogHeader>
-                                    <DialogTitle className="text-center">
-                                        Select or Add Tag
-                                    </DialogTitle>
-                                </DialogHeader>
+                            <Button onClick={() => setOopentagsModal(true)} className="!h-7" size={"sm"}>
+                                Add Tags
+                            </Button>
 
-                                <div className="space-y-4">
-                                    <Input
-                                        placeholder="Search for a tag..."
-                                        value={searchtag}
-                                        onChange={(e) => setSearchTag(e.target.value)}
-                                    />
 
-                                    <div className="max-h-60 overflow-y-auto border rounded-md p-2 space-y-2">
-                                        {filteredTags.length > 0
-                                            ? filteredTags.map((tag) => (
-                                                <div
-                                                    key={tag.id}
-                                                    className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                                                    onClick={() => handleTagSelect(tag.id)}
-                                                >
-                                                    <input
-                                                        type="checkbox"
-                                                        checked={selectedTags.some((t) => t.tag_id === tag.id)}
-                                                        onChange={() => handleTagSelect(tag.id)}
-                                                        className="w-4 h-4 accent-blue-600 cursor-pointer"
-                                                    />
-                                                    <span>{tag.tag_name}</span>
-                                                </div>
-                                            ))
-                                            :
-                                            searchtag && (
-                                                <div className="p-2 text-sm text-center">
-                                                    No tags found.
-                                                    <Button
-                                                        variant="link"
-                                                        className="text-blue-600"
-                                                        onClick={handleAddNewTag}
+                            <Dialog open={opentagsModal} onOpenChange={setOopentagsModal}>
+                                <DialogContent className="sm:max-w-md">
+                                    <DialogHeader>
+                                        <DialogTitle className="text-center">
+                                            Select or Add Tag
+                                        </DialogTitle>
+                                    </DialogHeader>
+
+                                    <div className="space-y-4">
+                                        <Input
+                                            placeholder="Search for a tag..."
+                                            value={searchtag}
+                                            onChange={(e) => setSearchTag(e.target.value)}
+                                        />
+
+                                        <div className="max-h-60 overflow-y-auto border rounded-md p-2 space-y-2">
+                                            {filteredTags.length > 0
+                                                ? filteredTags.map((tag) => (
+                                                    <div
+                                                        key={tag.id}
+                                                        className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
+                                                        onClick={() => handleTagSelect(tag.id)}
                                                     >
-                                                        Add new tag: "{searchtag}"
-                                                    </Button>
-                                                </div>
-                                            )}
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedTags.some((t) => t.tag_id === tag.id)}
+                                                            onChange={() => handleTagSelect(tag.id)}
+                                                            className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                                        />
+                                                        <span>{tag.tag_name}</span>
+                                                    </div>
+                                                ))
+                                                :
+                                                searchtag && (
+                                                    <div className="p-2 text-sm text-center">
+                                                        No tags found.
+                                                        <Button
+                                                            variant="link"
+                                                            className="text-blue-600"
+                                                            onClick={handleAddNewTag}
+                                                        >
+                                                            Add new tag: "{searchtag}"
+                                                        </Button>
+                                                    </div>
+                                                )}
+                                        </div>
                                     </div>
-                                </div>
 
-                                <DialogFooter>
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setOopentagsModal(false)}
-                                    >
-                                        Close
-                                    </Button>
-                                    <Button
-                                        onClick={() => {
-                                            setOopentagsModal(false);
-                                        }}
-                                    >
-                                        Save
-                                    </Button>
-                                </DialogFooter>
-                            </DialogContent>
-                        </Dialog>
+                                    <DialogFooter>
+                                        <Button
+                                            variant="outline"
+                                            onClick={() => setOopentagsModal(false)}
+                                        >
+                                            Close
+                                        </Button>
+                                        <Button
+                                            onClick={() => {
+                                                setOopentagsModal(false);
+                                            }}
+                                        >
+                                            Save
+                                        </Button>
+                                    </DialogFooter>
+                                </DialogContent>
+                            </Dialog>
+                        </div>
+
+                        <div className="mt-2">
+                            <Textarea
+                                name="seo_description"
+                                className="min-h-[110px]"
+                                value={productTags.map(tag => tag.tag_name).join(", ")}
+                                readOnly
+                            />
+                        </div>
                     </div>
                 </div>
 
