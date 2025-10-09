@@ -261,7 +261,8 @@ function CreateInwardItem() {
             <form >
                 <div className="flex flex-wrap gap-5 mb-5 grid grid-cols-3">
                     <div className="col-span-1">
-                        <Label className="pb-1">Packaging Store</Label>
+                        <Label className="pb-1">Packaging Store <span className="text-red-500">*</span>
+                        </Label>
                         <Select
                             value={formData.packagingstore_id?.toString()}
                             onValueChange={(value) =>
@@ -282,7 +283,8 @@ function CreateInwardItem() {
                     </div>
 
                     <div className="col-span-1">
-                        <Label className="pb-1">Raw Items</Label>
+                        <Label className="pb-1">Raw Items <span className="text-red-500">*</span>
+                        </Label>
                         <Select
                             value={formData.rawitem_id?.toString()}
                             onValueChange={(value) =>
@@ -305,7 +307,8 @@ function CreateInwardItem() {
 
                 <div className="flex flex-wrap gap-5 mb-5 grid grid-cols-3">
                     <div className="col-span-1">
-                        <Label className="pb-1">Vendor</Label>
+                        <Label className="pb-1">Vendor <span className="text-red-500">*</span>
+                        </Label>
                         <Select
                             value={formData.vendor_id?.toString()}
                             onValueChange={(value) =>
@@ -326,7 +329,8 @@ function CreateInwardItem() {
                     </div>
 
                     <div className="col-span-1">
-                        <Label className="pb-1">Batch</Label>
+                        <Label className="pb-1">Batch <span className="text-red-500">*</span>
+                        </Label>
                         <Input
                             name="batch"
                             value={formData.batch}
@@ -343,11 +347,12 @@ function CreateInwardItem() {
                         <Card>
                             <CardHeader>
                                 <CardTitle>
-                                    <h2 className="text-2xl font-bold">Add Stock</h2>
+                                    <h2 className="text-2xl font-bold">Add Stock </h2>
                                 </CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <Label className="pb-1">Quantity</Label>
+                                <Label className="pb-1">Quantity <span className="text-red-500">*</span>
+                                </Label>
                                 <Input
                                     name="quantity"
                                     value={formData.quantity}

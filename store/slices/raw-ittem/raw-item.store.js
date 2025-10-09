@@ -27,9 +27,15 @@ const rawItemSlice = createSlice({
             state.allRawItems = state.allRawItems.map(item =>
                 item.raw_id === id ? { ...item, status: false } : item
             );
+        },
+        activateRawItem: (state, action) => {
+            const id = action.payload;
+            state.allRawItems = state.allRawItems.map(item =>
+                item.raw_id === id ? { ...item, status: true } : item
+            );
         }
     },
 });
 
-export const { setRawItems, setAllRawItems, addNewRawItem, updateRawItem, deleteRawItem } = rawItemSlice.actions;
+export const { setRawItems, setAllRawItems, addNewRawItem, updateRawItem, deleteRawItem, activateRawItem } = rawItemSlice.actions;
 export default rawItemSlice.reducer;

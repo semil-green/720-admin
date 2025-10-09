@@ -202,7 +202,8 @@ const StoreOrderForm = ({
             {
                 !displayTransferFields &&
                 <div>
-                    <Label className="pb-2">Select Store</Label>
+                    <Label className="pb-2">Select Store <span className="text-red-500">*</span>
+                    </Label>
                     <Select
                         key={formData.dark_store_id || "store"}
                         value={formData.dark_store_id || ""}
@@ -226,7 +227,8 @@ const StoreOrderForm = ({
             {
                 !displayTransferFields &&
                 <div>
-                    <Label className="pb-2">Packaging Center</Label>
+                    <Label className="pb-2">Packaging Center <span className="text-red-500">*</span>
+                    </Label>
                     <Select
                         key={formData.packaging_center_id || "packaging"}
                         value={formData.packaging_center_id}
@@ -252,7 +254,8 @@ const StoreOrderForm = ({
             {
                 !displayTransferFields &&
                 <div>
-                    <Label className="pb-2">Product</Label>
+                    <Label className="pb-2">Product <span className="text-red-500">*</span>
+                    </Label>
                     <Select
                         key={formData.product_id || "product"}
                         value={formData.product_id}
@@ -280,7 +283,8 @@ const StoreOrderForm = ({
                 displayTransferFields &&
 
                 <div>
-                    <Label className="pb-2">Store</Label>
+                    <Label className="pb-2">Store <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="Store"
                         type="text"
@@ -296,7 +300,8 @@ const StoreOrderForm = ({
                 displayTransferFields &&
 
                 <div>
-                    <Label className="pb-2">Packaging Center</Label>
+                    <Label className="pb-2">Packaging Center <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="Store"
                         type="text"
@@ -313,7 +318,8 @@ const StoreOrderForm = ({
                 displayTransferFields &&
 
                 <div>
-                    <Label className="pb-2">Product</Label>
+                    <Label className="pb-2">Product <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="Store"
                         type="text"
@@ -326,7 +332,8 @@ const StoreOrderForm = ({
             }
 
             <div>
-                <Label className="pb-2">Quantity</Label>
+                <Label className="pb-2">Quantity <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="quantity"
                     type="number"
@@ -350,7 +357,8 @@ const StoreOrderForm = ({
 
             {displayTransferFields &&
                 <div>
-                    <Label className="pb-2">Transfer Quantity</Label>
+                    <Label className="pb-2">Transfer Quantity <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="transferred_quantity"
                         type="number"

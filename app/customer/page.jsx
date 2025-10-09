@@ -35,7 +35,7 @@ const CustomerPage = () => {
 
             if (response?.status == 200 || response?.status == 201) {
 
-                setTotalPages(response?.data?.total)
+                setTotalPages(Math.ceil(response?.data?.total / limit))
                 dispatch(setCustomers(response?.data?.rows))
             }
         } catch (error) {

@@ -41,7 +41,7 @@ export default function SliderForm({ editId }) {
             const fetchCollectionData = async () => {
                 const res = await getAllCollectionsService(1, 100000);
                 if (res?.data) {
-                    setAllCollections(res?.data);
+                    setAllCollections(res?.data?.data);
                 } else {
                     toast.error("Failed to fetch collections");
                 }
@@ -98,6 +98,22 @@ export default function SliderForm({ editId }) {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!formData.slider_name) {
+            toast.error("Slider name is required");
+            return;
+        }
+
+        if (!formData.collection_id) {
+            toast.error("Select a collection");
+            return;
+        }
+
+        if (!formData.slider_image) {
+            toast.error("Slider image is required");
+            return;
+        }
+
         try {
             const payload = new FormData();
             payload.append("slider_name", formData.slider_name);
@@ -120,6 +136,22 @@ export default function SliderForm({ editId }) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
+
+        if (!formData.slider_name) {
+            toast.error("Slider name is required");
+            return;
+        }
+
+        if (!formData.collection_id) {
+            toast.error("Select a collection");
+            return;
+        }
+
+        if (!formData.slider_image) {
+            toast.error("Slider image is required");
+            return;
+        }
+
         try {
             const payload = new FormData();
             payload.append("slider_name", formData.slider_name);
@@ -145,7 +177,8 @@ export default function SliderForm({ editId }) {
     return (
         <form className="grid gap-6">
             <div>
-                <Label className="pb-1">Slider Title</Label>
+                <Label className="pb-1">Slider Title <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="slider_name"
                     value={formData.slider_name}
@@ -156,7 +189,8 @@ export default function SliderForm({ editId }) {
             </div>
 
             <div>
-                <Label className="pb-1">Select Collection</Label>
+                <Label className="pb-1">Select Collection <span className="text-red-500">*</span>
+                </Label>
                 <Select
                     value={formData.collection_id}
                     onValueChange={(value) =>
@@ -178,7 +212,8 @@ export default function SliderForm({ editId }) {
             </div>
 
             <div>
-                <Label className="pb-1">Slider Image</Label>
+                <Label className="pb-1">Slider Image <span className="text-red-500">*</span>
+                </Label>
                 <Input type="file" accept="image/*" onChange={handleImageChange} />
                 {formData?.slider_image_preview && (
                     <div className="mt-2 relative inline-block">

@@ -142,7 +142,8 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             <input type="hidden" name="CategoryId" value={formData.CategoryId} />
 
             <div>
-                <Label className="pb-2">Category</Label>
+                <Label className="pb-2">Category <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="category_name"
                     value={formData.category_name}
@@ -152,7 +153,8 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             </div>
 
             <div>
-                <Label className="pb-2">Category Image</Label>
+                <Label className="pb-2">Category Image <span className="text-red-500">*</span>
+                </Label>
                 <Input type="file" accept="image/*" onChange={handleFileChange} />
                 {formData.ImagePreview && (
                     <div className="mt-2">

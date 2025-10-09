@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Button } from "../ui/button";
 import { AlertCircle, CheckCircle } from "lucide-react";
 import Image from "next/image";
 import {
@@ -15,8 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
-const OrderDetailTable = ({ order_id }) => {
+const DraftOrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
     const [loading, setLoading] = useState(false)
@@ -215,7 +215,7 @@ const OrderDetailTable = ({ order_id }) => {
                     order_status: res?.data?.order_status
                 }))
                 toast.success("Order status updated successfully");
-                router.push("/orders")
+                router.push("/draft-orders")
             }
         }
         catch (error) {
@@ -522,7 +522,7 @@ const OrderDetailTable = ({ order_id }) => {
                 </div>
 
                 <div className="flex justify-center">
-                    <Link href="/orders">
+                    <Link href="/draft-orders">
                         <Button type="button" variant="outline">
                             Back to list
                         </Button>
@@ -535,4 +535,4 @@ const OrderDetailTable = ({ order_id }) => {
     );
 };
 
-export default OrderDetailTable;
+export default DraftOrderDetailTable;

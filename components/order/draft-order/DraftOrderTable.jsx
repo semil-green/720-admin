@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { setOrderStatus } from '@/store/slices/order-status/order-status.slice'
 import { fetchOrderStatusTypesService } from '@/service/cutomer-order/cutomer-order.service'
+import Link from "next/link";
 
 const DraftOrderTable = ({ data, page, setPage, totalPages }) => {
 
@@ -48,7 +49,15 @@ const DraftOrderTable = ({ data, page, setPage, totalPages }) => {
         {
             accessorKey: 'order_id',
             header: 'Order ID',
-            cell: ({ row }) => <span className="font-medium">{row.original.order_id}</span>,
+            cell: ({ row }) => {
+                const order = row.original;
+                return <Link
+                    href={`/draft-orders/${order.order_id}`}
+                    className="underline underline-offset-4 text-md"
+                >
+                    {row.original?.order_id}
+                </Link>
+            }
         },
         {
             accessorKey: "created_date",

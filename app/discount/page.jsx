@@ -15,8 +15,8 @@ const page = () => {
                     <h1 className='font-semibold text-xl'>Discount</h1>
                 </div>
                 <div className='flex gap-3'>
-                    <Button className='cursor-pointer' variant={'secondary'}>Export</Button>
-                    <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
+                    {/* <Button className='cursor-pointer' variant={'secondary'}>Export</Button>
+                        <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button> */}
                     <Link href="/discount/add-discount">
                         <Button className='cursor-pointer'>Create Discount</Button>
                     </Link>

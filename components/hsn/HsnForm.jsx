@@ -130,7 +130,8 @@ const HsnForm = ({ editStateData, handleClose, setEditData }) => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
 
 
-            <Label className="pb-1 mt-3"> HSN Number</Label>
+            <Label className="pb-1 mt-3"> HSN Number <span className="text-red-500">*</span>
+            </Label>
             <input
                 type="text"
                 value={formData.hsn_no}
@@ -141,7 +142,8 @@ const HsnForm = ({ editStateData, handleClose, setEditData }) => {
                 className="border rounded px-2 py-1"
             />
 
-            <Label className="pb-1 mt-3">GST Percentage</Label>
+            <Label className="pb-1 mt-3">GST Percentage <span className="text-red-500">*</span>
+            </Label>
             <input
                 type="text"
                 value={formData.gst_percentage}
@@ -152,7 +154,8 @@ const HsnForm = ({ editStateData, handleClose, setEditData }) => {
                 className="border rounded px-2 py-1"
             />
 
-            <Label className="pb-1 mt-3">HSN Code</Label>
+            <Label className="pb-1 mt-3">HSN Code <span className="text-red-500">*</span>
+            </Label>
             <input
                 type="text"
                 value={formData.hsn_code}

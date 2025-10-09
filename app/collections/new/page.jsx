@@ -212,7 +212,8 @@ const Page = () => {
                     <div className='col-span-2  px-4 py-2 bg-white  shadow rounded-md'>
 
                         <div className='flex flex-col gap-2'>
-                            <Label className="pb-1">Title</Label>
+                            <Label className="pb-1">Title <span className="text-red-500">*</span>
+                            </Label>
                             <Input
                                 name="title"
                                 className='rounded-md border shadow h-10 px-4'
@@ -270,7 +271,8 @@ const Page = () => {
                     <div className='col-span-1 bg-white shadow rounded-md px-4 py-2'>
 
                         <div>
-                            <Label className="pb-1"> Image</Label>
+                            <Label className="pb-1"> Image <span className="text-red-500">*</span>
+                            </Label>
                             <Input
                                 type="file"
                                 accept="image/*"

@@ -18,12 +18,12 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from "@/components/ui/alert-dialog"
-import { MoreVertical, Pencil, Trash2, Copy } from "lucide-react"
+import { MoreVertical, Pencil, Trash2, Copy, ShieldCheck } from "lucide-react"
 import { useRouter } from "next/navigation";
-import { duplicateProductService } from "@/service/items/items.service"
+import { activateProductService, duplicateProductService } from "@/service/items/items.service"
 import { toast } from "sonner"
 import { useDispatch } from "react-redux"
-import { duplicateItem } from "@/store/slices/items/items.slice"
+import { activateItem, duplicateItem } from "@/store/slices/items/items.slice"
 export default function ItemTable({
     data,
     onDelete,
@@ -34,6 +34,7 @@ export default function ItemTable({
     totalItems,
     totalProductCount
 }) {
+
     const router = useRouter()
     const dispatch = useDispatch()
     const handleEdit = (item) => {
@@ -54,6 +55,23 @@ export default function ItemTable({
         }
         catch (error) {
             toast.error("Failed to duplicate product")
+        }
+    }
+
+    const handleProductActivate = async (product_id) => {
+
+        try {
+
+            const res = await activateProductService(product_id)
+
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Product activated successfully")
+                dispatch(activateItem(product_id))
+            }
+
+        }
+        catch (error) {
+            toast.error("Failed to activate product")
         }
     }
     const storeColumns = (onEdit, onDelete) => [
@@ -154,7 +172,7 @@ export default function ItemTable({
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        Deactivate
                                     </div>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -195,6 +213,30 @@ export default function ItemTable({
                                             onClick={() => handleDuplicate(item.product_id)}
                                         >
                                             Confirm Duplicate
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                        <ShieldCheck className="mr-2 h-4 w-4" />
+                                        Activate
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Activate Collection?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to activate this Collection?
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleProductActivate(item.product_id)}>
+
+                                            Confirm Activate
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
