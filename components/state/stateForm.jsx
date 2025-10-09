@@ -77,7 +77,8 @@ const StateForm = ({ editStateData, handleClose }) => {
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
 
 
-            <Label className="pb-1 mt-3">Enter State Name</Label>
+            <Label className="pb-1 mt-3">Enter State Name <span className="text-red-500">*</span>
+            </Label>
             <input
                 type="text"
                 value={formData.state_name}

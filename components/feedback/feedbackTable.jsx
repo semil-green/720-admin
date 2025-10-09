@@ -47,15 +47,16 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
                         <img
                             src={item?.feedback_upload}
                             alt={item?.customer_name}
-                            className="w-14 h-14 rounded-lg object-contain "
+                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
                         />
-                        <div>
-                            <div className="font-semibold">{item?.customer_name}</div>
+                        <div className="font-semibold break-words whitespace-normal flex-grow min-w-[12ch]">
+                            {item?.customer_name || "-"}
                         </div>
                     </div>
                 );
             },
         },
+
         {
             accessorKey: "feedback",
             header: "Feedback",
@@ -98,7 +99,7 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
                                     <AlertDialogFooter>
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                         <AlertDialogAction onClick={() => handleFeedbackDelete(item.feedback_id)} >
-                                            {/* <AlertDialogAction  > */}
+
                                             Confirm Delete
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
@@ -120,25 +121,32 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
     })
 
     return (
-        <div className="rounded border p-4 pt-0 shadow">
-            <Table>
+        <div className="rounded border p-4 pt-0 shadow overflow-x-auto">
+            <Table className="min-w-full border-separate border-spacing-0 table-auto">
                 <TableHeader>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
-                                <TableHead key={header.id}>
+                                <TableHead
+                                    key={header.id}
+                                    className="text-left align-top whitespace-normal break-words p-2 bg-gray-50"
+                                >
                                     {flexRender(header.column.columnDef.header, header.getContext())}
                                 </TableHead>
                             ))}
                         </TableRow>
                     ))}
                 </TableHeader>
+
                 <TableBody>
                     {table.getRowModel().rows.length > 0 ? (
                         table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
+                            <TableRow key={row.id} className="align-top">
                                 {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
+                                    <TableCell
+                                        key={cell.id}
+                                        className="whitespace-normal break-words p-2 align-top text-sm"
+                                    >
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                     </TableCell>
                                 ))}
@@ -146,14 +154,17 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
                         ))
                     ) : (
                         <TableRow>
-                            <TableCell colSpan={table.getAllColumns().length} className="text-center pt-6 text-md font-medium">
+                            <TableCell
+                                colSpan={table.getAllColumns().length}
+                                className="text-center pt-6 text-md font-medium"
+                            >
                                 No records found
                             </TableCell>
                         </TableRow>
                     )}
-
                 </TableBody>
             </Table>
+
             <div className="flex items-center justify-between mt-4">
                 <Button
                     variant="outline"
@@ -174,5 +185,7 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
                 </Button>
             </div>
         </div>
+
+
     )
 }

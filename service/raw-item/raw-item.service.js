@@ -76,3 +76,24 @@ export const deleteRawItemService = async (id) => {
         return error
     }
 }
+
+export const rawItemActivateService = async (raw_item_id) => {
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/rawitem/update-status`, {
+            raw_id: raw_item_id,
+            status: true
+        },
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            })
+
+        return result?.data
+    }
+    catch (error) {
+        return error
+    }
+}

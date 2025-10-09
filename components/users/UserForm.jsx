@@ -139,6 +139,22 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
         e.preventDefault();
         setLoading(true);
         try {
+
+            if (!formData.full_name) {
+                toast.error("Full name is required");
+                return;
+            }
+
+            if (!formData.contact_number) {
+                toast.error("Contact number is required");
+                return;
+            }
+
+            if (!formData.email) {
+                toast.error("Email is required");
+                return;
+            }
+
             const formDataToSend = new FormData();
 
             formDataToSend.append("full_name", formData.full_name);
@@ -174,8 +190,23 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
 
     const handleUpdate = async (e) => {
         e.preventDefault();
-        setLoading(true);
         try {
+            if (!formData.full_name) {
+                toast.error("Full name is required");
+                return;
+            }
+
+            if (!formData.contact_number) {
+                toast.error("Contact number is required");
+                return;
+            }
+
+            if (!formData.email) {
+                toast.error("Email is required");
+                return;
+            }
+
+            setLoading(true);
             const formDataToSend = new FormData();
 
             formDataToSend.append("full_name", formData.full_name);
@@ -215,7 +246,8 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
     return (
         <form className="grid gap-4">
             <div>
-                <Label className="pb-1">Full Name</Label>
+                <Label className="pb-1">Full Name <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="full_name"
                     value={formData.full_name}
@@ -225,7 +257,8 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
             </div>
 
             <div>
-                <Label className="pb-1">Mobile No</Label>
+                <Label className="pb-1">Mobile No <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="contact_number"
                     value={formData.contact_number}
@@ -235,7 +268,8 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
             </div>
 
             <div>
-                <Label className="pb-1">Email</Label>
+                <Label className="pb-1">Email <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     name="email"
                     value={formData.email}

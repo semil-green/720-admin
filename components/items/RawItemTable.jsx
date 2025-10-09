@@ -9,11 +9,11 @@ import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog"
-import { ArrowUpDown, MoreVertical, Pencil, Trash2 } from "lucide-react"
-import { deleteRawItemService } from "@/service/raw-item/raw-item.service"
+import { ArrowUpDown, MoreVertical, Pencil, Trash2, ShieldCheck } from "lucide-react"
+import { deleteRawItemService, rawItemActivateService } from "@/service/raw-item/raw-item.service"
 import { toast } from "sonner"
 import { useDispatch } from "react-redux"
-import { deleteRawItem } from "@/store/slices/raw-ittem/raw-item.store"
+import { activateRawItem, deleteRawItem } from "@/store/slices/raw-ittem/raw-item.store"
 
 export default function RawItemTable({ data, onDelete, page, limit, setPage, totalPages, setEditRawItem, openEditModal, totalRawItemCount }) {
 
@@ -24,12 +24,26 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
         const res = await deleteRawItemService(id);
 
         if (res?.status == 200 || res?.status == 201) {
-            toast.success("Deleted", { description: "Raw Item deleted successfully" });
+            toast.success("Deactivated", { description: "Raw Item Deactivated successfully" });
 
             dispatch(deleteRawItem(id));
         }
         else {
             toast.error("Failed to delete raw item");
+        }
+    }
+
+    const handlerawItemActivate = async (raw_item_id) => {
+
+        const res = await rawItemActivateService(raw_item_id)
+
+        if (res?.status == 200 || res?.status == 201) {
+            toast.success("Activated", { description: "Raw Item Activated successfully" });
+
+            dispatch(activateRawItem(raw_item_id));
+        }
+        else {
+            toast.error("Failed to Activate raw item");
         }
     }
 
@@ -75,7 +89,7 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
                                 <AlertDialogTrigger asChild>
                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                         <Trash2 className="mr-2 h-4 w-4" />
-                                        Delete
+                                        Deactivate
                                     </div>
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
@@ -89,6 +103,31 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                         <AlertDialogAction onClick={() => handleDelete(item.raw_id)}>
                                             Confirm Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+
+
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                        <ShieldCheck className="mr-2 h-4 w-4" />
+                                        Activate
+                                    </div>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Activate Collection?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            Are you sure you want to activate this Collection?
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handlerawItemActivate(item.raw_id)}>
+
+                                            Confirm Activate
                                         </AlertDialogAction>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>

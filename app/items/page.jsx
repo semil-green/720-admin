@@ -142,7 +142,7 @@ export default function Items() {
         if (res?.status == 200 || res?.status == 201) {
             dispatch(deleteItem(itemId));
             toast.success("Deleted", {
-                description: "Item deleted successfully",
+                description: "Product Deactivated Successfully",
             });
         }
     };

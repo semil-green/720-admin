@@ -125,3 +125,28 @@ export const duplicateProductService = async (product_id) => {
         return error
     }
 }
+
+export const activateProductService = async (product_id) => {
+
+    try {
+
+        const auth_token = localStorage.getItem("token")
+
+        const activateService = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/product/update-status`,
+            {
+                product_id: product_id,
+                status: true
+            },
+            {
+                headers: {
+                    Authorization: auth_token
+                }
+            }
+        )
+
+        return activateService?.data
+    }
+    catch (error) {
+        return error
+    }
+}

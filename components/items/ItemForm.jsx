@@ -816,7 +816,8 @@ export default function ItemForm({ editItemId }) {
             {/* ---------- ITEM FORM ---------- */}
             <div className="flex gap-3">
                 <div className="flex-1">
-                    <Label className="pb-1">Title</Label>
+                    <Label className="pb-1">Title <span className="text-red-500 ">*</span>
+                    </Label>
                     <Input
                         name="title"
                         value={formData.title}
@@ -826,7 +827,8 @@ export default function ItemForm({ editItemId }) {
                     />
 
                     <div className="pt-4">
-                        <Label className="pb-1">Categories</Label>
+                        <Label className="pb-1">Categories <span className="text-red-500 ">*</span>
+                        </Label>
                         <MultiSelect
                             options={dynamicCategoriesList}
                             onValueChange={handleCategoriesChange}
@@ -841,7 +843,8 @@ export default function ItemForm({ editItemId }) {
                 </div>
 
                 <div className="flex-1">
-                    <Label className="pb-1">Description</Label>
+                    <Label className="pb-1">Description <span className="text-red-500 ">*</span>
+                    </Label>
                     <Textarea
                         name="description"
                         className="min-h-[110px]"
@@ -854,7 +857,8 @@ export default function ItemForm({ editItemId }) {
 
             <div className="flex gap-3">
                 <div className="flex-1">
-                    <Label className="pb-1">Unit</Label>
+                    <Label className="pb-1">Unit <span className="text-red-500 ">*</span>
+                    </Label>
                     <Select
                         value={formData.unit_id?.toString() || ""}
                         onValueChange={(value) =>
@@ -876,7 +880,8 @@ export default function ItemForm({ editItemId }) {
                 </div>
 
                 <div className="flex-1">
-                    <Label className="pb-1">Quantity</Label>
+                    <Label className="pb-1">Quantity <span className="text-red-500 ">*</span>
+                    </Label>
                     <Input
                         name="quantity"
                         value={formData.quantity}
@@ -940,7 +945,8 @@ export default function ItemForm({ editItemId }) {
 
             <div className="flex gap-3">
                 <div className="flex-1">
-                    <Label className="pb-1">Pricing</Label>
+                    <Label className="pb-1">Pricing <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="price"
                         value={formData.price}
@@ -951,7 +957,8 @@ export default function ItemForm({ editItemId }) {
                 </div>
 
                 <div className="flex-1">
-                    <Label className="pb-1">Compare at price</Label>
+                    <Label className="pb-1">Compare at price <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="compare_price"
                         value={formData.compare_price}
@@ -1149,7 +1156,8 @@ export default function ItemForm({ editItemId }) {
             </label>
 
             <div>
-                <Label className="pb-1">Product Display Image</Label>
+                <Label className="pb-1">Product Display Image <span className="text-red-500">*</span>
+                </Label>
                 <Input
                     type="file"
                     accept="image/*"
@@ -1175,7 +1183,9 @@ export default function ItemForm({ editItemId }) {
             </div>
 
             <div>
-                <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5">
+                <Label className="pb-1">Images <span className="text-red-500">*</span>
+                </Label>
+                <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5 mt-2">
                     {images.map((img, index) => (
                         <div
                             key={index}

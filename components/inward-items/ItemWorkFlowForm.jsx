@@ -256,7 +256,8 @@ export default function ItemWorkFlowForm({ editData }) {
                     </CardHeader>
                     <CardContent>
                         <div className="flex-1">
-                            <Label className="pb-1">Workflow Name</Label>
+                            <Label className="pb-1">Workflow Name <span className="text-red-500">*</span>
+                            </Label>
                             <Input
                                 name="workflow_name"
                                 value={workflowName}
@@ -284,7 +285,8 @@ export default function ItemWorkFlowForm({ editData }) {
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Input Raw Items</h2>
+                            <h2 className="text-2xl font-bold">Input Raw Items
+                            </h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -299,7 +301,7 @@ export default function ItemWorkFlowForm({ editData }) {
 
                                     <div className="flex-1 flex items-end gap-3">
                                         <div className="flex-1">
-                                            <Label className="pb-1">Raw Item</Label>
+                                            <Label className="pb-1">Raw Item <span className="text-red-500 ">*</span></Label>
                                             <Select
                                                 value={nutrient.RawItem?.toString()}
                                                 onValueChange={(value) => {
@@ -408,7 +410,7 @@ export default function ItemWorkFlowForm({ editData }) {
                 <Card className="flex-1">
                     <CardHeader>
                         <CardTitle>
-                            <h2 className="text-2xl font-bold">Output Product</h2>
+                            <h2 className="text-2xl font-bold">Output Product </h2>
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -423,7 +425,7 @@ export default function ItemWorkFlowForm({ editData }) {
 
                                     <div className="flex items-end gap-3">
                                         <div className="flex-1">
-                                            <Label className="pb-1">Output Product</Label>
+                                            <Label className="pb-1">Output Product <span className="text-red-500 ">*</span></Label>
                                             <Select
                                                 value={item.value}
                                                 onValueChange={(value) =>

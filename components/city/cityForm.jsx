@@ -89,7 +89,8 @@ const CityForm = ({ editCityData, handleClose }) => {
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-            <Label className="pb-1">Select State</Label>
+            <Label className="pb-1">Select State <span className="text-red-500">*</span>
+            </Label>
             <Select
                 value={formData.state_id}
                 onValueChange={(value) =>
@@ -108,7 +109,8 @@ const CityForm = ({ editCityData, handleClose }) => {
                 </SelectContent>
             </Select>
 
-            <Label className="pb-1 mt-3">Enter City Name</Label>
+            <Label className="pb-1 mt-3">Enter City Name<span className="text-red-500">*</span>
+            </Label>
             <input
                 type="text"
                 value={formData.city_name}

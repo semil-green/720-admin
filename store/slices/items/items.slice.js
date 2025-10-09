@@ -25,6 +25,12 @@ const itemsSlice = createSlice({
             );
             state.allItemsData = state.allItemsData.filter(item => item.product_id !== idToDelete)
         },
+        activateItem: (state, action) => {
+            const idToActivate = action.payload;
+            state.allItems = state.allItems.map(item =>
+                item.product_id === idToActivate ? { ...item, status: true } : item
+            );
+        },
         duplicateItem: (state, action) => {
             const { oldId, newId } = action.payload;
 
@@ -45,5 +51,5 @@ const itemsSlice = createSlice({
     }
 })
 
-export const { getAllItems, getAllItemsData, deleteItem, clearAllItemsData, duplicateItem } = itemsSlice.actions;
+export const { getAllItems, getAllItemsData, deleteItem, clearAllItemsData, duplicateItem, activateItem } = itemsSlice.actions;
 export default itemsSlice.reducer

@@ -169,7 +169,8 @@ const Page = () => {
                 )}
 
                 <div>
-                    <Label className="pb-1">Feedback</Label>
+                    <Label className="pb-1">Feedback <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="feedback"
                         value={formData.feedback}
@@ -179,7 +180,8 @@ const Page = () => {
                 </div>
 
                 <div>
-                    <Label className="pb-1">Customer Name</Label>
+                    <Label className="pb-1">Customer Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="customer_name"
                         value={formData.customer_name}
@@ -189,7 +191,8 @@ const Page = () => {
                 </div>
 
                 <div>
-                    <Label className="pb-1">Profile Picture</Label>
+                    <Label className="pb-1">Profile Picture <span className="text-red-500">*</span>
+                    </Label>
                     <Input type="file" accept="image/*" onChange={handleFileChange} />
                     {formData.feedback_upload_preview && (
                         <div className="mt-2">

@@ -195,6 +195,32 @@ const page = () => {
 
     const handleSubmit = async () => {
         try {
+
+            if (!selectedUser) {
+                toast.error("Please select user");
+                return;
+            }
+
+            if (!selectedAddress) {
+                toast.error("Please select address");
+                return;
+            }
+
+            if (!selectedStore) {
+                toast.error("Please select store");
+                return;
+            }
+
+            if (!selectedSlot) {
+                toast.error("Please select slot");
+                return;
+            }
+
+            if (!selectedItems.length) {
+                toast.error("Please add atleast one item");
+                return;
+            }
+
             setLoading(true);
 
             const getFormattedDate = (date) => {
@@ -301,6 +327,11 @@ const page = () => {
         }
     };
 
+
+    useEffect(() => {
+        setSelectedItems([]);
+    }, [selectedUser, selectedAddress, selectedStore]);
+
     return (
         <MainLayout>
             <div className="bg-sidebar">
@@ -318,7 +349,7 @@ const page = () => {
                     <div className="col-span-3  bg-white ">
                         <div className="border shadow rounded-md px-4 py-4">
                             <div>
-                                <h4 className="font-medium">User</h4>
+                                <h4 className="font-medium">User <span className="text-red-500 px-1">*</span></h4>
                                 <div className="grid grid-cols-4 gap-2 mt-2">
                                     <div className="col-span-4 relative">
                                         <Input
@@ -419,7 +450,7 @@ const page = () => {
 
                     <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
-                            <h4 className="font-medium">User Address</h4>
+                            <h4 className="font-medium">User Address <span className="text-red-500 px-1">*</span></h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
                                 <div className="col-span-4">
                                     {loadingAddress ? (
@@ -461,7 +492,7 @@ const page = () => {
 
                     <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
-                            <h4 className="font-medium">Stores</h4>
+                            <h4 className="font-medium">Stores <span className="text-red-500 px-1">*</span></h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
                                 <div className="col-span-4">
                                     {loadingStore ? (
@@ -502,7 +533,7 @@ const page = () => {
 
                     <div className="col-span-3 bg-white">
                         <div className="border shadow rounded-md px-4 py-4">
-                            <h4 className="font-medium">Slots</h4>
+                            <h4 className="font-medium">Slots <span className="text-red-500 px-1">*</span></h4>
                             <div className="grid grid-cols-4 gap-2 mt-2">
                                 <div className="col-span-4">
                                     {slots && slots.length > 0 ? (
@@ -535,10 +566,10 @@ const page = () => {
                         </div>
                     </div>
 
-                    <div className="col-span-2  bg-white ">
+                    <div className="col-span-3  bg-white ">
                         <div className="border shadow rounded-md px-4 py-4">
                             <div>
-                                <h4 className="font-medium">Products</h4>
+                                <h4 className="font-medium">Products <span className="text-red-500 px-1">*</span></h4>
                                 <div className="grid grid-cols-4 gap-2 mt-2">
                                     <div className="col-span-4">
                                         <div className="flex gap-4">
@@ -581,6 +612,10 @@ const page = () => {
                                                             variant="outline"
                                                             size="sm"
                                                             onClick={() => {
+                                                                if (item.available === 0 || item.quantity === 0) {
+                                                                    toast.error("This product is out of stock and cannot be added");
+                                                                    return;
+                                                                }
                                                                 handleAdditem(item);
                                                                 setSearchResult([]);
                                                             }}
@@ -602,7 +637,7 @@ const page = () => {
                             </div>
 
                             <div className="mt-4 space-y-2">
-                                {selectedItems.map((item) => (
+                                {/* {selectedItems.map((item) => (
                                     <div
                                         key={item.product_id}
                                         className="grid grid-cols-4 items-center gap-2 border p-2 rounded-md"
@@ -668,6 +703,104 @@ const page = () => {
                                         <div className="col-span-1 font-semibold px-2">
                                             ₹ {Number(item.price) * item.quantity}
                                         </div>
+
+                                        <div className="col-span-1 text-right">
+                                            <button
+                                                type="button"
+                                                className="text-red-500 font-bold hover:text-red-700"
+                                                onClick={() =>
+                                                    setSelectedItems((prev) =>
+                                                        prev.filter((i) => i.product_id !== item.product_id)
+                                                    )
+                                                }
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))} */}
+
+
+                                {selectedItems.map((item) => (
+                                    <div
+                                        key={item.product_id}
+                                        className="grid grid-cols-5 items-center gap-2 border p-2 rounded-md"
+                                    >
+                                        {/* Product info */}
+                                        <div className="col-span-2 font-semibold flex gap-2 items-center">
+                                            <Image
+                                                src={item.thumbnail_image}
+                                                height={40}
+                                                width={50}
+                                                alt={item.title}
+                                                className="rounded-md"
+                                            />
+                                            <p className="text-sm">{item.title}</p>
+                                        </div>
+
+                                        {/* Quantity input */}
+                                        <div className="col-span-1 font-semibold px-2">
+                                            <Input
+                                                type="number"
+                                                min="1"
+                                                max={item.available}
+                                                value={item.quantity}
+                                                onChange={(e) => {
+                                                    const inputValue = e.target.value;
+
+                                                    if (inputValue === "") {
+                                                        setSelectedItems((prev) =>
+                                                            prev.map((i) =>
+                                                                i.product_id === item.product_id ? { ...i, quantity: "" } : i
+                                                            )
+                                                        );
+                                                        return;
+                                                    }
+
+                                                    const newQty = Number(inputValue);
+
+                                                    if (isNaN(newQty) || newQty < 1) return;
+
+                                                    if (newQty > item.available) {
+                                                        toast.error(`Only ${item.available} units available in stock.`);
+                                                        return;
+                                                    }
+
+                                                    setSelectedItems((prev) =>
+                                                        prev.map((i) =>
+                                                            i.product_id === item.product_id ? { ...i, quantity: newQty } : i
+                                                        )
+                                                    );
+                                                }}
+                                                onBlur={() => {
+                                                    setSelectedItems((prev) =>
+                                                        prev.map((i) =>
+                                                            i.product_id === item.product_id
+                                                                ? { ...i, quantity: Number(i.quantity) || 1 }
+                                                                : i
+                                                        )
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+
+                                        <div className="col-span-1 font-semibold px-2">
+                                            ₹ {(Number(item.price) * Number(item.quantity)).toFixed(2)}
+                                        </div>
+
+                                        <div className="col-span-1 text-right">
+                                            <button
+                                                type="button"
+                                                className="text-red-500 font-bold hover:text-red-700"
+                                                onClick={() =>
+                                                    setSelectedItems((prev) =>
+                                                        prev.filter((i) => i.product_id !== item.product_id)
+                                                    )
+                                                }
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -690,12 +823,12 @@ const page = () => {
                                 <div className="col-span-1">₹ {selectedStore?.delivery_charge ?? 0}</div>
 
                                 <div className="col-span-1">Estimated Tax</div>
-                                <div className="col-span-1">SGST + CGST 12% (included)</div>
+                                <div className="col-span-1">Tax details</div>
                                 <div className="col-span-1">₹ {tax ?? 0}</div>
 
                                 <div className="col-span-1">Total</div>
                                 <div className="col-span-1"></div>
-                                <div className="col-span-1">₹ {Number(subtotal || 0) + Number(tax || 0) + Number(selectedStore?.delivery_charge || 0) ?? 0}</div>
+                                <div className="col-span-1">₹ {Number(subtotal || 0) + Number(selectedStore?.delivery_charge || 0) ?? 0}</div>
                             </div>
                         </div>
 
@@ -728,7 +861,7 @@ const page = () => {
                     </div>
 
                     {/* right side content */}
-                    <div className="col-span-1 bg-white">
+                    {/* <div className="col-span-1 bg-white">
                         <div className="border shadow rounded-md px-4 py-4 ">
                             <span className="font-semibold"> Notes </span>
                             <p className="mt-4">No Notes</p>
@@ -738,10 +871,15 @@ const page = () => {
                             <span className="font-semibold"> Tags </span>
                             <Input placeholder="" className="mt-2" />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
-            <div className="flex justify-center mt-4">
+            <div className="flex justify-center mt-4 gap-4">
+                <Link href={'/draft-orders'}>
+                    <Button type="button" variant="outline" >
+                        Back to list
+                    </Button>
+                </Link>
                 <Button
                     className="cursor-pointer  border shadow  "
                     variant={"default"}

@@ -117,6 +117,32 @@ const AddDiscountForm = () => {
 
         try {
             e.preventDefault();
+
+            if (!formData?.discount_code) {
+                toast.error("Discount code is required");
+                return
+            }
+
+            if (!formData?.discount_type) {
+                toast.error("Discount value is required");
+                return
+            }
+
+            if (!formData?.discount_value) {
+                toast.error("Discount value is required");
+                return
+            }
+
+            if (!formData?.start_date) {
+                toast.error("Start date is required");
+                return
+            }
+
+            if (!formData?.start_time) {
+                toast.error("Start time is required");
+                return
+            }
+
             setLoading(true);
             const min_purchase_amount =
                 formData.min_requirement_type === "AMOUNT"
@@ -240,6 +266,32 @@ const AddDiscountForm = () => {
     const handleUpdate = async (e) => {
 
         e.preventDefault();
+
+        if (!formData?.discount_code) {
+            toast.error("Discount code is required");
+            return
+        }
+
+        if (!formData?.discount_type) {
+            toast.error("Discount value is required");
+            return
+        }
+
+        if (!formData?.discount_value) {
+            toast.error("Discount value is required");
+            return
+        }
+
+        if (!formData?.start_date) {
+            toast.error("Start date is required");
+            return
+        }
+
+        if (!formData?.start_time) {
+            toast.error("Start time is required");
+            return
+        }
+
         setLoading(true);
         const min_purchase_amount =
             formData.min_requirement_type === "AMOUNT"
@@ -304,7 +356,8 @@ const AddDiscountForm = () => {
                     <div className="mt-4 bg-white border rounded-md shadow px-4 py-3">
                         <h5 className="text-gray-500 font-semibold">Amount off Order</h5>
                         <div className="flex justify-between mt-4">
-                            <p className="text-gray-500 font-medium">Discount Code</p>
+                            <p className="text-gray-500 font-medium">Discount Code <span className="text-red-500">*</span>
+                            </p>
                         </div>
                         <input
                             className="border shadow px-2 py-2 w-full mt-2 rounded-md"
@@ -320,7 +373,8 @@ const AddDiscountForm = () => {
                     </div>
 
                     <div className="mt-4 bg-white border rounded-md shadow px-4 py-4">
-                        <h5 className="text-gray-500 font-semibold">Discount Value</h5>
+                        <h5 className="text-gray-500 font-semibold">Discount Value <span className="text-red-500">*</span>
+                        </h5>
                         <div className="grid grid-cols-4 gap-4 mt-4">
                             <select
                                 className="w-full border rounded-md px-2 py-2 col-span-2"
@@ -579,7 +633,8 @@ const AddDiscountForm = () => {
                         <div className="grid grid-cols-2 gap-4 mt-2">
                             <div className="flex flex-col">
                                 <label className="mb-1 text-gray-700 font-medium">
-                                    Start Date
+                                    Start Date <span className="text-red-500">*</span>
+
                                 </label>
                                 <input
                                     type="date"
@@ -592,7 +647,8 @@ const AddDiscountForm = () => {
                             </div>
                             <div className="flex flex-col">
                                 <label className="mb-1 text-gray-700 font-medium">
-                                    Start Time
+                                    Start Time <span className="text-red-500">*</span>
+
                                 </label>
                                 <input
                                     type="time"

@@ -125,6 +125,21 @@ export default function StoreForm({ editId, type }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData?.store_name) {
+            toast.error("Store name is required");
+            return;
+        }
+
+        if (!formData?.contact_no) {
+            toast.error("Contact number is required");
+            return;
+        }
+
+        if (!formData?.store_pincode) {
+            toast.error("Pincode is required");
+            return;
+        }
+
         if (!formData?.latitude) {
             toast.error("Latitude is required");
             return;
@@ -152,6 +167,21 @@ export default function StoreForm({ editId, type }) {
     const handleUpdate = async (editId, data, e) => {
 
         e.preventDefault();
+
+        if (!formData?.store_name) {
+            toast.error("Store name is required");
+            return;
+        }
+
+        if (!formData?.contact_no) {
+            toast.error("Contact number is required");
+            return;
+        }
+
+        if (!formData?.store_pincode) {
+            toast.error("Pincode is required");
+            return;
+        }
 
         if (!formData?.latitude) {
             toast.error("Latitude is required");
@@ -182,7 +212,7 @@ export default function StoreForm({ editId, type }) {
     return (
         <form className="grid gap-4 min-w-[350px]" >
             <div>
-                <Label className="pb-1">Store Name</Label>
+                <Label className="pb-1">Store Name <span className="text-red-500">*</span></Label>
                 <Input name="store_name" value={formData.store_name} onChange={handleChange} required />
             </div>
             <div>
@@ -190,7 +220,7 @@ export default function StoreForm({ editId, type }) {
                 <Input name="store_code" value={formData.store_code} onChange={handleChange} required />
             </div>
             <div>
-                <Label className="pb-1">Contact Number</Label>
+                <Label className="pb-1">Contact Number <span className="text-red-500">*</span></Label>
                 <Input name="contact_no" type={"number"} value={formData.contact_no} onChange={handleChange} required />
             </div>
             <div>
@@ -264,16 +294,16 @@ export default function StoreForm({ editId, type }) {
                 <Textarea name="address" value={formData.address} onChange={handleChange} />
             </div>
             <div>
-                <Label className="pb-1">Store Pincode</Label>
+                <Label className="pb-1">Store Pincode <span className="text-red-500">*</span></Label>
                 <Input name="store_pincode" value={formData.store_pincode} onChange={handleChange} />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <Label className="pb-1">Latitude</Label>
+                    <Label className="pb-1">Latitude <span className="text-red-500">*</span></Label>
                     <Input name="latitude" value={formData.latitude} onChange={handleChange} />
                 </div>
                 <div>
-                    <Label className="pb-1">Longitude</Label>
+                    <Label className="pb-1">Longitude <span className="text-red-500">*</span></Label>
                     <Input name="longitude" value={formData.longitude} onChange={handleChange} />
                 </div>
             </div>

@@ -210,12 +210,14 @@ export default function VendorForm({ editId }) {
         <form className="grid gap-4">
             <div className="flex gap-3">
                 <div className="flex-1">
-                    <Label className='pb-1'>Name</Label>
+                    <Label className='pb-1'>Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input name="vendor_name" value={formData.vendor_name} onChange={handleChange} placeholder='Vendor Name' type='text' required />
                 </div>
 
                 <div className="flex-1">
-                    <Label className='pb-1'>GST</Label>
+                    <Label className='pb-1'>GST <span className="text-red-500">*</span>
+                    </Label>
                     <Input name="gst" value={formData.gst} onChange={handleChange} placeholder='GST Number' type='text' required />
                 </div>
             </div>
@@ -229,7 +231,8 @@ export default function VendorForm({ editId }) {
 
             <div className="flex gap-3 max-w-[50%]">
                 <div className="flex-1">
-                    <Label className='pb-1'>Contact Details</Label>
+                    <Label className='pb-1'>Contact Details <span className="text-red-500">*</span>
+                    </Label>
                     <Input name="contact_number" value={formData.contact_number} onChange={handleChange} placeholder='Enter Contact number' type="number" required />
                 </div>
             </div>

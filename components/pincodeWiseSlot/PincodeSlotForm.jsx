@@ -107,6 +107,32 @@ const PincodeSlotForm = () => {
     }, [dark_store_packaging_center_id, pincode_id]);
 
     const handleAddSlot = async () => {
+
+        if (!slotName) {
+            toast.error("Please enter slot name")
+            return
+        }
+
+        if (!fromTime) {
+            toast.error("Please enter from time")
+            return
+        }
+
+        if (!toTime) {
+            toast.error("Please enter to time")
+            return
+        }
+
+        if (!dark_store_packaging_center_id) {
+            toast.error("Please select dark store packaging center")
+            return
+        }
+
+        if (!pincode_id) {
+            toast.error("Please select pincode")
+            return
+        }
+
         const payload = {
             slot_name: slotName,
             from_time: fromTime,
@@ -141,6 +167,31 @@ const PincodeSlotForm = () => {
 
     const handleSlotUpdate = async () => {
 
+        if (!slotName) {
+            toast.error("Please enter slot name")
+            return
+        }
+
+        if (!fromTime) {
+            toast.error("Please enter from time")
+            return
+        }
+
+        if (!toTime) {
+            toast.error("Please enter to time")
+            return
+        }
+
+        if (!dark_store_packaging_center_id) {
+            toast.error("Please select dark store packaging center")
+            return
+        }
+
+        if (!pincode_id) {
+            toast.error("Please select pincode")
+            return
+        }
+
         const payload = {
             slot_name: slotName,
             from_time: fromTime,
@@ -168,7 +219,8 @@ const PincodeSlotForm = () => {
     return (
         <div className="bg-white border rounded-md shadow px-4 py-4 ">
             <div className="flex gap-4  items-center">
-                <div>Store / PC</div>
+                <div>Store / PC <span className="text-red-500">*</span>
+                </div>
                 <div className="w-[50%]">
                     <Select
                         disabled={loading}
@@ -196,7 +248,8 @@ const PincodeSlotForm = () => {
             </div>
 
             <div className="mt-4 flex  items-center gap-4">
-                <div className="w-20">Pin Code</div>
+                <div className="w-20">Pin Code <span className="text-red-500">*</span>
+                </div>
                 <div className="w-[50%]">
                     <Select
                         defaultValue={""}
@@ -224,7 +277,8 @@ const PincodeSlotForm = () => {
 
             <div className="flex mt-4 gap-4">
                 <div>
-                    <Label className="pb-1">Slot Name</Label>
+                    <Label className="pb-1">Slot Name <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="slot_name"
                         placeholder="Slot Name"
@@ -234,7 +288,8 @@ const PincodeSlotForm = () => {
                     />
                 </div>
                 <div>
-                    <Label className="pb-1">From</Label>
+                    <Label className="pb-1">From <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="from_time"
                         placeholder="From"
@@ -244,7 +299,8 @@ const PincodeSlotForm = () => {
                     />{" "}
                 </div>
                 <div>
-                    <Label className="pb-1">To</Label>
+                    <Label className="pb-1">To <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="to_time"
                         placeholder="To"
@@ -254,7 +310,8 @@ const PincodeSlotForm = () => {
                     />{" "}
                 </div>
                 <div>
-                    <Label className="pb-1">Cut-Off</Label>
+                    <Label className="pb-1">Cut-Off <span className="text-red-500">*</span>
+                    </Label>
                     <Input
                         name="cut_off_time"
                         placeholder="Cut Off Time"
