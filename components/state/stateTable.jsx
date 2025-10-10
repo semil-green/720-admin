@@ -50,10 +50,10 @@ const StateTable = ({ data, page, totalPages, setPage, setEditingState, setIsCit
 
         if (res?.status === 200) {
             dispatch(deleteState(id));
-            toast.success("Deleted", { description: "State deleted successfully" });
+            toast.success("Deleted", { description: "State deleted successfully" }, { duration: 8000 });
         }
         else {
-            toast.error("Failed to delete state");
+            toast.error(res?.response?.data?.message || "Failed to delete state");
         }
 
 

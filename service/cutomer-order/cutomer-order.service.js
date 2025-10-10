@@ -83,12 +83,12 @@ export const updateOrderStatusService = async (order_id, order_status) => {
     }
 };
 
-export const getCustomerOrdersHistoryService = async (customer_id) => {
+export const getCustomerOrdersHistoryService = async (customer_id, page) => {
     try {
         const auth_token = localStorage.getItem("token");
 
         const fetchData = await axios.get(
-            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/customer/customers/orders/${customer_id}`,
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/customer/customers/orders/${customer_id}?page=${page}`,
             { headers: { Authorization: auth_token } }
         );
 

@@ -40,11 +40,12 @@ const CityTable = ({ data, onEdit, page, limit, totalPages, setPage }) => {
         const res = await deleteCityService(city_id);
 
         if (res?.status == 200 || res?.status == 201) {
+
             dispatch(deleteCity(city_id))
-            toast.success("Deleted", { description: "City deleted successfully" });
+            toast.success("Deleted", { description: "City deleted successfully" }, { duration: 8000 });
         }
         else {
-            toast.error("Failed to delete city");
+            toast.error(res?.response?.data?.message || "Failed to delete city");
         }
     }
     return (
