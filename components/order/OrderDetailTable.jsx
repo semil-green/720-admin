@@ -27,7 +27,6 @@ const OrderDetailTable = ({ order_id }) => {
             setSelectedStatus(String(orderData.order_status));
         }
     }, [orderData]);
-
     const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
 
     useEffect(() => {
@@ -69,7 +68,6 @@ const OrderDetailTable = ({ order_id }) => {
         }
     }, [orderStatus]);
 
-
     const handlePrint = (storeItems) => {
         if (!storeItems || storeItems.length === 0) return;
 
@@ -81,7 +79,6 @@ const OrderDetailTable = ({ order_id }) => {
         }).format(createdDate);
 
         const firstItem = storeItems[0];
-        const pincode = firstItem?.pincode || "";
         const deliveryCharge = parseFloat(firstItem?.delivery_charge) || 0;
 
         let itemsHtml = "";
@@ -89,13 +86,11 @@ const OrderDetailTable = ({ order_id }) => {
         let totalItemPrice = 0;
 
         storeItems.forEach((item) => {
-
             const gst = parseFloat(item.gst_percentage) || 0;
             const tax = parseFloat(item.gst_amount) || 0;
             totalTax += tax;
 
-            const itemTotal =
-                (parseFloat(item.price) || 0) * (item.item_quantity || 0);
+            const itemTotal = (parseFloat(item.price) || 0) * (item.item_quantity || 0);
             totalItemPrice += itemTotal;
 
             itemsHtml += `
@@ -113,7 +108,9 @@ const OrderDetailTable = ({ order_id }) => {
             `;
         });
 
-        const totalPrice = totalItemPrice + deliveryCharge;
+        const discountAmount = parseFloat(orderData?.discount_amount || 0);
+        const totalBeforeDiscount = totalItemPrice + deliveryCharge;
+        const totalPrice = totalBeforeDiscount - discountAmount;
 
         const printableHtml = `
           <div style="width:200px; font-family: 'Courier New', monospace; font-size:14px; text-align:center; margin:0 auto; padding:20px;">
@@ -130,15 +127,7 @@ const OrderDetailTable = ({ order_id }) => {
               <p style="margin:0;">Ship To:</p>
               <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
               <p style="margin:5px 0 0 0;">${orderData.address}</p>
-              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no
-            }</p>
-              <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
-            </div>
-    
-            <div style="text-align:left; margin-top:15px;">
-              <p style="margin:0;">Bill To:</p>
-              <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
-              <p style="margin:5px 0 0 0;">${orderData.address}</p>
+              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no}</p>
               <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
             </div>
     
@@ -148,7 +137,7 @@ const OrderDetailTable = ({ order_id }) => {
             <div style="text-align:left; margin-top:10px;">
               <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
                 <div>Items</div>
-                <div>Quantity</div>
+                <div>Qty</div>
               </div>
               ${itemsHtml}
             </div>
@@ -168,25 +157,24 @@ const OrderDetailTable = ({ order_id }) => {
                 <div>Delivery Charge:</div>
                 <div>₹${deliveryCharge.toFixed(2)}</div>
               </div>
+              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <div>Discount:</div>
+                <div>₹${discountAmount.toFixed(2)}</div>
+              </div>
               <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight:bold;">
                 <div>Total Price:</div>
                 <div>₹${totalPrice.toFixed(2)}</div>
               </div>
             </div>
-
+    
             <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-            
+    
             <h4 style="margin:0 0 10px 0;">Thank you for shopping with us!</h4>
-
-            <h4 style="margin:0 0 10px 0;">Dam Good Fish
-                <br/> Dam good fish Private Limited,
-                <br/> Gurugram, HR, 122004, India
-                hello@damgoodfish.com
-                damgoodfish.com
-                </h4>
-                
+            <p style="margin:0;">Dam Good Fish Private Limited</p>
+            <p style="margin:0;">Gurugram, HR, 122004</p>
+            <p style="margin:0;">hello@damgoodfish.com</p>
+            <p style="margin:0;">damgoodfish.com</p>
           </div>
-
         `;
 
         printJS({
@@ -200,7 +188,6 @@ const OrderDetailTable = ({ order_id }) => {
             `,
         });
     };
-
 
     const handleOrderStatus = async () => {
         try {
@@ -404,7 +391,7 @@ const OrderDetailTable = ({ order_id }) => {
                                 {" "}
                                 {` ₹ ${orderData?.discount_value == null
                                     ? "0"
-                                    : orderData?.discount_value
+                                    : orderData?.discount_amount
                                     }` || "0"}
                             </p>
                         </div>
@@ -451,7 +438,7 @@ const OrderDetailTable = ({ order_id }) => {
                             </p> */}
                             <p className="col-span-1 text-right font-semibold">
                                 ₹{" "}
-                                {orderData?.items
+                                {/* {orderData?.items
                                     ? (
                                         Object.values(orderData.items).reduce((sum, storeItems) => {
                                             // sum of item prices for this store
@@ -464,7 +451,26 @@ const OrderDetailTable = ({ order_id }) => {
                                             return sum + itemTotal + deliveryCharge;
                                         }, 0)
                                     ).toFixed(2)
-                                    : orderData?.final_price || 0}
+                                    : orderData?.final_price || 0} */}
+
+                                {orderData?.items
+                                    ? (
+                                        (
+                                            Object.values(orderData.items).reduce((sum, storeItems) => {
+                                                // total item price per store
+                                                const itemTotal = storeItems.reduce(
+                                                    (acc, item) => acc + Number(item.price) * Number(item.item_quantity),
+                                                    0
+                                                );
+                                                // delivery charge (from first item)
+                                                const deliveryCharge = Number(storeItems[0]?.delivery_charge || 0);
+                                                return sum + itemTotal + deliveryCharge;
+                                            }, 0)
+                                            - Number(orderData?.discount_amount || 0) //  subtract discount if present
+                                        ).toFixed(2)
+                                    )
+                                    : (orderData?.final_price || 0)}
+
                             </p>
                         </div>
                     </div>
@@ -484,16 +490,19 @@ const OrderDetailTable = ({ order_id }) => {
                                 ₹{" "}
                                 {orderData?.items
                                     ? (
-                                        Object.values(orderData.items).reduce((sum, storeItems) => {
-                                            const itemTotal = storeItems.reduce(
-                                                (acc, item) => acc + Number(item.price) * Number(item.item_quantity),
-                                                0
-                                            );
-                                            const deliveryCharge = Number(storeItems[0]?.delivery_charge || 0);
-                                            return sum + itemTotal + deliveryCharge;
-                                        }, 0)
-                                    ).toFixed(2)
-                                    : orderData?.final_price || 0}
+                                        (
+                                            Object.values(orderData.items).reduce((sum, storeItems) => {
+                                                const itemTotal = storeItems.reduce(
+                                                    (acc, item) => acc + Number(item.price) * Number(item.item_quantity),
+                                                    0
+                                                );
+                                                const deliveryCharge = Number(storeItems[0]?.delivery_charge || 0);
+                                                return sum + itemTotal + deliveryCharge;
+                                            }, 0)
+                                            - Number(orderData?.discount_amount || 0)
+                                        ).toFixed(2)
+                                    )
+                                    : (orderData?.final_price || 0)}
                             </p>
                         </div>
                     </div>

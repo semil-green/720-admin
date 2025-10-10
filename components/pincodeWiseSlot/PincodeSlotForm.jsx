@@ -152,7 +152,7 @@ const PincodeSlotForm = () => {
             setCutOffTime("");
         }
         else {
-            toast.error("Failed to add slot");
+            toast.error(res?.response?.data?.message || "Failed to add slot");
         }
     };
 
