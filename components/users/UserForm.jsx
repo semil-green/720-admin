@@ -171,8 +171,14 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
                 formDataToSend.append("profile_image", formData.profile_image);
             }
 
+
             const newUser = await addNewUserService(formDataToSend);
 
+            if (newUser?.response?.status == 400) {
+                toast.error("", {
+                    description: newUser?.response?.data?.message || "An error occurred",
+                }, { autoClose: 6000 });
+            }
             if (newUser?.status === 200) {
                 toast.success("Created", {
                     description: "User created successfully",

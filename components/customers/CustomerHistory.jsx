@@ -6,25 +6,44 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getCustomerOrdersHistoryService } from '@/service/cutomer-order/cutomer-order.service';
 import { toast } from 'sonner';
+import { Loader2 } from "lucide-react";
+
 const CustomerHistory = ({ customerId }) => {
     const [customerOrderHistory, setCustomerOrderHistory] = useState([])
+    const [isLoading, setIsLoading] = useState(false)
+    const [page, setPage] = useState(1)
+    const [totalPage, setTotalPage] = useState(1)
     const fetchCustomerHistory = async () => {
         try {
 
-            const fetchData = await getCustomerOrdersHistoryService(customerId);
+            setIsLoading(true)
+            const fetchData = await getCustomerOrdersHistoryService(customerId, page);
             setCustomerOrderHistory(fetchData?.data)
+            setTotalPage(fetchData?.data?.orders?.pagination?.totalPages)
+
         }
         catch (error) {
             toast.error("Failed to fetch customer history");
+        }
+        finally {
+            setIsLoading(false)
         }
     }
 
     useEffect(() => {
         fetchCustomerHistory()
-    }, [customerId])
+    }, [customerId, page])
+
 
     return (
         <div className='p-8 bg-sidebar'>
+            {
+                isLoading && <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            }
             <div className='flex justify-between items-end'>
                 <div className="flex items-center gap-2">
                     <Link href={"/customer"}>
@@ -32,30 +51,6 @@ const CustomerHistory = ({ customerId }) => {
                     </Link>
                     <ChevronRight className="w-4 h-4 text-gray-500" />
                     {customerOrderHistory?.customer?.customer_name && <h2 className="font-semibold text-xl">{customerOrderHistory?.customer?.customer_name}</h2>}
-                </div>
-
-                <div>
-
-                    <div>
-                        <div className="relative inline-block group">
-                            <button
-                                className="h-8 px-4 py-2 has-[>svg]:px-3 bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80 inline-flex items-center rounded-md"
-                            >
-                                Menu
-                                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                </svg>
-                            </button>
-
-                            <div
-                                className="absolute right-0 z-10 mt-2 w-48 rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all origin-top duration-200 pointer-events-none group-hover:pointer-events-auto"
-                            >
-                                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 1</a>
-                                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 2</a>
-                                <a href="#" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Option 3</a>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -115,6 +110,27 @@ const CustomerHistory = ({ customerId }) => {
                                 );
                             })}
                         </div>
+                    </div>
+
+                    <div className="flex justify-between items-center mt-4">
+                        <Button
+                            variant="outline"
+                            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                            disabled={page === 1}
+                        >
+                            Previous
+                        </Button>
+                        <span className="text-sm">
+                            Page {page} of {totalPage}
+
+                        </span>
+                        <Button
+                            variant="outline"
+                            onClick={() => setPage((p) => Math.min(p + 1, totalPage))}
+                            disabled={page === totalPage}
+                        >
+                            Next
+                        </Button>
                     </div>
                 </div>
                 <div className='col-span-1 rounded-lg border shadow px-3 py-3 bg-white'>
