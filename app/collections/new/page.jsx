@@ -13,6 +13,13 @@ import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { Suspense } from "react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 const Page = () => {
     const editId = useSearchParams().get("id");
@@ -30,8 +37,7 @@ const Page = () => {
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState([])
     const [product, setProducts] = useState([])
-
-
+    const [sortBy, setSortBy] = useState("");
 
     useEffect(() => {
         if (!editId) return;
@@ -127,7 +133,12 @@ const Page = () => {
             dataToSend.append("title", formData.title);
             dataToSend.append("description", formData.description);
 
-            const productIds = product.map((p) => p.product_id);
+            // const productIds = product.map((p) => p.product_id);
+            const productIds = product.map((p, index) => ({
+                product_id: p.product_id,
+                order_no: index + 1, // or use a custom order from drag/drop etc.
+            }));
+
             dataToSend.append("product_ids", JSON.stringify(productIds));
             dataToSend.append("display_homepage", formData.display_homepage);
 
@@ -167,7 +178,10 @@ const Page = () => {
             dataToSend.append("title", formData.title);
             dataToSend.append("description", formData.description);
 
-            const productIds = product.map((p) => p.product_id);
+            const productIds = product.map((p, index) => ({
+                product_id: p.product_id,
+                order_no: index + 1,
+            }));
             dataToSend.append("product_ids", JSON.stringify(productIds));
             dataToSend.append("display_homepage", formData.display_homepage);
 
@@ -192,6 +206,44 @@ const Page = () => {
         }
     };
 
+
+
+    useEffect(() => {
+        let sortedProducts = [...product]
+
+        switch (sortBy) {
+            case "best_selling":
+                sortedProducts.sort(
+                    (a, b) => Number(b.total_sold) - Number(a.total_sold)
+                )
+                break
+
+            case "title_asc":
+                sortedProducts.sort((a, b) =>
+                    a.full_product_name.localeCompare(b.full_product_name)
+                )
+                break
+
+            case "title_desc":
+                sortedProducts.sort((a, b) =>
+                    b.full_product_name.localeCompare(a.full_product_name)
+                )
+                break
+
+            case "price_high":
+                sortedProducts.sort((a, b) => Number(b.price) - Number(a.price))
+                break
+
+            case "price_low":
+                sortedProducts.sort((a, b) => Number(a.price) - Number(b.price))
+                break
+
+            default:
+                break
+        }
+
+        setProducts(sortedProducts)
+    }, [sortBy])
 
     return (
         <MainLayout>
@@ -320,6 +372,19 @@ const Page = () => {
                                 >
                                     Clear
                                 </Button>
+
+                                <Select onValueChange={(value) => setSortBy(value)}>
+                                    <SelectTrigger className="w-[180px] h-10">
+                                        <SelectValue placeholder="Filter" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="best_selling">Best Selling</SelectItem>
+                                        <SelectItem value="title_asc">Product Title A–Z</SelectItem>
+                                        <SelectItem value="title_desc">Product Title Z–A</SelectItem>
+                                        <SelectItem value="price_high">Highest Price</SelectItem>
+                                        <SelectItem value="price_low">Lowest Price</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </div>
 
                             {searchResults.length > 0 && (
