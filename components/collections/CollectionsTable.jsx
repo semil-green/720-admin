@@ -1,66 +1,88 @@
-'use client';
+"use client";
 
-import React from 'react';
+import React from "react";
 import {
     useReactTable,
     getCoreRowModel,
     flexRender,
-} from '@tanstack/react-table';
-import Image from 'next/image';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+} from "@tanstack/react-table";
+import Image from "next/image";
 import {
-    AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
-    AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+    AlertDialog,
+    AlertDialogTrigger,
+    AlertDialogContent,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogCancel,
+    AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Button } from '../ui/button';
+import { Button } from "../ui/button";
 import { MoreVertical, Pencil, Trash2, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { activateCollectionsService, deleteCollectionService } from '@/service/collections/collections.service';
+import {
+    activateCollectionsService,
+    deleteCollectionService,
+} from "@/service/collections/collections.service";
 import { toast } from "sonner";
-import { activateCollection, deleteCollection } from '@/store/slices/collections/collections.slice';
+import {
+    activateCollection,
+    deleteCollection,
+} from "@/store/slices/collections/collections.slice";
 import { useDispatch } from "react-redux";
 
-export default function CollectionsTable({ allCollectionsData, totalPage, page, setPage, totalRecordCount }) {
-
+export default function CollectionsTable({
+    allCollectionsData,
+    totalPage,
+    page,
+    setPage,
+    totalRecordCount,
+}) {
     const router = useRouter();
     const dispatch = useDispatch();
 
     const handleDelete = async (collectionId) => {
-
         const res = await deleteCollectionService(collectionId);
 
         if (res?.status === 200) {
-            dispatch(deleteCollection(collectionId))
-            toast.success("Deleted", { description: "Collection deleted successfully" });
+            dispatch(deleteCollection(collectionId));
+            toast.success("Deleted", {
+                description: "Collection deleted successfully",
+            });
         }
-    }
+    };
 
     const handleCollectionActivate = async (collection) => {
-
         try {
+            const { collection_id, status } = collection;
 
-            const { collection_id, status } = collection
+            const updatedStatus = status == true ? false : true;
 
-            const updatedStatus = status == true ? false : true
-
-            const res = await activateCollectionsService(collection_id, updatedStatus)
+            const res = await activateCollectionsService(
+                collection_id,
+                updatedStatus
+            );
 
             if (res?.status == 200 || res?.status == 201) {
-
                 const updatedCollection = { ...collection, status: updatedStatus };
                 dispatch(activateCollection(updatedCollection));
             }
-        }
-        catch (error) {
+        } catch (error) {
             toast.error("Failed to update status");
         }
-
-    }
+    };
 
     const columns = [
         {
-            header: 'Product',
-            accessorKey: 'title',
+            header: "Product",
+            accessorKey: "title",
             cell: ({ row }) => {
                 const { image, title } = row.original;
                 return (
@@ -78,15 +100,19 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
             },
         },
         {
-            header: 'Products',
-            accessorKey: 'no_of_products',
+            header: "Products",
+            accessorKey: "no_of_products",
         },
         {
             accessorKey: "status",
             header: "Status",
             cell: ({ getValue }) => {
                 const value = getValue();
-                return value ? <span className="text-green-600">Active</span> : <span className="text-red-600">Inactive</span>;
+                return value ? (
+                    <span className="text-green-600">Active</span>
+                ) : (
+                    <span className="text-red-600">Inactive</span>
+                );
             },
         },
         {
@@ -103,31 +129,41 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                                onClick={() => router.push(`/collections/new?id=${collection.collection_id}`)}
+                                onClick={() =>
+                                    router.push(`/collections/new?id=${collection.collection_id}`)
+                                }
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Deactivate
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Collection?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(collection.collection_id)}>
-                                            Confirm Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
+
+                            {collection?.status ? (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Deactivate
+                                        </div>
+                                    </AlertDialogTrigger>
+
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete Collection?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to delete? This action cannot be
+                                                undone.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => handleDelete(collection.collection_id)}
+                                            >
+                                                Confirm Delete
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            ) : (
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
@@ -144,14 +180,15 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                            <AlertDialogAction onClick={() => handleCollectionActivate(collection)}>
-
+                                            <AlertDialogAction
+                                                onClick={() => handleCollectionActivate(collection)}
+                                            >
                                                 Confirm Activate
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>
-                            </AlertDialog>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -165,20 +202,22 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
         getCoreRowModel: getCoreRowModel(),
     });
 
-
     return (
         <div className="p-4">
             <div className="overflow-x-auto rounded-lg shadow border">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-50 text-left">
-                        {table.getHeaderGroups().map(headerGroup => (
+                        {table.getHeaderGroups().map((headerGroup) => (
                             <tr key={headerGroup.id}>
-                                {headerGroup.headers.map(header => (
+                                {headerGroup.headers.map((header) => (
                                     <th
                                         key={header.id}
                                         className="px-4 py-3 text-xs font-semibold text-gray-600 uppercase tracking-wider"
                                     >
-                                        {flexRender(header.column.columnDef.header, header.getContext())}
+                                        {flexRender(
+                                            header.column.columnDef.header,
+                                            header.getContext()
+                                        )}
                                     </th>
                                 ))}
                             </tr>
@@ -194,7 +233,8 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                                             className="px-4 py-3 text-sm text-gray-800"
                                         >
                                             {flexRender(
-                                                cell.column.columnDef.cell ?? cell.column.columnDef.accessorKey,
+                                                cell.column.columnDef.cell ??
+                                                cell.column.columnDef.accessorKey,
                                                 cell.getContext()
                                             )}
                                         </td>
@@ -212,7 +252,6 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
                             </tr>
                         )}
                     </tbody>
-
                 </table>
             </div>
 
@@ -220,17 +259,18 @@ export default function CollectionsTable({ allCollectionsData, totalPage, page, 
             <div className="flex justify-between items-center mt-4">
                 <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.max(p - 1, 1))}
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
                     disabled={page === 1}
                 >
                     Previous
                 </Button>
                 <span className="text-sm">
-                    Page {page} of {totalPage} , <span className='ml-4'>  Total : {totalRecordCount}</span>
+                    Page {page} of {totalPage} ,{" "}
+                    <span className="ml-4"> Total : {totalRecordCount}</span>
                 </span>
                 <Button
                     variant="outline"
-                    onClick={() => setPage(p => Math.min(p + 1, totalPage))}
+                    onClick={() => setPage((p) => Math.min(p + 1, totalPage))}
                     disabled={page === totalPage}
                 >
                     Next

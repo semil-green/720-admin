@@ -357,7 +357,7 @@ const Page = () => {
 
                     <label className='font-medium'>Products</label>
                     <div className="grid grid-cols-5 gap-2 mb-6 mt-4 relative">
-                        <div className="col-span-2">
+                        <div className="col-span-5">
                             <div className='flex gap-4'>
                                 <input
                                     type="text"

@@ -84,52 +84,56 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
 
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Deactivate
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Category?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => onDelete(category.category_id)}>
-                                            Confirm Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
 
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
-                                        <ShieldCheck className="mr-2 h-4 w-4" />
-                                        Activate
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Activate Category?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to activate this category?
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleCategoryActivate(category.category_id, category?.status)}>
 
-                                            Confirm Activate
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+
+
+                            {
+                                category?.status ? (<AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Deactivate
+                                        </div>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Deactivate Category?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to deactivate this category?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => onDelete(category.category_id)}>
+                                                Confirm Deactivatw
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>) : (<AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                            Activate
+                                        </div>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Activate Category?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to activate this category?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleCategoryActivate(category.category_id, category?.status)}>
+
+                                                Confirm Activate
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>)
+                            }
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
