@@ -52,10 +52,12 @@ const HsnTable = ({ data, setEditData, isHsnModalOpen }) => {
 
         if (res?.status === 200 || res?.status === 201) {
             dispatch(deleteHsnCode(id));
-            toast.success("Deleted", { description: "State deleted successfully" });
+            toast.success("Deleted", { description: "HSN code deleted successfully" });
         }
+
         else {
-            toast.error("Failed to delete state");
+
+            toast.error(res?.response?.data?.message || "Failed to delete HSN code");
         }
 
     };

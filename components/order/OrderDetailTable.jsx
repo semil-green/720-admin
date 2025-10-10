@@ -84,14 +84,14 @@ const OrderDetailTable = ({ order_id }) => {
         const pincode = firstItem?.pincode || "";
         const deliveryCharge = parseFloat(firstItem?.delivery_charge) || 0;
 
-        // Build items HTML and calculate total tax and total item price
         let itemsHtml = "";
         let totalTax = 0;
         let totalItemPrice = 0;
 
         storeItems.forEach((item) => {
-            const gst = item.gst_percentage ?? 0;
-            const tax = parseFloat(item.tax_amount) || 0;
+
+            const gst = parseFloat(item.gst_percentage) || 0;
+            const tax = parseFloat(item.gst_amount) || 0;
             totalTax += tax;
 
             const itemTotal =
@@ -437,7 +437,7 @@ const OrderDetailTable = ({ order_id }) => {
                             <p className="col-span-1">Taxes</p>
                             <p className="col-span-2 text-gray-600">Tax details </p>
                             <p className="col-span-1 text-right">
-                                ₹ {orderData?.grand_tax_total}
+                                ₹ {orderData?.total_gst_amount}
                             </p>
                         </div>
                     </div>

@@ -104,10 +104,16 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             return;
         }
 
-        if (!(formData.category_image instanceof File)) {
+        // if (!(formData.category_image instanceof File)) {
+        //     toast.error("Category image is required");
+        //     return;
+        // }
+
+        if (!formData.category_image) {
             toast.error("Category image is required");
             return;
         }
+
 
         setLoading(true);
 

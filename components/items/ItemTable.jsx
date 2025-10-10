@@ -35,6 +35,7 @@ export default function ItemTable({
     totalProductCount
 }) {
 
+    console.log("data333423", JSON.stringify(data, null, 2))
     const router = useRouter()
     const dispatch = useDispatch()
     const handleEdit = (item) => {
@@ -168,30 +169,6 @@ export default function ItemTable({
                             >
                                 <Pencil className="mr-2 h-4 w-4" /> Edit
                             </DropdownMenuItem>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
-                                        <Trash2 className="mr-2 h-4 w-4" />
-                                        Deactivate
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Item?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={() => onDelete(item.product_id)}
-                                        >
-                                            Confirm Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
 
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
@@ -218,29 +195,54 @@ export default function ItemTable({
                                 </AlertDialogContent>
                             </AlertDialog>
 
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
-                                        <ShieldCheck className="mr-2 h-4 w-4" />
-                                        Activate
-                                    </div>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Activate Collection?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to activate this Collection?
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleProductActivate(item.product_id)}>
+                            {
+                                item.status ? (<AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
+                                            <Trash2 className="mr-2 h-4 w-4" />
+                                            Deactivate
+                                        </div>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Deactivate Item?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to deactivate?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={() => onDelete(item.product_id)}
+                                            >
+                                                Confirm Deactivate
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>) : (<AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                            <ShieldCheck className="mr-2 h-4 w-4" />
+                                            Activate
+                                        </div>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Activate Collection?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to activate this Collection?
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={() => handleProductActivate(item.product_id)}>
 
-                                            Confirm Activate
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                                                Confirm Activate
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>)
+                            }
 
                         </DropdownMenuContent>
                     </DropdownMenu>
