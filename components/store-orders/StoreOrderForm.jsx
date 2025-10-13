@@ -85,10 +85,6 @@ const StoreOrderForm = ({
             toast.error("Transferred quantity must be greater than 0");
             return;
         }
-        if (displayTransferFields && !formData.transferred_remarks?.trim()) {
-            toast.error("Transferred remarks are required");
-            return;
-        }
         setLoading(true);
         try {
             const payload = {
@@ -141,10 +137,6 @@ const StoreOrderForm = ({
 
         if (displayTransferFields && (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0)) {
             toast.error("Transferred quantity must be greater than 0");
-            return;
-        }
-        if (displayTransferFields && !formData.transferred_remarks?.trim()) {
-            toast.error("Transferred remarks are required");
             return;
         }
 

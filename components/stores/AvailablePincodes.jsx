@@ -417,7 +417,7 @@ export default function AvailablePincodes({ editId }) {
                                 >
                                     Edit
                                 </Button>
-                                <Button
+                                {/* <Button
                                     size="sm"
                                     variant="link"
                                     onClick={() => {
@@ -426,7 +426,7 @@ export default function AvailablePincodes({ editId }) {
                                     }}
                                 >
                                     Delete
-                                </Button>
+                                </Button> */}
                             </td>
                         </tr>
                     ))}

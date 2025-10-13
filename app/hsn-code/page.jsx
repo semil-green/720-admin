@@ -41,7 +41,7 @@ const page = () => {
     return (
         <MainLayout>
             <div className="flex justify-end mb-4">
-                <Button onClick={openHsnModal}>Add State</Button>
+                <Button onClick={openHsnModal}>Add HSN Code</Button>
             </div>
 
             <Dialog open={isHsnModalOpen} onOpenChange={(open) => {

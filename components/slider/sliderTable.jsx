@@ -33,16 +33,15 @@ import {
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
 
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
-import { deleteSliderService } from "@/service/slider/slider.service";
-import { deleteSlider } from "@/store/slices/slider/slider.slice";
+import { MoreVertical, Pencil, Trash2, ShieldCheck } from "lucide-react";
+import { deleteSliderService, updateSliderStatusService } from "@/service/slider/slider.service";
+import { deleteSlider, updateSliderStatus } from "@/store/slices/slider/slider.slice";
 
 
 const SliderTable = ({ data, page, totalPages, setPage }) => {
     const router = useRouter();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(null);
-
 
     if (!data || data.length === 0) {
         return <div className="p-6 text-center text-muted-foreground">No sliders available</div>;
@@ -60,6 +59,21 @@ const SliderTable = ({ data, page, totalPages, setPage }) => {
             toast.success("Deleted", { description: "Slider deleted successfully" });
         }
 
+    }
+
+    const handleSliderActivate = async (slider_id, status) => {
+
+        const updatedStatus = status == true ? false : true
+
+        const res = await updateSliderStatusService(slider_id, updatedStatus);
+
+        if (res?.status == 200 || res?.status == 201) {
+            dispatch(updateSliderStatus(res?.data))
+            toast.success("Updated", { description: "Slider status updated successfully" });
+        }
+        else {
+            toast.error("Failed to update slider status");
+        }
     }
 
     return (
@@ -124,11 +138,12 @@ const SliderTable = ({ data, page, totalPages, setPage }) => {
                                                 <Pencil className="h-4 w-4" /> Edit
                                             </DropdownMenuItem>
 
-                                            <AlertDialog>
+
+                                            {slider?.status ? (<AlertDialog>
                                                 <AlertDialogTrigger asChild>
                                                     <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
                                                         <Trash2 className="mr-2 h-4 w-4" />
-                                                        Delete
+                                                        Deactivate
                                                     </div>
                                                 </AlertDialogTrigger>
 
@@ -143,14 +158,40 @@ const SliderTable = ({ data, page, totalPages, setPage }) => {
                                                     <AlertDialogFooter>
                                                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                                                         <AlertDialogAction
-                                                            onClick={() => handleDelete(slider.slider_id)}
+                                                            onClick={() => handleSliderActivate(slider?.slider_id, slider?.status)}
                                                             disabled={loading === slider.slider_id}
                                                         >
                                                             {loading === slider.slider_id ? "Deleting..." : "Confirm Delete"}
                                                         </AlertDialogAction>
                                                     </AlertDialogFooter>
                                                 </AlertDialogContent>
-                                            </AlertDialog>
+                                            </AlertDialog>) : (<AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                                        <ShieldCheck className="mr-2 h-4 w-4" />
+                                                        Activate
+                                                    </div>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Activate Slider?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Are you sure you want to activate this slider?
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => handleSliderActivate(slider?.slider_id, slider?.status)}>
+
+                                                            Confirm Activate
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>)}
+
+
+
+
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </div>

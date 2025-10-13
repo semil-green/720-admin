@@ -113,7 +113,7 @@ const page = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex flex-1 gap-2">
                         <Input
-                            placeholder="Search City"
+                            placeholder="Search Vendors"
                             className="flex-1 sm:flex-[2]"
                             onChange={(e) => setVendorSearch(e.target.value)}
                             value={vendorSearch}

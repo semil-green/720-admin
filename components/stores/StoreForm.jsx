@@ -135,6 +135,16 @@ export default function StoreForm({ editId, type }) {
             return;
         }
 
+        if (!formData?.state_id) {
+            toast.error("State is required");
+            return;
+        }
+
+        if (!formData?.city_id) {
+            toast.error("City is required");
+            return;
+        }
+
         if (!formData?.store_pincode) {
             toast.error("Pincode is required");
             return;
@@ -149,6 +159,8 @@ export default function StoreForm({ editId, type }) {
             toast.error("Longitude is required");
             return;
         }
+
+
 
         setLoading(true);
         const payload = { ...formData, type };
@@ -193,6 +205,16 @@ export default function StoreForm({ editId, type }) {
             return;
         }
 
+        if (!formData?.state_id) {
+            toast.error("State is required");
+            return;
+        }
+
+        if (!formData?.city_id) {
+            toast.error("City is required");
+            return;
+        }
+
         const payload = { ...formData, type };
         const res = await updateDarkStorePackagingCenter(editId, payload)
 
@@ -224,7 +246,7 @@ export default function StoreForm({ editId, type }) {
                 <Input name="contact_no" type={"number"} value={formData.contact_no} onChange={handleChange} required />
             </div>
             <div>
-                <Label className="pb-1">State</Label>
+                <Label className="pb-1">State <span className="text-red-500">*</span></Label>
                 <Select
                     value={formData.state_id}
                     onValueChange={(value) => {
@@ -248,7 +270,7 @@ export default function StoreForm({ editId, type }) {
                 </Select>
             </div>
             <div>
-                <Label className="pb-1">City</Label>
+                <Label className="pb-1">City <span className="text-red-500">*</span></Label>
                 <Select
                     value={formData.city_id}
                     onValueChange={(value) =>
