@@ -376,6 +376,7 @@ export default function AvailablePincodes({
                     <tr>
                         <th className="p-2 border-b text-center">Pincode</th>
                         <th className="p-2 border-b text-center">Delivery Charge</th>
+                        <th className="p-2 border-b text-center">Status</th>
                         <th className="p-2 border-b text-center">Actions</th>
                     </tr>
                 </thead>
@@ -408,7 +409,7 @@ export default function AvailablePincodes({
                                 >
                                     Edit
                                 </Button>
-                                <Button
+                                {/* <Button
                                     size="sm"
                                     variant="link"
                                     onClick={() => {
@@ -417,7 +418,7 @@ export default function AvailablePincodes({
                                     }}
                                 >
                                     Delete
-                                </Button>
+                                </Button> */}
                             </td>
                         </tr>
                     ))}

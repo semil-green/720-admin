@@ -37,8 +37,14 @@ const PincodeSlotForm = () => {
     const [isEdit, setisEdit] = useState(false)
     const [editSlotId, setEditSlotId] = useState(null)
 
-
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        setSlotName("");
+        setFromTime("");
+        setToTime("");
+        setCutOffTime("")
+    }, [pincode_id]);
 
     const alPackagingCenterDarkStore = useSelector(
         (state) => state.pincodeWiseSlotSlice.allDarkStorePackagingCenter
@@ -212,7 +218,7 @@ const PincodeSlotForm = () => {
             setisEdit(false)
         }
         else {
-            toast.error("Failed to update slot");
+            toast.error(res?.response?.data?.message || "Failed to update slot");
         }
 
     }

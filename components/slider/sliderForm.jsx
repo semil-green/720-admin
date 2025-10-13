@@ -22,6 +22,7 @@ import {
     updateSliderService,
 } from "@/service/slider/slider.service";
 import { setSliders } from "@/store/slices/slider/slider.slice";
+import { Loader2 } from "lucide-react";
 
 export default function SliderForm({ editId }) {
     const router = useRouter();
@@ -35,6 +36,7 @@ export default function SliderForm({ editId }) {
     });
     const [allCollections, setAllCollections] = useState([]);
     const [editData, setEditData] = useState({});
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (allCollections?.length == 0) {
@@ -53,8 +55,19 @@ export default function SliderForm({ editId }) {
         if (!editId) return;
 
         const fetchSliderData = async () => {
-            const res = await getSliderByIdService(editId);
-            setEditData(res?.data);
+
+            try {
+                setLoading(true);
+                const res = await getSliderByIdService(editId);
+                setEditData(res?.data);
+            }
+            catch (err) {
+                toast.error("Failed to fetch slider data");
+            }
+            finally {
+                setLoading(false);
+            }
+
         };
 
         fetchSliderData();
@@ -62,6 +75,7 @@ export default function SliderForm({ editId }) {
 
     useEffect(() => {
         if (editData?.slider_id) {
+
             setFormData({
                 slider_name: editData.slider_name || "",
                 collection_id: editData.collection_id?.toString() || "",
@@ -114,6 +128,8 @@ export default function SliderForm({ editId }) {
             return;
         }
 
+        setLoading(true);
+
         try {
             const payload = new FormData();
             payload.append("slider_name", formData.slider_name);
@@ -132,6 +148,9 @@ export default function SliderForm({ editId }) {
         } catch (error) {
             toast.error("Failed to add slider");
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     const handleUpdate = async (e) => {
@@ -147,11 +166,18 @@ export default function SliderForm({ editId }) {
             return;
         }
 
-        if (!formData.slider_image) {
+        // if (!formData.slider_image) {
+        //     toast.error("Slider image is required");
+        //     return;
+        // }
+
+        if (!formData.slider_image && !editData?.slider_image) {
             toast.error("Slider image is required");
             return;
         }
 
+
+        setLoading(true);
         try {
             const payload = new FormData();
             payload.append("slider_name", formData.slider_name);
@@ -172,10 +198,20 @@ export default function SliderForm({ editId }) {
         } catch (error) {
             toast.error("Failed to update slider");
         }
+        finally {
+            setLoading(false);
+        }
     };
 
     return (
         <form className="grid gap-6">
+            {loading && (
+                <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            )}
             <div>
                 <Label className="pb-1">Slider Title <span className="text-red-500">*</span>
                 </Label>
@@ -245,12 +281,12 @@ export default function SliderForm({ editId }) {
                 </Button>
 
                 {!editData?.slider_id ? (
-                    <Button type="submit" onClick={handleSubmit}>
-                        Save
+                    <Button type="submit" onClick={handleSubmit} disabled={loading}>
+                        {loading ? "Saving..." : "Save"}
                     </Button>
                 ) : (
-                    <Button type="submit" onClick={handleUpdate}>
-                        Update
+                    <Button type="submit" onClick={handleUpdate} disabled={loading}>
+                        {loading ? "Updating..." : "Update"}
                     </Button>
                 )}
             </div>

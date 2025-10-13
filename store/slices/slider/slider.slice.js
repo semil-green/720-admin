@@ -13,10 +13,22 @@ const sliderSlice = createSlice({
         },
         deleteSlider: (state, action) => {
             state.allSliders = state.allSliders.filter((slider) => slider.slider_id !== action.payload)
+        },
+        updateSliderStatus: (state, action) => {
+            state.allSliders = state.allSliders.map((slider) => {
+                if (slider.slider_id === action.payload.slider_id) {
+                    return {
+                        ...slider,
+                        status: !slider.status,
+                    };
+                }
+                return slider;
+            });
         }
+
     }
 })
 
-export const { setSliders, deleteSlider } = sliderSlice.actions
+export const { setSliders, deleteSlider, updateSliderStatus } = sliderSlice.actions
 
 export default sliderSlice.reducer

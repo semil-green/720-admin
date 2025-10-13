@@ -102,7 +102,7 @@ const DraftOrderTable = ({ data, page, setPage, totalPages }) => {
         {
             accessorKey: 'item_order_price',
             header: 'Total',
-            cell: ({ row }) => <span className="font-medium">{row.original.item_order_price}</span>,
+            cell: ({ row }) => <span className="font-medium">{row.original.final_price}</span>,
         },
     ]
 

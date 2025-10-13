@@ -75,3 +75,22 @@ export const deleteSliderService = async (id) => {
         return error
     }
 }
+
+export const updateSliderStatusService = async (slider_id, status) => {
+
+    try {
+        const updateStatus = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/slider/update-status`, {
+            slider_id,
+            status
+        }, {
+            headers: {
+                Authorization: localStorage.getItem("token")
+            }
+        })
+
+        return updateStatus?.data
+    }
+    catch (error) {
+        return error
+    }
+}
