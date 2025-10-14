@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { use, useEffect, useState } from 'react'
 import MainLayout from "@/components/layout/mainLayout";
 import {
     Card,
@@ -20,89 +20,86 @@ import WorstSellingTable from '@/components/dashboard/WorstSellingTable';
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { getAllDashboardItemService, getDashboardOrdersService } from '@/service/dashboard/dashboard.service';
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 export default function Dashboard() {
-    const [orderInterval, setOrderInterval] = useState(Dashboard_Order_Interval.Today);
+    const [orderInterval, setOrderInterval] = useState("today");
     const [loading, setLoading] = useState(false)
-    const [itemSelected, setItemSelected] = useState("bestItem")
+    const [itemSelected, setItemSelected] = useState("best")
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
 
-    useEffect(() => {
-        setLoading(true);
-        setTimeout(() => {
-            setLoading(false);
-        }, 2000)
-    }, [])
+    const [ordersLoading, setOrdersLoading] = useState(true)
+    const [ordersData, setOrdersData] = useState([])
 
-    const bestSellingList = [
-        {
-            Name: 'Fresh Fish',
-            Image: "/images/fish-image.png",
-            SKU: 'RF-BK-45',
-            Price: '300',
-            Units: '5',
-            TotalRevenue: '1.58K'
-        }, {
-            Name: 'New Fish',
-            Image: "/images/fish-image.png",
-            SKU: 'RF-BK-23',
-            Price: '250',
-            Units: '3',
-            TotalRevenue: '1.11K'
-        }, {
-            Name: 'Rohu Fish',
-            Image: "/images/fish-image.png",
-            SKU: 'RF-BK-13',
-            Price: '159',
-            Units: '2',
-            TotalRevenue: '298'
-        }, {
-            Name: 'Delhi Fish',
-            Image: "/images/fish-image.png",
-            SKU: 'RF-BK-25',
-            Price: '499',
-            Units: '2',
-            TotalRevenue: '1K'
-        },
-    ]
+    const [bestItemsData, setBestitemsData] = useState([])
+    const [worstItemsData, setWorstItemsData] = useState([])
+    const [itemsLoading, setItemsLoading] = useState(false)
+    const [itemsRange, setItemsRange] = useState(5)
 
-    const worstSellingList = [
-        {
-            Name: 'Dry Fish',
-            Image: 'https://picsum.photos/200?random=1',
-            SKU: 'RF-WK-12',
-            Price: '180',
-            Units: '1',
-            TotalRevenue: '180'
-        },
-        {
-            Name: 'Frozen Shrimp',
-            Image: 'https://picsum.photos/200?random=2',
-            SKU: 'RF-WK-07',
-            Price: '299',
-            Units: '1',
-            TotalRevenue: '299'
-        },
-        {
-            Name: 'Bangda Fish',
-            Image: 'https://picsum.photos/200?random=3',
-            SKU: 'RF-WK-19',
-            Price: '120',
-            Units: '2',
-            TotalRevenue: '240'
-        },
-        {
-            Name: 'Imported Fish',
-            Image: 'https://picsum.photos/200?random=4',
-            SKU: 'RF-WK-33',
-            Price: '499',
-            Units: '1',
-            TotalRevenue: '499'
+    const fetchItemsData = async (
+        customFilter = orderInterval,
+        customStartDate = startDate?.toISOString()?.split("T")[0],
+        customEndData = endDate?.toISOString()?.split("T")[0],
+        customItemSelected = itemSelected,
+        customItemRange = itemsRange) => {
+
+        try {
+            setItemsLoading(true);
+            const res = await getAllDashboardItemService(customFilter, customStartDate, customEndData, customItemSelected, customItemRange)
+
+            if (itemSelected == "best") {
+                setBestitemsData(res?.data)
+            }
+            else {
+                setWorstItemsData(res?.data)
+            }
         }
-    ];
+        catch (error) {
+            toast.error("Error in fetching orders");
+        }
+        finally {
+            setItemsLoading(false);
+        }
+    }
 
+    const fetchOrdersData = async (
+        customFilter = orderInterval,
+        customStartDate = startDate?.toISOString()?.split("T")[0],
+        customEndData = endDate?.toISOString()?.split("T")[0],
+    ) => {
+
+        try {
+            setOrdersLoading(true);
+            const result = await getDashboardOrdersService(customFilter, customStartDate, customEndData)
+
+            setOrdersData(result?.data)
+        }
+        catch (error) {
+            toast.error("Error in fetching orders");
+        }
+        finally {
+            setOrdersLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        if (orderInterval === "custom" && (!startDate || !endDate)) return;
+        const formattedStart = startDate ? startDate.toISOString().split("T")[0] : null;
+        const formattedEnd = endDate ? endDate.toISOString().split("T")[0] : null;
+
+        fetchOrdersData(orderInterval, formattedStart, formattedEnd)
+    }, [orderInterval, startDate, endDate, orderInterval])
+
+    useEffect(() => {
+        if (orderInterval === "custom" && (!startDate || !endDate)) return;
+        const formattedStart = startDate ? startDate.toISOString().split("T")[0] : null;
+        const formattedEnd = endDate ? endDate.toISOString().split("T")[0] : null;
+
+        fetchItemsData(orderInterval, formattedStart, formattedEnd, itemSelected, itemsRange)
+    }, [itemSelected, orderInterval, startDate, endDate, orderInterval])
 
     return (
         <MainLayout>
@@ -113,13 +110,13 @@ export default function Dashboard() {
 
                         <div className="relative">
                             <ToggleGroup type="single" className='border' size='sm' value={orderInterval} onValueChange={(val) => setOrderInterval(val)}>
-                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.Today}>Today</ToggleGroupItem>
-                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisWeek}>This Week</ToggleGroupItem>
-                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.ThisMonth}>This Month</ToggleGroupItem>
-                                <ToggleGroupItem className='px-4' value={Dashboard_Order_Interval.Custom}>Custom</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={"today"}>Today</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={"week"}>This Week</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={"month"}>This Month</ToggleGroupItem>
+                                <ToggleGroupItem className='px-4' value={"custom"}>Custom</ToggleGroupItem>
                             </ToggleGroup>
 
-                            {orderInterval === Dashboard_Order_Interval.Custom && (
+                            {orderInterval === "custom" && (
                                 <div className="absolute top-full right-0 mt-2 bg-white border rounded-lg shadow-lg p-3 z-50">
                                     <div className="text-sm font-medium mb-2 text-center text-gray-700">
                                         Select Date Range
@@ -136,7 +133,7 @@ export default function Dashboard() {
                                         selectsRange
                                         inline
                                         monthsShown={1}
-                                        dateFormat="MMM d, yyyy"
+                                        dateFormat="yyyy-MM-dd"
                                     />
                                     <div className="flex justify-between items-center mt-3 pt-3 border-t text-sm">
                                         <div className="text-gray-600">
@@ -160,61 +157,42 @@ export default function Dashboard() {
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-5'>
-                    {loading &&
+                    {ordersLoading &&
                         <>
-                            <Skeleton className="h-[156px] flex-1 rounded-xl bg-secondary" />
-                            <Skeleton className="h-[156px] flex-1 rounded-xl bg-secondary" />
                             <Skeleton className="h-[156px] flex-1 rounded-xl bg-secondary" />
                             <Skeleton className="h-[156px] flex-1 rounded-xl bg-secondary" />
                         </>
                     }
 
-                    {!loading &&
+                    {ordersLoading &&
+                        <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                            <div className="flex-1 flex justify-center items-center">
+                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                            </div>
+                        </div>
+                    }
+
+                    {!ordersLoading &&
                         <>
                             <Card className='flex-1'>
                                 <CardHeader>
-                                    <CardDescription className=''>Pending</CardDescription>
-                                    <CardAction>₹50</CardAction>
-                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>20</CardTitle>
+                                    {/* <CardDescription className="whitespace-nowrap">Not Delivered</CardDescription>
+                                    <CardAction>₹20</CardAction> */}
+                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>{ordersData?.total_count}</CardTitle>
                                 </CardHeader>
                                 <CardFooter>
-                                    <div className='text-sm font-semibold'>Total pending orders for today</div>
+                                    <div className="text-sm font-semibold whitespace-nowrap">Total orders</div>
                                 </CardFooter>
                             </Card>
 
                             <Card className='flex-1'>
                                 <CardHeader>
-                                    <CardDescription className=''>Delivered</CardDescription>
-                                    <CardAction>₹150</CardAction>
-                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>80</CardTitle>
-
+                                    {/* <CardDescription className=''>Total</CardDescription>
+                                    <CardAction>₹220</CardAction> */}
+                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>{ordersData?.total_amount}</CardTitle>
                                 </CardHeader>
                                 <CardFooter>
-                                    <div className='text-sm font-semibold'>Total delivered orders for today</div>
-                                </CardFooter>
-                            </Card>
-
-                            <Card className='flex-1'>
-                                <CardHeader>
-                                    <CardDescription className=''>Not Delivered</CardDescription>
-                                    <CardAction>₹20</CardAction>
-                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>10</CardTitle>
-
-                                </CardHeader>
-                                <CardFooter>
-                                    <div className='text-sm font-semibold'>Total not delivered orders for today</div>
-                                </CardFooter>
-                            </Card>
-
-                            <Card className='flex-1'>
-                                <CardHeader>
-                                    <CardDescription className=''>Total</CardDescription>
-                                    <CardAction>₹220</CardAction>
-                                    <CardTitle className='text-3xl font-bold tabular-nums text-primary'>110</CardTitle>
-
-                                </CardHeader>
-                                <CardFooter>
-                                    <div className='text-sm font-semibold'>Total orders for today</div>
+                                    <div className='text-sm font-semibold'>Total Amount</div>
                                 </CardFooter>
                             </Card>
                         </>
@@ -225,28 +203,37 @@ export default function Dashboard() {
             {/* Best Selling List */}
             <div>
                 <div className='flex items-center justify-between pb-3 pt-8'>
-                    {/* <h2 className='font-semibold text-xl'>Best Selling Items</h2> */}
                     <Tabs value={itemSelected} onValueChange={(val) => setItemSelected(val)}>
                         <TabsList>
-                            <TabsTrigger value="bestItem">Best Selling Items</TabsTrigger>
-                            <TabsTrigger value="worstItem">Worst Selling Items</TabsTrigger>
+                            <TabsTrigger value="best">Best Selling Items</TabsTrigger>
+                            <TabsTrigger value="worst">Worst Selling Items</TabsTrigger>
                         </TabsList>
                     </Tabs>
 
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-5'>
-                    {loading &&
+                    {itemsLoading &&
                         <Skeleton className="h-[400px] flex-1 rounded-xl bg-secondary" />
                     }
 
-                    {!loading && itemSelected === "bestItem" &&
-                        <BestSellingTable data={bestSellingList} />
+                    {
+                        itemsLoading && (
+                            <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                                <div className="flex-1 flex justify-center items-center">
+                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                </div>
+                            </div>
+                        )
+                    }
+
+                    {!itemsLoading && itemSelected === "best" &&
+                        <BestSellingTable data={bestItemsData} />
                     }
                 </div>
 
-                {!loading && itemSelected === "worstItem" &&
-                    <WorstSellingTable data={worstSellingList} />
+                {!itemsLoading && itemSelected === "worst" &&
+                    <WorstSellingTable data={worstItemsData} />
                 }
             </div>
         </MainLayout>
