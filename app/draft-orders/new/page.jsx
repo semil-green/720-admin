@@ -824,7 +824,7 @@ const page = () => {
 
                                 <div className="col-span-1">Estimated Tax</div>
                                 <div className="col-span-1">Tax details</div>
-                                <div className="col-span-1">₹ {tax ?? 0}</div>
+                                <div className="col-span-1">₹ {tax?.toFixed(2) ?? 0}</div>
 
                                 <div className="col-span-1">Total</div>
                                 <div className="col-span-1"></div>
