@@ -44,6 +44,7 @@ const PincodeSlotForm = () => {
         setFromTime("");
         setToTime("");
         setCutOffTime("")
+        setisEdit(false)
     }, [pincode_id]);
 
     const alPackagingCenterDarkStore = useSelector(

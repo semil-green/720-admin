@@ -13,7 +13,7 @@ import { ArrowUpDown, MoreVertical, Pencil, Trash2, ShieldClose } from "lucide-r
 import { useDispatch } from "react-redux"
 import { deleteDarkStorePackagingCenterService } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service"
 import { deletePackagingCenter } from "@/store/slices/packaging-center/packaging-center.slice"
-
+import { toast } from "sonner"
 export default function PackagingStoreTable({
   data,
   page,
@@ -36,7 +36,7 @@ export default function PackagingStoreTable({
     if (res?.status === 200) {
       dispatch(deletePackagingCenter(id));
     } else {
-      console.error("Failed to delete:", res);
+      toast.error("Failed to delete packaging center");
     }
   };
 

@@ -91,7 +91,7 @@ export default function FeedbackTable({ data, openAddStoreOrder, setEditData, pa
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete StoreOrder?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete Feedback?</AlertDialogTitle>
                                         <AlertDialogDescription>
                                             Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>

@@ -18,14 +18,14 @@ export default function WorstSellingTable({ data }) {
                         <img src={item?.thumbnail_image} alt="image" width={50} height={50} className="rounded-full" />
                         <div className="">
                             <div className="font-semibold">{item?.title}</div>
-                            <div className="">{item.sku} / ₹{item.price} per {item?.unit}</div>
+                            <div className="">{item.sku} / ₹{item.price} per {item?.quantity} {item?.unit}</div>
                         </div>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "unit",
+            accessorKey: "total_units",
             header: "Units",
         },
         {
@@ -39,7 +39,7 @@ export default function WorstSellingTable({ data }) {
     ]
 
     const table = useReactTable({
-        data,
+        data: data ?? [],
         columns: storeColumns(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),

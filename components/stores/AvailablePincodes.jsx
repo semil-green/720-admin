@@ -273,6 +273,7 @@ export default function AvailablePincodes({ editId }) {
                         value={pincode}
                         onChange={(e) => setPincode(e.target.value)}
                         placeholder="Pincode"
+                        disabled={isEdit}
                     />
                     <Input
                         name="delivery_charge"
