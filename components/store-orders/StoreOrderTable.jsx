@@ -22,10 +22,13 @@ export default function StoreOrderTable({ data, openAddStoreOrder, setEditData, 
         try {
 
             const res = await deleteOrderRequestService(id)
-
             if (res?.status == 200) {
                 dispatch(deleteOrderRequest(id));
                 toast.success("Deleted", { description: "Order Request deleted successfully" });
+            }
+
+            if (res?.status == 500) {
+                toast.error(res?.response?.data?.message || "Failed to delete order request");
             }
         }
         catch (error) {

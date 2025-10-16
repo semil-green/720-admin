@@ -347,7 +347,7 @@ const StoreOrderForm = ({
             </div>
 
 
-            {displayTransferFields &&
+            {/* {displayTransferFields &&
                 <div>
                     <Label className="pb-2">Transfer Quantity <span className="text-red-500">*</span>
                     </Label>
@@ -355,11 +355,61 @@ const StoreOrderForm = ({
                         name="transferred_quantity"
                         type="number"
                         value={formData.transferred_quantity}
-                        onChange={(e) => handleChange("transferred_quantity", e.target.value)}
+                        onChange={(e) => {
+                            const value = Number(e.target.value);
+                            const availableQty = editData?.product?.available_quantity || 0;
+
+                            if (value > availableQty) {
+                                toast.error(`Transfer quantity cannot exceed, available quantity is :  ${availableQty}`);
+                                return;
+                            }
+
+                            setFormData((prev) => ({
+                                ...prev,
+                                transferred_quantity: value,
+                            }));
+                        }}
                         required
                     />
                 </div>
-            }
+            } */}
+
+            {displayTransferFields && (
+                <div>
+                    <Label className="pb-2">
+                        Transfer Quantity <span className="text-red-500">*</span>
+                    </Label>
+                    <Input
+                        name="transferred_quantity"
+                        type="number"
+                        inputMode="numeric"
+                        value={formData.transferred_quantity === null ? "" : formData.transferred_quantity}
+                        onChange={(e) => {
+                            let value = e.target.value;
+
+                            if (value.startsWith("0") && value.length > 1) {
+                                value = value.replace(/^0+/, "");
+                            }
+
+                            const numValue = Number(value);
+                            const availableQty = editData?.product?.available_quantity || 0;
+
+                            if (numValue > availableQty) {
+                                toast.error(`Transfer quantity cannot exceed available quantity (${availableQty})`);
+                                return;
+                            }
+
+                            setFormData((prev) => ({
+                                ...prev,
+                                transferred_quantity: value === "" ? null : numValue,
+                            }));
+                        }}
+                        min="0"
+                        required
+                    />
+                </div>
+            )}
+
 
             {displayTransferFields &&
                 <div>

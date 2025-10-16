@@ -98,9 +98,9 @@ const HsnTable = ({ data, setEditData, isHsnModalOpen }) => {
                                 </AlertDialogTrigger>
                                 <AlertDialogContent>
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete State?</AlertDialogTitle>
+                                        <AlertDialogTitle>Delete HSN?</AlertDialogTitle>
                                         <AlertDialogDescription>
-                                            This action cannot be undone.
+                                            Are you sure you want to delete? This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>

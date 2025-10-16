@@ -21,14 +21,14 @@ export default function BestSellingTable({ data }) {
                         <img src={item?.thumbnail_image} alt="image" width={50} height={50} className="rounded-full" />
                         <div className="">
                             <div className="font-semibold">{item?.title}</div>
-                            <div className="">{item?.sku} / ₹{item?.price} per {item?.unit}</div>
+                            <div className="">{item?.sku} / ₹{item?.price} per {item?.quantity} {item?.unit}</div>
                         </div>
                     </div>
                 )
             }
         },
         {
-            accessorKey: "unit",
+            accessorKey: "total_units",
             header: "Units",
         },
         {
@@ -42,12 +42,16 @@ export default function BestSellingTable({ data }) {
     ]
 
     const table = useReactTable({
-        data,
+        data: data ?? [],
         columns: storeColumns(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
     })
+
+    const rows = table.getRowModel
+        ? table.getRowModel().rows ?? []
+        : [];
 
     return (
         <div className="rounded border px-4 shadow w-full">
@@ -64,26 +68,28 @@ export default function BestSellingTable({ data }) {
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows?.length > 0 ? (
-                        table.getRowModel().rows.map((row) => (
-                            <TableRow key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                    </TableCell>
-                                ))}
+                    {
+                        rows.length > 0 ? (
+                            rows.map((row) => (
+                                <TableRow key={row.id}>
+                                    {row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={table.getAllColumns()?.length} className="text-center py-6 text-gray-500">
+                                    No records found
+                                </TableCell>
                             </TableRow>
-                        ))
-                    ) : (
-                        <TableRow>
-                            <TableCell colSpan={table.getAllColumns().length} className="text-center py-6 text-gray-500">
-                                No records found
-                            </TableCell>
-                        </TableRow>
-                    )}
-                </TableBody>
+                        )
+                    }
+                </TableBody >
 
-            </Table>
-        </div>
+            </Table >
+        </div >
     )
 }

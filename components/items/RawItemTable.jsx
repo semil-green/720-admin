@@ -95,15 +95,15 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
                                     </AlertDialogTrigger>
                                     <AlertDialogContent>
                                         <AlertDialogHeader>
-                                            <AlertDialogTitle>Delete Item?</AlertDialogTitle>
+                                            <AlertDialogTitle>Deactivate Raw Item?</AlertDialogTitle>
                                             <AlertDialogDescription>
-                                                Are you sure you want to delete? This action cannot be undone.
+                                                Are you sure you want to deactivate?
                                             </AlertDialogDescription>
                                         </AlertDialogHeader>
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                                             <AlertDialogAction onClick={() => handleDelete(item.raw_id)}>
-                                                Confirm Delete
+                                                Confirm Deactivate
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>

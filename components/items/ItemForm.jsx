@@ -78,8 +78,7 @@ export default function ItemForm({ editItemId }) {
         tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
     );
 
-
-    const productTags = filteredTags.filter(tag =>
+    const productTags = alltagsData.filter(tag =>
         selectedTags.some(selected => selected.tag_id === tag.id)
     );
 
@@ -1012,7 +1011,7 @@ export default function ItemForm({ editItemId }) {
                                                     <div
                                                         key={tag.id}
                                                         className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                                                        onClick={() => handleTagSelect(tag.id)}
+                                                    // onClick={() => handleTagSelect(tag.id)}
                                                     >
                                                         <input
                                                             type="checkbox"
@@ -1082,7 +1081,7 @@ export default function ItemForm({ editItemId }) {
                 </div>
             </div>
 
-            <label className="flex items-center space-x-2 mt-1">
+            {/* <label className="flex items-center space-x-2 mt-1">
                 <input
                     type="checkbox"
                     name="charge_tax"
@@ -1091,7 +1090,7 @@ export default function ItemForm({ editItemId }) {
                     onChange={handleChange}
                 />
                 <span>Charge tax on this product</span>
-            </label>
+            </label> */}
 
             <div className="flex flex-col gap-3">
                 <div className="flex-1">
@@ -1126,6 +1125,7 @@ export default function ItemForm({ editItemId }) {
                         <SelectValue placeholder="Select HSN code" />
                     </SelectTrigger>
                     <SelectContent>
+
                         {(allHsnCodes || []).map((vendor, index) => {
                             const val = vendor?.hsn_id ?? vendor?._id ?? index;
                             return (
@@ -1137,6 +1137,17 @@ export default function ItemForm({ editItemId }) {
                         })}
                     </SelectContent>
                 </Select>
+                {formData.hsn_id && (
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setFormData((prev) => ({ ...prev, hsn_id: "" }))
+                        }
+                        className="text-sm text-red-500 hover:underline"
+                    >
+                        Remove HSN Code
+                    </button>
+                )}
             </div>
 
             <label className="flex items-center space-x-2 mt-1">

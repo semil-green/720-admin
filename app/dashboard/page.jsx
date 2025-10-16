@@ -39,6 +39,16 @@ export default function Dashboard() {
     const [itemsLoading, setItemsLoading] = useState(false)
     const [itemsRange, setItemsRange] = useState(5)
 
+    const [showDatePicker, setShowDatePicker] = useState(false);
+
+    useEffect(() => {
+        if (orderInterval !== "custom") {
+            setShowDatePicker(false);
+        } else {
+            setShowDatePicker(true);
+        }
+    }, [orderInterval]);
+
     const fetchItemsData = async (
         customFilter = orderInterval,
         customStartDate = startDate?.toISOString()?.split("T")[0],
@@ -116,7 +126,7 @@ export default function Dashboard() {
                                 <ToggleGroupItem className='px-4' value={"custom"}>Custom</ToggleGroupItem>
                             </ToggleGroup>
 
-                            {orderInterval === "custom" && (
+                            {orderInterval === "custom" && showDatePicker && (
                                 <div className="absolute top-full right-0 mt-2 bg-white border rounded-lg shadow-lg p-3 z-50">
                                     <div className="text-sm font-medium mb-2 text-center text-gray-700">
                                         Select Date Range
@@ -144,7 +154,7 @@ export default function Dashboard() {
                                             )}
                                         </div>
                                         <button
-                                            onClick={() => setOrderInterval(Dashboard_Order_Interval.Today)}
+                                            onClick={() => setShowDatePicker(false)}
                                             className="px-2 py-1 text-xs text-gray-500 hover:bg-gray-100 rounded"
                                         >
                                             Close

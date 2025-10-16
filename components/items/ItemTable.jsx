@@ -35,7 +35,6 @@ export default function ItemTable({
     totalProductCount
 }) {
 
-    console.log("data333423", JSON.stringify(data, null, 2))
     const router = useRouter()
     const dispatch = useDispatch()
     const handleEdit = (item) => {
