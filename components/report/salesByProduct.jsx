@@ -1,12 +1,11 @@
 "use client";
 
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
     Legend,
@@ -24,95 +23,147 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useMemo } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { Button } from "../ui/button";
 import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
 
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
+    BarElement,
     Title,
     Tooltip,
     Legend
 );
 
-const SalesByProduct = ({ chartData, startDate, endDate }) => {
-    const labels = chartData?.data?.map((item) => item?.order_date);
-    const values = chartData?.data?.map((item) => Number(item?.avg_order_value));
+const SalesByProduct = ({ chartData }) => {
+    const chartRef = useRef(null);
+
+    const labels = chartData?.map((item) => item?.product_name);
+    const values = chartData?.map((item) => Number(item?.net_sales_amount));
 
     const data = {
         labels,
         datasets: [
             {
-                label: "Total Sales Amount",
+                label: "Total Sales (₹)",
                 data: values,
+                backgroundColor: "rgba(37, 99, 235, 0.6)",
                 borderColor: "rgba(37, 99, 235, 1)",
-                backgroundColor: "rgba(37, 99, 235, 0.2)",
-                tension: 0.3,
-                fill: true,
-                pointRadius: 4,
-                pointHoverRadius: 6,
+                borderWidth: 1,
+                borderRadius: 8,
+                barThickness: 28,
             },
         ],
     };
 
     const options = {
+        indexAxis: "y",
         responsive: true,
         plugins: {
             legend: {
-                position: "top",
+                display: false,
             },
             title: {
                 display: true,
-                text: "Sales Over Time",
+                text: "Sales by Product",
+                font: { size: 18 },
+            },
+            tooltip: {
+                callbacks: {
+                    label: (context) => `₹${context.parsed.x}`,
+                },
             },
         },
         scales: {
             x: {
                 title: {
                     display: true,
-                    text: "Order Date",
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: "Total Amount (₹)",
+                    text: "Total Sales (₹)",
                 },
                 beginAtZero: true,
+            },
+            y: {
+                ticks: {
+                    display: false,
+                },
             },
         },
     };
 
+    const productLabelPlugin = {
+        id: "productLabelAboveBar",
+        afterDatasetsDraw: (chart) => {
+            const { ctx, chartArea } = chart;
+
+            chart.data.datasets.forEach((dataset, datasetIndex) => {
+                const meta = chart.getDatasetMeta(datasetIndex);
+
+                meta.data.forEach((bar, index) => {
+                    const productName = chart.data.labels[index];
+                    const value = dataset.data[index];
+
+                    ctx.save();
+                    ctx.fillStyle = "#111";
+                    ctx.font = "bold 12px sans-serif";
+                    ctx.textAlign = "left";
+                    ctx.textBaseline = "bottom";
+
+                    const padding = 4;
+
+                    ctx.fillText(productName, chartArea.left + padding, bar.y - 20);
+
+                    ctx.fillText(`₹${value}`, chartArea.left + padding, bar.y - 35);
+
+                    ctx.restore();
+                });
+            });
+        },
+    };
+
+    useEffect(() => {
+        const chart = chartRef.current;
+        if (chart) {
+            chart.update();
+        }
+    }, [chartData]);
+
     const columns = useMemo(
         () => [
             {
-                header: "Date",
-                accessorKey: "order_date",
+                header: "Product",
+                accessorKey: "product_name",
+                cell: ({ row }) => {
+                    const product = row.original;
+                    return (
+                        <div className="flex items-center gap-2">
+                            <img
+                                src={product?.thumbnail_image}
+                                alt={product?.product_name}
+                                className="w-10 h-10 object-cover rounded"
+                            />
+                            <span>{product?.product_name}</span>
+                        </div>
+                    );
+                },
             },
-            {
-                header: "Orders",
-                accessorKey: "total_orders",
-            },
-            {
-                header: "Average Order Value",
-                accessorKey: "avg_order_value",
-            },
+            { header: "Net Sales (₹)", accessorKey: "net_sales_amount" },
+            { header: "Tax Amount (₹)", accessorKey: "tax_amount" },
+            { header: "Total Sales Amount (₹)", accessorKey: "total_sales" },
         ],
         []
     );
 
+
+
     const table = useReactTable({
-        data: chartData?.data ?? [],
+        data: chartData ?? [],
         columns,
         getCoreRowModel: getCoreRowModel(),
     });
 
     const exportToExcel = () => {
-        const dataToExport = table?.getRowModel().rows.map((row) => {
+        const dataToExport = table.getRowModel().rows.map((row) => {
             const rowData = {};
             row.getVisibleCells().forEach((cell) => {
                 rowData[cell.column.columnDef.header] = cell.getValue();
@@ -122,30 +173,28 @@ const SalesByProduct = ({ chartData, startDate, endDate }) => {
 
         const ws = XLSX.utils.json_to_sheet(dataToExport);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Report");
-
-        XLSX.writeFile(wb, "average-order-value.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Sales Report");
+        XLSX.writeFile(wb, "sales-by-product.xlsx");
     };
 
     return (
         <>
-
-            <div className="my-2">
-                <h1 className="font-md text-lg underline underline-offset-4 ">Sales By Product :</h1>
-                <p className="my-2 font-bold text-xl">₹ {chartData?.summary?.avg_order_value}</p>
-            </div>
-
             <div className="bg-white shadow-md rounded-xl p-4 mt-6">
-                <Line data={data} options={options} />
+                <Bar
+                    ref={chartRef}
+                    data={data}
+                    options={options}
+                    plugins={[productLabelPlugin]}
+                />
             </div>
 
-            <div className="flex justify-center my-2">
+            <div className="flex justify-center my-4">
                 <Button onClick={exportToExcel}>Export</Button>
             </div>
 
-            <Table className="bg-white shadow-md border-2  rounded-2xl my-0 ">
+            <Table className="bg-white shadow-md border-2 rounded-2xl my-0">
                 <TableHeader>
-                    {table?.getHeaderGroups()?.map((headerGroup) => (
+                    {table.getHeaderGroups().map((headerGroup) => (
                         <TableRow key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <TableHead key={header.id}>
@@ -161,8 +210,8 @@ const SalesByProduct = ({ chartData, startDate, endDate }) => {
                     ))}
                 </TableHeader>
 
-                <TableBody className="px-2 py-2">
-                    {table?.getRowModel().rows?.map((row) => (
+                <TableBody>
+                    {table.getRowModel().rows.map((row) => (
                         <TableRow key={row.id}>
                             {row.getVisibleCells().map((cell) => (
                                 <TableCell key={cell.id}>
@@ -173,23 +222,6 @@ const SalesByProduct = ({ chartData, startDate, endDate }) => {
                             ))}
                         </TableRow>
                     ))}
-
-                    {/* <TableRow className="font-bold bg-gray-200">
-                        <TableCell>
-                            <div>
-                                {startDate?.toLocaleDateString()} -{" "}
-                                {endDate?.toLocaleDateString()}
-                            </div>
-                        </TableCell>
-                        <TableCell>
-                            <div className="!px-3 !py-3">{chartData?.summary?.total_tax}</div>
-                        </TableCell>
-                        <TableCell>
-                            <div className="!px-3 !py-3">
-                                {chartData?.summary?.total_amount}
-                            </div>
-                        </TableCell>
-                    </TableRow> */}
                 </TableBody>
             </Table>
         </>

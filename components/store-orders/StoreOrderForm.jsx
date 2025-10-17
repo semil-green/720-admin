@@ -28,6 +28,7 @@ const StoreOrderForm = ({
     setDisplayTransferFields,
     setEditData
 }) => {
+
     const router = useRouter();
     const dispatch = useDispatch();
     const [loading, setLoading] = useState(false);
@@ -137,6 +138,11 @@ const StoreOrderForm = ({
 
         if (displayTransferFields && (!formData.transferred_quantity || Number(formData.transferred_quantity) <= 0)) {
             toast.error("Transferred quantity must be greater than 0");
+            return;
+        }
+
+        if (formData?.transferred_quantity < editData?.transferred_quantity) {
+            toast.error(`Transferred quantity must be greater than or equal to previous transferred quantity : ${editData?.transferred_quantity}`);
             return;
         }
 
@@ -345,34 +351,6 @@ const StoreOrderForm = ({
                     disabled={displayTransferFields}
                 />
             </div>
-
-
-            {/* {displayTransferFields &&
-                <div>
-                    <Label className="pb-2">Transfer Quantity <span className="text-red-500">*</span>
-                    </Label>
-                    <Input
-                        name="transferred_quantity"
-                        type="number"
-                        value={formData.transferred_quantity}
-                        onChange={(e) => {
-                            const value = Number(e.target.value);
-                            const availableQty = editData?.product?.available_quantity || 0;
-
-                            if (value > availableQty) {
-                                toast.error(`Transfer quantity cannot exceed, available quantity is :  ${availableQty}`);
-                                return;
-                            }
-
-                            setFormData((prev) => ({
-                                ...prev,
-                                transferred_quantity: value,
-                            }));
-                        }}
-                        required
-                    />
-                </div>
-            } */}
 
             {displayTransferFields && (
                 <div>

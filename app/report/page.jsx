@@ -36,6 +36,7 @@ const Page = () => {
 
     const handleOptionChange = (e) => {
         setSelectedOption(e.target.value);
+        setChartData([]);
     };
 
     useEffect(() => {
@@ -89,9 +90,18 @@ const Page = () => {
 
     const fetchSalesByproductData = async (startDate, endDate) => {
 
-        const res = await salesByProductService(startDate, endDate)
+        try {
+            setLoading(true)
+            const res = await salesByProductService(startDate, endDate)
 
-        setChartData(res?.data)
+            setChartData(res?.data)
+        }
+        catch (error) {
+            toast.error("Error in fetching sales by product data");
+        }
+        finally {
+            setLoading(false)
+        }
     }
     useEffect(() => {
 
