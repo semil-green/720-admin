@@ -231,6 +231,10 @@ export default function ItemForm({ editItemId }) {
     // Handle basic input change for ItemForm fields
     const handleChange = (e) => {
         const { name, type, checked, value } = e.target;
+
+        const regex = /^\d*(-\d*)?$/;
+        if ((name == 'serve_person' || name == 'pieces') && !!value && !!!regex.test(value)) return;
+
         setFormData((prev) => ({
             ...prev,
             [name]: type === "checkbox" ? checked : value,
@@ -447,8 +451,8 @@ export default function ItemForm({ editItemId }) {
                     description: formData.description,
                     unit_id: Number(formData.unit_id),
                     quantity: Number(formData.quantity),
-                    pieces: Number(formData.pieces),
-                    serve_person: Number(formData.serve_person),
+                    pieces: formData.pieces,
+                    serve_person: formData.serve_person,
                     suitable_for: formData.suitable_for,
                     sku: formData.sku,
                     price: Number(formData.price),
@@ -599,15 +603,15 @@ export default function ItemForm({ editItemId }) {
                     const nutrients =
                         editData.nutritional_facts.find(
                             (nf) => nf.nutritional_type_id === 1
-                        )?.facts || [];
+                        )?.facts || [{ label: "", value: "", nutritional_type_id: 1, id: Date.now() }];
                     const vitamins =
                         editData.nutritional_facts.find(
                             (nf) => nf.nutritional_type_id === 2
-                        )?.facts || [];
+                        )?.facts || [{ label: "", value: "", nutritional_type_id: 2, id: Date.now() }];
                     const minerals =
                         editData.nutritional_facts.find(
                             (nf) => nf.nutritional_type_id === 3
-                        )?.facts || [];
+                        )?.facts || [{ label: "", value: "", nutritional_type_id: 3, id: Date.now() }];
 
                     setNutrients(
                         nutrients.map((n) => ({
@@ -744,8 +748,8 @@ export default function ItemForm({ editItemId }) {
                     description: formData.description,
                     unit_id: Number(formData.unit_id),
                     quantity: Number(formData.quantity),
-                    pieces: Number(formData.pieces),
-                    serve_person: Number(formData.serve_person),
+                    pieces: formData.pieces,
+                    serve_person: formData.serve_person,
                     suitable_for: formData.suitable_for,
                     sku: formData.sku,
                     price: Number(formData.price),
@@ -899,9 +903,9 @@ export default function ItemForm({ editItemId }) {
                         name="pieces"
                         value={formData.pieces}
                         onChange={handleChange}
-                        placeholder="3 Pieces"
+                        placeholder="3-4"
                         required
-                        type={"number"}
+                        type={"text"}
                     />
                 </div>
 
@@ -911,9 +915,9 @@ export default function ItemForm({ editItemId }) {
                         name="serve_person"
                         value={formData.serve_person}
                         onChange={handleChange}
-                        placeholder="3 Persons"
+                        placeholder="1-2"
                         required
-                        type={"number"}
+                        type={"text"}
                     />
                 </div>
             </div>
