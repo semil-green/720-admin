@@ -238,6 +238,15 @@ const Page = () => {
                 sortedProducts.sort((a, b) => Number(a.price) - Number(b.price))
                 break
 
+            case "newest":
+                sortedProducts.sort((a, b) => Number(b.product_id) - Number(a.product_id))
+                break
+
+            case "oldest":
+                sortedProducts.sort((a, b) => Number(a.product_id) - Number(b.product_id))
+                break
+
+
             default:
                 break
         }
@@ -383,56 +392,56 @@ const Page = () => {
                                         <SelectItem value="title_desc">Product Title Z–A</SelectItem>
                                         <SelectItem value="price_high">Highest Price</SelectItem>
                                         <SelectItem value="price_low">Lowest Price</SelectItem>
+                                        <SelectItem value="newest">Newest First</SelectItem>
+                                        <SelectItem value="oldest">Oldest First</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
 
-                            {searchResults.length > 0 && (
-                                <div className="absolute mt-1 w-full max-h-64 overflow-y-auto bg-white rounded-md shadow-lg z-20">
-                                    {searchResults.map((product, index) => (
-                                        <div
-                                            key={product.product_id}
-                                            className="flex items-center gap-3 p-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
-                                        >
-                                            <span className="text-sm text-gray-700 font-medium w-4 text-right">
-                                                {index + 1}.
-                                            </span>
-                                            <Image
-                                                src={product.thumbnail_image}
-                                                alt={product.full_product_name}
-                                                width={40}
-                                                height={40}
-                                                className="rounded object-cover"
-                                            />
-                                            <span className="text-sm text-gray-900">{product.full_product_name}</span>
+                            {searchResults.map((product, index) => (
+                                <div
+                                    key={product.product_id}
+                                    className="flex items-center justify-between p-3 cursor-pointer hover:bg-gray-100 border-b last:border-b-0"
+                                >
+                                    {/* Left side — image and product name */}
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-sm text-gray-700 font-medium w-4 text-right">
+                                            {index + 1}.
+                                        </span>
+                                        <Image
+                                            src={product.thumbnail_image}
+                                            alt={product.full_product_name}
+                                            width={40}
+                                            height={40}
+                                            className="rounded object-cover"
+                                        />
+                                        <span className="text-sm text-gray-900">{product.full_product_name}</span>
+                                    </div>
 
+                                    {/* Right side — Add button */}
+                                    <Button
+                                        type="button"
+                                        className="cursor-pointer"
+                                        size="sm"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
 
-                                            <Button
-                                                type="button"
-                                                className="cursor-pointer"
-                                                size="sm"
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-
-                                                    setProducts((prev) => {
-                                                        if (prev.some((p) => p.product_id === product.product_id)) {
-                                                            toast.error("This product is already added");
-                                                            return prev;
-                                                        }
-                                                        toast.success("Product added successfully",);
-                                                        return [...prev, product];
-                                                    });
-                                                    setSearchQuery("");
-
-                                                }}
-                                            >
-                                                Add
-                                            </Button>
-
-                                        </div>
-                                    ))}
+                                            setProducts((prev) => {
+                                                if (prev.some((p) => p.product_id === product.product_id)) {
+                                                    toast.error("This product is already added");
+                                                    return prev;
+                                                }
+                                                toast.success("Product added successfully");
+                                                return [...prev, product];
+                                            });
+                                            setSearchQuery("");
+                                        }}
+                                    >
+                                        Add
+                                    </Button>
                                 </div>
-                            )}
+                            ))}
+
                         </div>
                     </div>
 
