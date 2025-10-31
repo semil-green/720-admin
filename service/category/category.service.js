@@ -1,11 +1,19 @@
 import axios from "axios"
 
-export const getAllCategoriesService = async () => {
+export const getAllCategoriesService = async (page, limit, searchCategories, sortBy, sortOrder) => {
 
     const auth_token = localStorage.getItem("token")
 
+
+    const params = new URLSearchParams();
+
+    if (page) params.append("page", page);
+    if (limit) params.append("limit", limit);
+    if (searchCategories) params.append("search", searchCategories);
+    if (sortBy) params.append("sortBy", sortBy);
+    if (sortOrder) params.append("sortOrder", sortOrder);
     try {
-        const result = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/category`,
+        const result = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/category?${params.toString()}`,
 
             {
                 headers: {

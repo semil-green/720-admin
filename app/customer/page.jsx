@@ -12,6 +12,7 @@ import FilterDropdown from "@/components/items/FilterDropDown";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
+import * as XLSX from "xlsx";
 
 const CustomerPage = () => {
 
@@ -65,6 +66,33 @@ const CustomerPage = () => {
         setSort(sort);
     }
 
+    const exportToExcelCustomerData = (allCustomersData = []) => {
+        if (!allCustomersData || allCustomersData.length === 0) {
+            toast.error("No customer data available to export.");
+            return;
+        }
+
+        const dataToExport = allCustomersData.map((customer) => ({
+            "Customer Name": customer.customer_name || "-",
+            "Contact Number": customer.mobile_no || "-",
+            "Total Orders": customer.total_orders ?? "-",
+            "Amount Spent": customer.total_spent ?? "-",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) => (item[key] ? item[key].toString().length : 0))
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Customers");
+        XLSX.writeFile(wb, "customer-data.xlsx");
+    };
     return (
         <MainLayout>
             {loading && (
@@ -77,15 +105,16 @@ const CustomerPage = () => {
             <div className="space-y-4">
                 <div className="flex justify-between items-end ">
                     <div className='flex  gap-3'>
+
                         <Users />
                         <h1 className='font-semibold text-xl'>Customers</h1>
                     </div>
-                    {/* <div className='flex gap-3'>
-                        <Button className='cursor-pointer' variant={'secondary'}>Export</Button>
-                        <Button className='cursor-pointer' variant={'secondary'}>Import</Button>
+                    <div className='flex gap-3'>
+                        <Button className='cursor-pointer' onClick={() => exportToExcelCustomerData(allCustomers)} >Export</Button>
+                        {/* <Button className='cursor-pointer' variant={'secondary'}>Import</Button>
                         <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
-                        <Button className='cursor-pointer'>Add Customer</Button>
-                    </div> */}
+                        <Button className='cursor-pointer'>Add Customer</Button> */}
+                    </div>
                 </div>
 
                 <div className='  px-2 py-2 rounded border shadow	'>

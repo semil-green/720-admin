@@ -29,6 +29,8 @@ import FinishedProductTable from "@/components/inventories/FinishedProductTable"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import FilterDropdown from "@/components/items/FilterDropDown";
+import * as XLSX from "xlsx";
+
 
 export default function Inventory() {
     const [loading, setLoading] = useState(true);
@@ -238,8 +240,65 @@ export default function Inventory() {
         setFinishedProductSort(sort)
     }
 
+    const exportToExcelRawMaterialData = (allRawMaterialData = []) => {
+        if (!allRawMaterialData || allRawMaterialData.length === 0) {
+            toast.error("No raw material data available to export.");
+            return;
+        }
 
+        const dataToExport = allRawMaterialData.map((item) => ({
+            "Raw Item": item.raw_item || "-",
+            "SKU": item.sku || "-",
+            "In Hand": item.in_hand ?? "-",
+        }));
 
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) =>
+                    item[key] ? item[key].toString().length : 0
+                )
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Raw Materials");
+
+        XLSX.writeFile(wb, "raw-material-data.xlsx");
+    };
+
+    const exportToExcelFinishedProductData = (allFinishedProductData = []) => {
+        if (!allFinishedProductData || allFinishedProductData.length === 0) {
+            toast.error("No finished product data available to export.");
+            return;
+        }
+
+        const dataToExport = allFinishedProductData.map((item) => ({
+            "Product Name": item.product_name || "-",
+            "SKU": item.sku || "-",
+            "In Hand": item.in_hand ?? "-",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) =>
+                    item[key] ? item[key].toString().length : 0
+                )
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Finished Products");
+
+        XLSX.writeFile(wb, "finished-product-data.xlsx");
+    };
     return (
         <MainLayout>
             {loading && (
@@ -250,26 +309,42 @@ export default function Inventory() {
                 </div>
             )}
 
-            <Tabs defaultValue="Item">
-                <TabsList>
-                    <TabsTrigger
-                        value="Item"
-                        onClick={() => {
-                            setSelectedItem("Item");
-                        }}
-                    >
-                        Raw Material
-                    </TabsTrigger>
-                    <TabsTrigger
-                        value="RawItem"
-                        onClick={() => {
-                            setSelectedItem("RawItem");
-                        }}
-                    >
-                        Finished Product
-                    </TabsTrigger>
-                </TabsList>
-            </Tabs>
+            <div className="flex justify-between">
+                <div>
+                    <Tabs defaultValue="Item">
+                        <TabsList>
+                            <TabsTrigger
+                                value="Item"
+                                onClick={() => {
+                                    setSelectedItem("Item");
+                                }}
+                            >
+                                Raw Material
+                            </TabsTrigger>
+                            <TabsTrigger
+                                value="RawItem"
+                                onClick={() => {
+                                    setSelectedItem("RawItem");
+                                }}
+                            >
+                                Finished Product
+                            </TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+
+                </div>
+                <div>
+
+                    {
+                        selectedItem === "Item" && <Button onClick={() => exportToExcelRawMaterialData(allRawItemsData)}>Export</Button>
+                    }
+
+                    {
+                        selectedItem === "RawItem" && <Button onClick={() => exportToExcelFinishedProductData(finishedProductData)}>Export </Button>
+                    }
+
+                </div>
+            </div>
 
             <div className="space-y-4 mt-4">
                 {selectedItem === "Item" && (

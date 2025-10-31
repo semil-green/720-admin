@@ -85,7 +85,7 @@ export default function CollectionsTable({
             accessorKey: "collection_id",
         },
         {
-            header: "Product",
+            header: "Collections",
             accessorKey: "title",
             cell: ({ row }) => {
                 const { image, title } = row.original;

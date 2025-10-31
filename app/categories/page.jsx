@@ -23,12 +23,18 @@ import {
     deleteCategory,
     setCategoriesData,
 } from "@/store/slices/category/category.slice";
-
+import * as XLSX from "xlsx";
+import { Input } from "@/components/ui/input";
+import FilterDropdown from "@/components/items/FilterDropDown";
 export default function Categories() {
     const [editcategoryData, setEditCategoryData] = useState({});
     const [loading, setLoading] = useState(true);
     const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
     const [isSubCategoryModalOpen, setIsSubCategoryModalOpen] = useState(false);
+    const [searchCategories, setSearchCategories] = useState("");
+    const [sortCategories, setSortCategories] = useState(null)
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(10);
 
     const dispatch = useDispatch();
 
@@ -75,7 +81,7 @@ export default function Categories() {
     useEffect(() => {
         const fetchCategories = async () => {
             if (!allCategoriesData || allCategoriesData.length == 0) {
-                const response = await getAllCategoriesService();
+                const response = await getAllCategoriesService(page, limit, searchCategories, sortCategories?.sortBy, sortCategories?.sortOrder);
 
                 if (response?.status === 200) {
                     dispatch(setCategoriesData(response?.data));
@@ -89,8 +95,45 @@ export default function Categories() {
         };
 
         fetchCategories();
-    }, []);
+    }, [page, limit, searchCategories, sortCategories]);
 
+    const exportToExcelCategoriesData = (categoriesData = []) => {
+        if (!categoriesData || categoriesData.length === 0) {
+            toast.error("No category data available to export");
+            return;
+        }
+
+        const formattedData = categoriesData.map((item) => ({
+            "Category ID": item.category_id || "-",
+            "Category Name": item.category_name || "-",
+            "Status": item.status ? "Active" : "Inactive",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+        const columnWidths = Object.keys(formattedData[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...formattedData.map((row) => String(row[key] || "").length)
+            ) + 2,
+        }));
+        worksheet["!cols"] = columnWidths;
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Categories");
+
+        XLSX.writeFile(workbook, "Categories_Data.xlsx");
+
+    };
+
+    const categoriesColumns = [
+        { label: "Collections", value: "title" },
+        { label: "Products", value: "no_of_products" },
+    ];
+
+    const handleCategorieSortChange = (sort) => {
+        setSortCategories(sort)
+    }
     return (
         <MainLayout>
             {loading && (
@@ -102,10 +145,46 @@ export default function Categories() {
             )}
 
             <div className="space-y-4">
-                <div className="flex justify-end items-center">
+                <div className="flex justify-end items-center gap-4">
+                    <Button onClick={() => exportToExcelCategoriesData(allCategoriesData)}>
+                        Export
+                    </Button>
                     <Button onClick={() => openAddCategory()} className="cursor-pointer">
                         Add Category
                     </Button>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex flex-1 gap-2">
+                        <Input
+                            placeholder="Search Categories"
+                            className="flex-1 sm:flex-[2]"
+                            onChange={(e) => setSearchCategories(e.target.value)}
+                            value={searchCategories}
+                        />
+                        <Button
+                            onClick={() => fetchCategories(page, limit, searchState, sortState?.sortBy, sortState?.sortOrder)}
+                        >
+                            Search
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setSearchCategories("");
+                                setPage(1);
+                                fetchCategories(1, limit, "");
+                            }}
+                            variant={"link"}
+                        >
+                            Clear
+                        </Button>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <FilterDropdown
+                            columns={categoriesColumns}
+                            onSortChange={handleCategorieSortChange}
+                        />
+                    </div>
                 </div>
 
                 <CategoryTable

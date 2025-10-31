@@ -518,7 +518,6 @@ export default function ItemForm({ editItemId }) {
             });
 
             const res = await addNewItemService(formDataToSend);
-            console.log("add3345", res)
             if (res?.status == 201 || res?.data?.status == 200) {
                 dispatch(clearAllItemsData());
                 toast.success("Item added successfully");
