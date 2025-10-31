@@ -101,9 +101,9 @@ const page = () => {
                         <h1 className="font-semibold text-xl">Vendors</h1>
                     </div>
                     <div className="flex gap-3">
-                        <Button className="cursor-pointer" variant={"secondary"}>
+                        {/* <Button className="cursor-pointer" variant={"secondary"}>
                             More Actions
-                        </Button>
+                        </Button> */}
                         <Link href={"/vendors/new "}>
                             <Button className="cursor-pointer">Add Vendors</Button>
                         </Link>

@@ -139,7 +139,6 @@ export default function PackagingStores() {
 
             const payload = { ...data, store_id: selectedStoreId };
             const result = await saveDayOff(payload);
-            console.log({ result });
             if (result?.status === 201) {
                 toast.success("Success", { description: "Day Off set successfully." });
                 setIsDayOffModalOpen(false);

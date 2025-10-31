@@ -112,7 +112,6 @@ export const deleteUseService = async (id) => {
         return result?.data
     }
     catch (error) {
-        console.log("Failed to delete user")
         throw error
     }
 } 

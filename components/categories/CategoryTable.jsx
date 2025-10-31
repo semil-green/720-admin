@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { activateCategory } from "@/store/slices/category/category.slice";
 export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal, totalRecordCount }) {
-
     const dispatch = useDispatch();
     const handleCategoryActivate = async (category_id, status) => {
 
@@ -35,6 +34,10 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
 
     }
     const storeColumns = (onEdit, onDelete, onOpenSubCategoryModal) => [
+        {
+            header: "ID",
+            accessorKey: "category_id",
+        },
         {
             accessorKey: "category_image",
             header: "Image",

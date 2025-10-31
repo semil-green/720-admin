@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +54,10 @@ export default function ItemForm({ editItemId }) {
     const [opentagsModal, setOopentagsModal] = useState(false);
     const [searchtag, setSearchTag] = useState("");
     const [selectedTags, setSelectedTags] = useState([]);
+    const [tagLoading, setTagLoading] = useState(false);
+
+    const fileInputRef = useRef(null);
+
     const alltagsData = useSelector((state) => state.tagsSlice.alltagsData);
 
     useEffect(() => {
@@ -97,7 +101,9 @@ export default function ItemForm({ editItemId }) {
 
     const handleAddNewTag = async () => {
         try {
+            setTagLoading(true);
             const res = await addNewTagService(searchtag);
+
 
             if (res?.status == 200 || res?.status == 201) {
                 dispatch(addNewTag(res?.data));
@@ -106,6 +112,9 @@ export default function ItemForm({ editItemId }) {
             }
         } catch (err) {
             toast.error("Failed to add new tag");
+        }
+        finally {
+            setTagLoading(false);
         }
     };
 
@@ -226,6 +235,10 @@ export default function ItemForm({ editItemId }) {
     const handleRemoveProductDisplayImage = () => {
         setProductDisplayImageFile(null);
         setProductDisplayImagePreview("");
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = "";
+        }
     };
 
     // Handle basic input change for ItemForm fields
@@ -505,7 +518,7 @@ export default function ItemForm({ editItemId }) {
             });
 
             const res = await addNewItemService(formDataToSend);
-
+            console.log("add3345", res)
             if (res?.status == 201 || res?.data?.status == 200) {
                 dispatch(clearAllItemsData());
                 toast.success("Item added successfully");
@@ -956,6 +969,13 @@ export default function ItemForm({ editItemId }) {
                         onChange={handleChange}
                         placeholder="₹ 350"
                         required
+                        type={"number"}
+                        onKeyDown={(e) => {
+                            if (e.key === "-" || e.key === "e" || e.key === "E") {
+                                e.preventDefault();
+                            }
+                        }}
+                        min={0}
                     />
                 </div>
 
@@ -969,6 +989,12 @@ export default function ItemForm({ editItemId }) {
                         placeholder="₹ 0.00"
                         required
                         type={"number"}
+                        onKeyDown={(e) => {
+                            if (e.key === "-" || e.key === "e" || e.key === "E") {
+                                e.preventDefault();
+                            }
+                        }}
+                        min={0}
                     />
                 </div>
             </div>
@@ -1034,6 +1060,7 @@ export default function ItemForm({ editItemId }) {
                                                             variant="link"
                                                             className="text-blue-600"
                                                             onClick={handleAddNewTag}
+                                                            disabled={tagLoading}
                                                         >
                                                             Add new tag: "{searchtag}"
                                                         </Button>
@@ -1177,6 +1204,7 @@ export default function ItemForm({ editItemId }) {
                     type="file"
                     accept="image/*"
                     onChange={handleProductDisplayImageChange}
+                    ref={fileInputRef}
                 />
                 {productDisplayImagePreview && (
                     <div className="mt-2 relative inline-block">

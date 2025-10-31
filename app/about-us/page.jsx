@@ -5,7 +5,7 @@ const page = () => {
         <div className=" mx-4 lg:mx-44 my-8 lg:my-12">
             <div className="flex justify-center ">
                 <Image
-                    src={"/images/dgf-full-logo.webp"}
+                    src={"/new-logo.png"}
                     height={150}
                     width={150}
                     alt="logo"

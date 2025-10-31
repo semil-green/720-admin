@@ -34,7 +34,6 @@ export default function ItemTable({
     totalItems,
     totalProductCount
 }) {
-
     const router = useRouter()
     const dispatch = useDispatch()
     const handleEdit = (item) => {
@@ -75,6 +74,15 @@ export default function ItemTable({
         }
     }
     const storeColumns = (onEdit, onDelete) => [
+        {
+            accessorKey: "product_id",
+            header: "ID",
+            cell: ({ row }) => (
+                <div className="whitespace-nowrap">
+                    {row.original?.product_id}
+                </div>
+            ),
+        },
         {
             accessorKey: "Title",
             header: "Product",
