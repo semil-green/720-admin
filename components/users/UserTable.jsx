@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -6,13 +7,32 @@ import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, Eye, EyeOff, Copy } from "lucide-react";
 import { editUserData } from "@/store/slices/user-slice/user.slice";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+
 
 export default function UserTable({ data, onDelete, page, limit, totalPages, setPage, setLimit }) {
     const router = useRouter();
     const dispatch = useDispatch();
+    const [showPassword, setShowPassword] = useState({}); // per-user visibility state
+
+    const handleTogglePassword = (userId) => {
+        setShowPassword((prev) => ({
+            ...prev,
+            [userId]: !prev[userId],
+        }));
+    };
+
+    const handleCopyPassword = async (password) => {
+        try {
+            await navigator.clipboard.writeText(password);
+            toast.success("Password copied to clipboard");
+        } catch {
+            toast.error("Failed to copy password");
+        }
+    };
     const handleSetPage = (newPage) => {
         const pageNum = Number(newPage);
         if (!isNaN(pageNum) && pageNum >= 1) {
@@ -47,6 +67,40 @@ export default function UserTable({ data, onDelete, page, limit, totalPages, set
         { accessorKey: "full_name", header: "Name" },
         { accessorKey: "contact_number", header: "Mobile No" },
         { accessorKey: "email", header: "Email" },
+        {
+            accessorKey: "password",
+            header: "Password",
+            cell: ({ row }) => {
+                const user = row.original;
+                const isVisible = showPassword[user.id];
+                const passwordText = isVisible ? user.password : "********";
+                return (
+                    <div className="flex items-center gap-2">
+                        <span className="font-mono">{passwordText}</span>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleTogglePassword(user.id)}
+                            className="h-6 w-6"
+                        >
+                            {isVisible ? (
+                                <EyeOff className="h-4 w-4 text-slate-600" />
+                            ) : (
+                                <Eye className="h-4 w-4 text-slate-600" />
+                            )}
+                        </Button>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            onClick={() => handleCopyPassword(user.password)}
+                            className="h-6 w-6"
+                        >
+                            <Copy className="h-4 w-4 text-slate-600" />
+                        </Button>
+                    </div>
+                );
+            },
+        },
         { accessorKey: "name", header: "Role" },
         {
             id: "actions",
