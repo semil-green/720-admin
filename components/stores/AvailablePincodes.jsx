@@ -165,12 +165,12 @@ export default function AvailablePincodes({ editId }) {
             return;
         }
 
-        if (isNaN(Number(pincode)) || isNaN(Number(deliveryCharge))) {
-            toast.error("Validation Error", {
-                description: "Pincode and delivery charge must be numbers",
-            });
-            return;
-        }
+        // if (isNaN(Number(pincode)) || isNaN(Number(deliveryCharge))) {
+        //     toast.error("Validation Error", {
+        //         description: "Pincode and delivery charge must be numbers",
+        //     });
+        //     return;
+        // }
 
         const data = {
             packaging_store_dark_store_id: editId,
@@ -271,17 +271,14 @@ export default function AvailablePincodes({ editId }) {
                         name="pincode"
                         className=""
                         value={pincode}
-                        onChange={(e) => setPincode(e.target.value)}
                         placeholder="Pincode"
                         disabled={isEdit}
-                        type={"number"}
-                        onKeyDown={(e) => {
-                            if (e.key === "." || e.key === "e" || e.key === "E") {
-                                e.preventDefault();
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*(-\d*)?$/.test(value)) {
+                                setPincode(value);
                             }
                         }}
-                        min={0}
-
                     />
                     <Input
                         name="delivery_charge"
