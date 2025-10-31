@@ -81,6 +81,10 @@ export default function CollectionsTable({
 
     const columns = [
         {
+            header: "ID",
+            accessorKey: "collection_id",
+        },
+        {
             header: "Product",
             accessorKey: "title",
             cell: ({ row }) => {

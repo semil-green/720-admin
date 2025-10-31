@@ -274,6 +274,14 @@ export default function AvailablePincodes({ editId }) {
                         onChange={(e) => setPincode(e.target.value)}
                         placeholder="Pincode"
                         disabled={isEdit}
+                        type={"number"}
+                        onKeyDown={(e) => {
+                            if (e.key === "." || e.key === "e" || e.key === "E") {
+                                e.preventDefault();
+                            }
+                        }}
+                        min={0}
+
                     />
                     <Input
                         name="delivery_charge"
@@ -281,6 +289,8 @@ export default function AvailablePincodes({ editId }) {
                         value={deliveryCharge}
                         onChange={(e) => setDeliveryCharge(e.target.value)}
                         placeholder="Delivery Charge"
+                        type={"number"}
+                        min={0}
                     />
 
                     <div className="flex flex-col mt-2 mx-2">

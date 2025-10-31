@@ -317,16 +317,39 @@ export default function StoreForm({ editId, type }) {
             </div>
             <div>
                 <Label className="pb-1">Store Pincode <span className="text-red-500">*</span></Label>
-                <Input name="store_pincode" value={formData.store_pincode} onChange={handleChange} />
+                <Input name="store_pincode" value={formData.store_pincode} onChange={handleChange}
+                    type={"number"}
+                    onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "e" || e.key === "E") {
+                            e.preventDefault();
+                        }
+                    }}
+                    min={0}
+                />
             </div>
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <Label className="pb-1">Latitude <span className="text-red-500">*</span></Label>
-                    <Input name="latitude" value={formData.latitude} onChange={handleChange} />
+                    <Input name="latitude"
+                        value={formData.latitude}
+                        onChange={handleChange}
+                        onKeyDown={(e) => {
+                            if (e.key === "-" || e.key === "e" || e.key === "E") {
+                                e.preventDefault();
+                            }
+                        }}
+                        type={"number"}
+
+                    />
                 </div>
                 <div>
                     <Label className="pb-1">Longitude <span className="text-red-500">*</span></Label>
-                    <Input name="longitude" value={formData.longitude} onChange={handleChange} />
+                    <Input name="longitude" value={formData.longitude} onChange={handleChange} onKeyDown={(e) => {
+                        if (e.key === "-" || e.key === "e" || e.key === "E") {
+                            e.preventDefault();
+                        }
+                    }}
+                        type={"number"} />
                 </div>
             </div>
             <div className="flex justify-center gap-4 mt-4">

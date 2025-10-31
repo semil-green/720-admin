@@ -266,6 +266,13 @@ export default function AvailablePincodes({
                         onChange={(e) => setPincode(e.target.value)}
                         placeholder="Pincode"
                         disabled={isEdit}
+                        type={"number"}
+                        onKeyDown={(e) => {
+                            if (e.key === "." || e.key === "e" || e.key === "E") {
+                                e.preventDefault();
+                            }
+                        }}
+                        min={0}
                     />
                     <Input
                         name="delivery_charge"
@@ -273,6 +280,13 @@ export default function AvailablePincodes({
                         value={deliveryCharge}
                         onChange={(e) => setDeliveryCharge(e.target.value)}
                         placeholder="Delivery Charge"
+                        type={"number"}
+                        min={0}
+                        onKeyDown={(e) => {
+                            if (e.key === "e" || e.key === "E" || e.key === "-") {
+                                e.preventDefault();
+                            }
+                        }}
                     />
                     <div className="flex flex-col mt-2 mx-2">
                         <span className="text-gray-700">Pincode Status</span>
