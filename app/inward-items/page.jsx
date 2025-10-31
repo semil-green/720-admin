@@ -28,6 +28,7 @@ import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCen
 import { getALlWorkFlowService } from "@/service/work-flow/workflow.service";
 import { setWorkFlows } from "@/store/slices/work-flow/workflow.slice";
 import FilterDropdown from "@/components/items/FilterDropDown";
+import * as XLSX from "xlsx";
 
 export default function InwardItems() {
     const [items, setItems] = useState([]);
@@ -186,6 +187,56 @@ export default function InwardItems() {
     const handleWorkflowSortChange = (data) => {
         setWorkFlowSort(data);
     }
+
+    const exportToExcelInwardMaterialData = (data) => {
+        if (!data || data.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+
+        const formattedData = data.map((item) => ({
+            "Inward Materials": item.raw_item,
+            "SKU": item.sku,
+            "Quantity": item.quantity,
+            "Batch": item.batch,
+            "Vendor": item.vendor_name,
+            "Date": item.date,
+            "Time": item.time,
+            "Unit": item.unit,
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Inward Material Data");
+
+        XLSX.writeFile(workbook, "Inward_Material_Data.xlsx");
+    };
+
+    const exportToExcelWorkflowData = (data) => {
+        if (!data || data.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+        const formattedData = data.map((item) => ({
+            "Output Products": item.outputs
+                ?.map((out) => `${out.title} (SKU: ${out.sku})`)
+                .join(", ") || "No outputs",
+
+            "Input Raw Items": item.inputs
+                ?.map(
+                    (inp) =>
+                        `${inp.raw_item} (SKU: ${inp.sku}, Qty: ${inp.quantity}, Unit: ${inp.unit})`
+                )
+                .join(", ") || "No inputs",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Workflow Data");
+
+        XLSX.writeFile(workbook, "Workflow_Data.xlsx");
+    };
+
     return (
         <MainLayout>
             {loading && (
@@ -197,6 +248,7 @@ export default function InwardItems() {
             )}
 
             <Tabs defaultValue="InwardItem">
+
                 <TabsList>
                     <TabsTrigger value="InwardItem">Inward Materials</TabsTrigger>
                     <TabsTrigger value="ItemWorkflow">Workflow</TabsTrigger>
@@ -206,6 +258,7 @@ export default function InwardItems() {
                 <TabsContent value="InwardItem">
                     <div className="space-y-4">
                         <div className="flex justify-end items-center gap-2">
+                            <Button onClick={() => exportToExcelInwardMaterialData(allInwardMaterialsData)}>Export</Button>
                             <Button
                                 onClick={() => router.push("/inward-items/new")}
                                 className="cursor-pointer"
@@ -264,6 +317,8 @@ export default function InwardItems() {
                 {/* ====== WORKFLOW TAB ====== */}
                 <TabsContent value="ItemWorkflow">
                     <div className="flex justify-end">
+                        <Button onClick={() => exportToExcelWorkflowData(allWorkFlowData?.data)}>Export</Button>
+
                         <Button
                             onClick={() => router.push("/inward-items/new-workflow")}
                             className="cursor-pointer"

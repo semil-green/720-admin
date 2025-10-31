@@ -12,6 +12,7 @@ import { setVendors } from "@/store/slices/vendor-master/vendor-master.slice";
 import FilterDropdown from "@/components/items/FilterDropDown";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react"
+import * as XLSX from "xlsx";
 
 
 const page = () => {
@@ -84,6 +85,38 @@ const page = () => {
         setVendorSort(sort);
     };
 
+    const exportToExcelVendorData = (allVendorsData = []) => {
+        if (!allVendorsData || allVendorsData.length === 0) {
+            toast.error("No data to export.");
+            return;
+        }
+
+        const dataToExport = allVendorsData?.data?.map((vendor) => ({
+            "Vendor Name": vendor.vendor_name || "-",
+            "GST": vendor.gst || "-",
+            "Phone": vendor.contact_number || "-",
+            "GPay": vendor.gpay_number || "-",
+            "UPI ID": vendor.upi_id || "-",
+            "Bank Account": vendor.account_name || "-",
+            "Address": vendor.address || "-",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) => (item[key] ? item[key].toString().length : 0))
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Vendors");
+
+        XLSX.writeFile(wb, "vendor-data.xlsx");
+    };
+
     return (
         <MainLayout>
 
@@ -101,9 +134,9 @@ const page = () => {
                         <h1 className="font-semibold text-xl">Vendors</h1>
                     </div>
                     <div className="flex gap-3">
-                        {/* <Button className="cursor-pointer" variant={"secondary"}>
-                            More Actions
-                        </Button> */}
+                        <Button className="cursor-pointer" onClick={() => exportToExcelVendorData(allVendorsData)}>
+                            Export
+                        </Button>
                         <Link href={"/vendors/new "}>
                             <Button className="cursor-pointer">Add Vendors</Button>
                         </Link>

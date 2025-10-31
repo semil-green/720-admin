@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export const getAllCollectionsService = async (page, limit) => {
+export const getAllCollectionsService = async (page, limit, searchCollections, sortBy, sortOrder) => {
     try {
         const auth_token = localStorage.getItem("token")
 
@@ -8,6 +8,9 @@ export const getAllCollectionsService = async (page, limit) => {
 
         if (page) params.append("page", page);
         if (limit) params.append("limit", limit);
+        if (sortOrder) params.append("sortOrder", sortOrder);
+        if (sortBy) params.append("sortBy", sortBy);
+        if (searchCollections) params.append("search", searchCollections);
 
         const result = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/v1/collection?${params.toString()}`,
 

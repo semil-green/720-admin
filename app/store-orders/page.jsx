@@ -35,6 +35,7 @@ import { setStoreOrders } from "@/store/slices/store-order/store-order.slice";
 import FilterDropdown from "@/components/items/FilterDropDown";
 import { setDarkStores } from "@/store/slices/dark-store/dark-store.slice";
 import { getAllDarkStorePackagingCenter } from "@/service/darkStore-packagingCenter/darkStore-packagingCenter.service";
+import * as XLSX from "xlsx";
 
 export default function StoreOrders() {
     const [StoreOrder, setStoreOrder] = useState({});
@@ -101,6 +102,54 @@ export default function StoreOrders() {
         setSort(sort);
     }
 
+    const exportToExcelStoreOrderData = (data) => {
+        if (!data || data.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+
+        const formattedData = data.map((item) => {
+            const createdAt = new Date(item.created_at);
+            const createdDate = createdAt.toLocaleDateString("en-GB");
+            const createdTime = createdAt.toLocaleTimeString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+            });
+
+            const transferredDateTime = item.transferred_date
+                ? (() => {
+                    const date = new Date(item.transferred_date);
+                    const formattedDate = date.toLocaleDateString("en-GB");
+                    const formattedTime = date.toLocaleTimeString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                    });
+                    return `${formattedDate} ${formattedTime}`;
+                })()
+                : "-";
+
+            return {
+                "Order No.": item.id,
+                "Order Date & Time": `${createdDate} ${createdTime}`,
+                "Product": item.product?.title || "-",
+                "Store": item.packaging_center?.store_name || "-",
+                "Store Remarks": item.remarks || "-",
+                "Demanded Qty": item.quantity ?? 0,
+                "Transferred Qty": item.transferred_quantity ?? 0,
+                "PC Remarks": item.transferred_remarks || "-",
+                "Transfer Date & Time": transferredDateTime,
+            };
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Store Orders");
+
+        XLSX.writeFile(workbook, "Store_Orders.xlsx");
+    };
+
     return (
         <MainLayout>
             {loading && (
@@ -110,6 +159,10 @@ export default function StoreOrders() {
                     </div>
                 </div>
             )}
+
+            <div className="mb-4 flex justify-end">
+                <Button onClick={() => exportToExcelStoreOrderData(allStoreOrders)}>Export</Button>
+            </div>
             <div className="flex justify-between">
                 <div className="flex gap-4">
                     <Input

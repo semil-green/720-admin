@@ -28,6 +28,8 @@ import {
 import { getAllRawItemsService } from "@/service/raw-item/raw-item.service";
 import { setRawItems } from "@/store/slices/raw-ittem/raw-item.store";
 import { getAllUnitsService } from "@/service/unit/unit.service";
+import * as XLSX from "xlsx";
+
 
 export default function Items() {
     const [loading, setLoading] = useState(false);
@@ -169,6 +171,69 @@ export default function Items() {
         { label: "unit", value: "unit" },
     ];
 
+    const exportToExcelProductData = (allItemsData = []) => {
+        if (!allItemsData || allItemsData.length === 0) {
+            toast.error("No product data available to export.");
+            return;
+        }
+        const dataToExport = allItemsData.map((item) => ({
+            "Product ID": item.product_id || "-",
+            "Title": item.title || "-",
+            "SKU": item.sku || "-",
+            "Categories": Array.isArray(item.categories)
+                ? item.categories.filter(Boolean).join(", ")
+                : "-",
+            "Quantity": item.quantity || "-",
+            "Unit": item.unit || "-",
+            "Serve Person": item.serve_person || "-",
+            "Status": item.status ? "Active" : "Inactive",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) => (item[key] ? item[key].toString().length : 0))
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Products");
+
+        XLSX.writeFile(wb, "product-data.xlsx");
+    };
+
+    const exportToExcelRawItemData = (allRawItemsData = []) => {
+        if (!allRawItemsData || allRawItemsData.length === 0) {
+            toast.error("No raw item data available to export.");
+            return;
+        }
+
+        const dataToExport = allRawItemsData.map((item) => ({
+            "Raw Item": item.raw_item || "-",
+            "Unit": item.unit || "-",
+            "SKU": item.sku || "-",
+            "Status": item.status ? "Active" : "Inactive",
+        }));
+
+        const ws = XLSX.utils.json_to_sheet(dataToExport);
+        const wb = XLSX.utils.book_new();
+
+        const columnWidths = Object.keys(dataToExport[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...dataToExport.map((item) => (item[key] ? item[key].toString().length : 0))
+            ) + 2,
+        }));
+        ws["!cols"] = columnWidths;
+
+        XLSX.utils.book_append_sheet(wb, ws, "Raw Items");
+
+        XLSX.writeFile(wb, "raw-item-data.xlsx");
+    };
+
     return (
         <MainLayout>
             {loading && (
@@ -188,7 +253,7 @@ export default function Items() {
                         <div className="flex justify-between items-center gap-2">
                             <div />
                             <div className="flex gap-4">
-                                <Button variant="secondary">Export</Button>
+                                <Button variant="" onClick={() => exportToExcelProductData(allItemsData)}>Export</Button>
                                 <Button onClick={() => router.push("/items/new")}>
                                     Add Product
                                 </Button>
@@ -244,6 +309,8 @@ export default function Items() {
                 <TabsContent value="RawItem">
                     <div className="space-y-4">
                         <div className="flex justify-end items-center gap-2">
+                            <Button variant="" onClick={() => exportToExcelRawItemData(allRawItemsData)}>Export</Button>
+
                             <Button onClick={() => openAddRawItem()}>Add Raw Item</Button>
                         </div>
 

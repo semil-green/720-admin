@@ -10,7 +10,9 @@ import { useSelector, useDispatch } from 'react-redux';
 import { toast } from "sonner"
 import { getAllCollectionsService } from '@/service/collections/collections.service';
 import { setCollections } from '@/store/slices/collections/collections.slice';
-
+import * as XLSX from "xlsx";
+import { Input } from "@/components/ui/input";
+import FilterDropdown from "@/components/items/FilterDropDown";
 export default function Collections() {
 
     const [loading, setLoading] = useState(false);
@@ -18,6 +20,9 @@ export default function Collections() {
     const [limit, setLimit] = useState(10);
     const [totalPage, setTotalPage] = useState(0);
     const [totalRecordCount, setTotalRecordCount] = useState(0);
+    const [searchCollections, setSearchCollections] = useState("");
+    const [sortCollection, setSortCollection] = useState(null);
+
 
     const dispatch = useDispatch();
 
@@ -26,7 +31,7 @@ export default function Collections() {
         const fetchCollectionData = async () => {
             setLoading(true)
             try {
-                const res = await getAllCollectionsService(page, limit)
+                const res = await getAllCollectionsService(page, limit, searchCollections, sortCollection?.sortBy, sortCollection?.sortOrder)
 
                 if (res?.data) {
                     setTotalPage(Math.ceil(res?.data?.total / limit))
@@ -42,7 +47,46 @@ export default function Collections() {
         }
 
         fetchCollectionData()
-    }, [page])
+    }, [page, searchCollections, sortCollection])
+
+    const exportToExcelCollectionsData = (collectionsData = []) => {
+        if (!collectionsData || collectionsData.length === 0) {
+            toast.error("No collection data available to export");
+            return;
+        }
+
+        const formattedData = collectionsData.map((item) => ({
+            "Collection ID": item.collection_id || "-",
+            "Title": item.title || "-",
+            "Products": item.no_of_products ?? 0,
+            "Status": item.status ? "Active" : "Inactive",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+        const columnWidths = Object.keys(formattedData[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...formattedData.map((row) => String(row[key] || "").length)
+            ) + 2,
+        }));
+        worksheet["!cols"] = columnWidths;
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Collections");
+
+        XLSX.writeFile(workbook, "Collections_Data.xlsx");
+
+    };
+
+    const collectionsColumns = [
+        { label: "Collections", value: "title" },
+        { label: "Products", value: "no_of_products" },
+    ];
+
+    const handleProductSortChange = (sort) => {
+        setSortCollection(sort);
+    };
 
     return (
         <MainLayout>
@@ -55,10 +99,44 @@ export default function Collections() {
                     </div>
                     <div className='flex gap-3'>
 
-                        <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
+                        <Button className='cursor-pointer' onClick={() => exportToExcelCollectionsData(allCollectionsData)}>Export</Button>
                         <Link href={'/collections/new'} >
                             <Button className='cursor-pointer'>Add Collections</Button>
                         </Link>
+                    </div>
+                </div>
+
+
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex flex-1 gap-2">
+                        <Input
+                            placeholder="Search Collections"
+                            className="flex-1 sm:flex-[2]"
+                            onChange={(e) => setSearchCollections(e.target.value)}
+                            value={searchCollections}
+                        />
+                        <Button
+                            onClick={() => fetchCollectionData(page, limit, searchState, sortState?.sortBy, sortState?.sortOrder)}
+                        >
+                            Search
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                setSearchCollections("");
+                                setPage(1);
+                                fetchCollectionData(1, limit, "");
+                            }}
+                            variant={"link"}
+                        >
+                            Clear
+                        </Button>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <FilterDropdown
+                            columns={collectionsColumns}
+                            onSortChange={handleProductSortChange}
+                        />
                     </div>
                 </div>
 

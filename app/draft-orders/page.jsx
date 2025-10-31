@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Input } from "@/components/ui/input";
 import FilterDropdown from "@/components/items/FilterDropDown";
 import { Loader2 } from "lucide-react";
+import * as XLSX from "xlsx";
 
 const page = () => {
 
@@ -65,6 +66,47 @@ const page = () => {
     const handleDraftOrderSortChange = (sort) => {
         setSort(sort);
     }
+
+    const exportToExcelDraftOrderData = (data, orderStatus = []) => {
+        if (!data || data.length === 0) {
+            toast.error("No data available to export");
+            return;
+        }
+
+        const formattedData = data.map((item) => {
+            let formattedDate = "-";
+            if (item.created_date) {
+                const date = new Date(item.created_date);
+                formattedDate = date.toLocaleString("en-GB", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true,
+                });
+            }
+
+            const statusLabel =
+                orderStatus?.find?.((s) => s.value === item.order_status)?.label ||
+                "Unknown";
+
+            return {
+                "Order ID": item.order_id,
+                "Created": formattedDate,
+                "Customer": item.customer_name || "-",
+                "Order Status": statusLabel,
+                "Items": item.order_items_count ?? 0,
+                "Total": item.final_price ?? 0,
+            };
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Draft Orders");
+        XLSX.writeFile(workbook, "Draft_Orders.xlsx");
+    };
+
     return (
         <MainLayout>
 
@@ -78,10 +120,14 @@ const page = () => {
             <div className="space-y-4">
                 <div className="flex justify-end items-end gap-2">
                     <div>
+                        <Button onClick={() => exportToExcelDraftOrderData(allDraftOrders)}>Export</Button>
+                    </div>
+                    <div>
                         <Link href={"/draft-orders/new"}>
                             <Button className='cursor-pointer'>Add New</Button>
                         </Link>
                     </div>
+
                 </div>
 
             </div>
