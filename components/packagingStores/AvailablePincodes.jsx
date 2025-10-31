@@ -263,16 +263,14 @@ export default function AvailablePincodes({
                         name="pincode"
                         className=""
                         value={pincode}
-                        onChange={(e) => setPincode(e.target.value)}
                         placeholder="Pincode"
                         disabled={isEdit}
-                        type={"number"}
-                        onKeyDown={(e) => {
-                            if (e.key === "." || e.key === "e" || e.key === "E") {
-                                e.preventDefault();
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*(-\d*)?$/.test(value)) {
+                                setPincode(value);
                             }
                         }}
-                        min={0}
                     />
                     <Input
                         name="delivery_charge"
