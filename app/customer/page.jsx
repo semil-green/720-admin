@@ -17,7 +17,7 @@ import * as XLSX from "xlsx";
 const CustomerPage = () => {
 
     const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(50)
     const [search, setSearch] = useState('')
     const searchParams = useSearchParams();
     const searchFromUrl = searchParams.get("search");
@@ -75,6 +75,8 @@ const CustomerPage = () => {
         const dataToExport = allCustomersData.map((customer) => ({
             "Customer Name": customer.customer_name || "-",
             "Contact Number": customer.mobile_no || "-",
+            "Success Orders": customer.success_orders ?? "-",
+            "Failed/Pending Orders": customer.failed_pending_orders ?? "-",
             "Total Orders": customer.total_orders ?? "-",
             "Amount Spent": customer.total_spent ?? "-",
         }));

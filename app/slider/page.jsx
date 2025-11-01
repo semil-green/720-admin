@@ -11,7 +11,7 @@ import { Loader2 } from 'lucide-react';
 const page = () => {
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(50);
     const [totalPages, setTotalPages] = useState(0);
     const [loading, setLoading] = useState(false)
 

@@ -86,3 +86,17 @@ export const deleteDiscountService = (id) => {
         return error
     }
 }
+
+export const activateDiscountService = async (discountId) => {
+
+    try {
+        const auth_token = localStorage.getItem("token")
+
+        const result = await axios.put(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/discount/activate/${discountId}`, {}, { headers: { Authorization: auth_token } })
+
+        return result
+    }
+    catch (error) {
+        return error
+    }
+}

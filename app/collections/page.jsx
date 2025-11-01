@@ -17,7 +17,7 @@ export default function Collections() {
 
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(50);
     const [totalPage, setTotalPage] = useState(0);
     const [totalRecordCount, setTotalRecordCount] = useState(0);
     const [searchCollections, setSearchCollections] = useState("");

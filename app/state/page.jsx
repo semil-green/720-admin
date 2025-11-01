@@ -21,7 +21,7 @@ import FilterDropdown from "@/components/items/FilterDropDown";
 
 const page = () => {
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(50);
     const [totalCount, setTotalCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [searchState, setSearchState] = useState("");

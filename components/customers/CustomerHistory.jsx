@@ -1,18 +1,22 @@
 "use client"
 import React, { useState, useEffect } from 'react'
-import { Users, ChevronRight } from 'lucide-react';
+import { Users, ChevronRight, PhoneIcon, CastleIcon, UserIcon, HomeIcon, WorkflowIcon, GlobeIcon } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getCustomerOrdersHistoryService } from '@/service/cutomer-order/cutomer-order.service';
 import { toast } from 'sonner';
 import { Loader2 } from "lucide-react";
+import { ADDRESS_TYPE, PAYMENT_STATUSES } from '@/lib/constants';
 
 const CustomerHistory = ({ customerId }) => {
     const [customerOrderHistory, setCustomerOrderHistory] = useState([])
     const [isLoading, setIsLoading] = useState(false)
     const [page, setPage] = useState(1)
     const [totalPage, setTotalPage] = useState(1)
+
+    const paymentStatusOptions = Object.fromEntries(Object.entries(PAYMENT_STATUSES).map(([label, code]) => [code, label]));
+
     const fetchCustomerHistory = async () => {
         try {
 
@@ -81,31 +85,39 @@ const CustomerHistory = ({ customerId }) => {
 
                             <div className="relative border-l-2 border-gray-200 pl-6 space-y-8">
                                 {customerOrderHistory?.orders?.data?.map((order) => {
-                                    let statusColor = "bg-gray-400";
-                                    if (order.order_status === "Fulfilled") statusColor = "bg-green-500";
-                                    else if (order.order_status === "Unfulfilled") statusColor = "bg-yellow-400";
-                                    else if (order.order_status === "Cancelled") statusColor = "bg-red-500";
+                                    let statusColor = "gray-400";
+                                    if (order.order_status === "Fulfilled") statusColor = "green-500";
+                                    else if (order.order_status === "Unfulfilled") statusColor = "yellow-400";
+                                    else if (order.order_status === "Cancelled") statusColor = "red-500";
+
+                                    let paymentStatusColor = 'gray-500';
+                                    if (order.payment_status === PAYMENT_STATUSES.Success) paymentStatusColor = "green-500";
+                                    else if (order.payment_status === PAYMENT_STATUSES.Pending) paymentStatusColor = "yellow-400";
+                                    else if (order.payment_status === PAYMENT_STATUSES.Failed) paymentStatusColor = "red-500";
 
                                     return (
                                         <div key={order.order_id} className="relative">
-                                            <div className={`absolute -left-[20px] top-1 w-4 h-4 rounded-full border-2 border-white ${statusColor}`}></div>
+                                            <div className={`absolute -left-[20px] top-1 w-4 h-4 rounded-full border-2 border-white bg-${statusColor}`}></div>
                                             <div>
                                                 <h3 className="text-md font-semibold text-gray-900">
                                                     Order #{order.order_id}
                                                 </h3>
                                                 <p className="text-sm text-gray-600">
-                                                    Placed on {new Date(order.order_date).toLocaleDateString("en-US", {
+                                                    Placed on <span className='font-bold'>{new Date(order.order_date).toLocaleDateString("en-US", {
                                                         year: "numeric", month: "long", day: "numeric"
-                                                    })}
+                                                    })}</span>
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    Status: <span className={`font-medium ${statusColor.replace("bg-", "text-")}`}>{order.order_status}</span>
+                                                    Order Status: <span className={`font-bold text-${statusColor}`}>{order.order_status}</span>
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    Order Total :  <span className={`font-medium ${statusColor.replace("bg-", "text-")}`}>₹{order.final_price}</span>
+                                                    Payment Status: <span className={`font-bold text-${paymentStatusColor}`}>{paymentStatusOptions[order.payment_status]}</span>
                                                 </p>
                                                 <p className="text-sm text-gray-500">
-                                                    No of items: <span className={`font-medium ${statusColor.replace("bg-", "text-")}`}>{order.order_items_count} </span>
+                                                    Order Total :  <span className={`font-bold`}>₹{order.final_price}</span>
+                                                </p>
+                                                <p className="text-sm text-gray-500">
+                                                    No of items: <span className={`font-bold`}>{order.order_items_count} </span>
                                                 </p>
                                             </div>
                                         </div>
@@ -139,18 +151,37 @@ const CustomerHistory = ({ customerId }) => {
 
                         <div>
                             <h1>Customer Name :</h1>
-                            <p>{customerOrderHistory?.customer?.customer_name}</p>
+                            <p className='flex flex-row items-center gap-1'>
+                                <UserIcon className="size-4" />
+                                {customerOrderHistory?.customer?.customer_name}</p>
                         </div>
 
                         <div className='mt-3'>
-                            <h1>Contact Information</h1>
-                            <p className=''>{customerOrderHistory?.customer?.mobile_no}</p>
+                            <h1>Contact Information:</h1>
+                            <p className='flex flex-row items-center gap-2'>
+                                <PhoneIcon className="size-4" />
+                                {customerOrderHistory?.customer?.mobile_no}</p>
                         </div>
 
                         <div className='mt-3'>
-                            <h1>Default Address</h1>
-                            <p className=''>{customerOrderHistory?.customer?.default_address}
-                            </p>
+                            <h1>Addresses:</h1>
+
+                            <div className='flex flex-col gap-3'>
+                                {customerOrderHistory?.customer?.addresses &&
+                                    customerOrderHistory?.customer?.addresses.length > 0 &&
+                                    customerOrderHistory?.customer?.addresses.map((address, index) =>
+                                        <p className='flex flex-row items-start gap-3 text-sm' key={index}>
+                                            {address.address_type == ADDRESS_TYPE.Home && <HomeIcon className="size-5" />}
+                                            {address.address_type == ADDRESS_TYPE.Work && <CastleIcon className="size-5" />}
+                                            {address.address_type == ADDRESS_TYPE.Other && <GlobeIcon className="size-5" />}
+
+                                            <span>
+                                                {address?.address}
+                                                {address.is_default_address && <span className='font-bold'> - Default</span>}
+                                            </span>
+                                        </p>
+                                    )}
+                            </div>
                         </div>
                     </div>
                 </div>

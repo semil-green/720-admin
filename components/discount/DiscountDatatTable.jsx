@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "sonner";
-import { deleteDiscountService, getDiscountsService } from '@/service/discount/discount.service';
-import { deleteDiscount, setAllDiscounts } from '@/store/slices/discount/discount.slice';
+import { activateDiscountService, deleteDiscountService, getDiscountsService } from '@/service/discount/discount.service';
+import { activateDiscount, deleteDiscount, setAllDiscounts } from '@/store/slices/discount/discount.slice';
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import FilterDropdown from "@/components/items/FilterDropDown";
@@ -12,7 +12,7 @@ import {
     AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle,
     AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, ShieldCheck } from "lucide-react";
 import { useRouter } from 'next/navigation';
 
 
@@ -23,7 +23,7 @@ const DiscountDatatTable = () => {
     const [type, setType] = useState("")
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(50);
     const [search, setSearch] = useState("");
     const [totalPages, setTotalPages] = useState(0);
     const [sort, setSort] = useState("")
@@ -91,7 +91,6 @@ const DiscountDatatTable = () => {
     }, [activeTab, page, sort])
 
     const allDiscountsData = useSelector((state) => state.discountSlice.paginatedDiscountData)
-
     const discountColumns = [
         { label: "discount code", value: "discount_code" },
     ];
@@ -105,7 +104,21 @@ const DiscountDatatTable = () => {
 
         if (res?.data?.status == 200) {
             dispatch(deleteDiscount(id));
-            toast.success("Deleted", { description: "Discount deleted successfully" });
+            toast.success("Deleted", { description: "Discount deactivated successfully" });
+        }
+        else {
+            toast.error("Failed to deactivate discount");
+        }
+    }
+
+    const handleActivate = async (id) => {
+        const res = await activateDiscountService(id);
+        if (res?.data?.status == 200) {
+            dispatch(activateDiscount(id));
+            toast.success("Activated", { description: "Discount Activated successfully" });
+        }
+        else {
+            toast.error("Failed to activate discount");
         }
     }
     return (
@@ -174,6 +187,9 @@ const DiscountDatatTable = () => {
                                 Title
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
+                                Type
+                            </th>
+                            <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
                                 Status
                             </th>
                             <th className="px-4 py-2 text-left text-sm font-semibold text-gray-600">
@@ -209,6 +225,9 @@ const DiscountDatatTable = () => {
                                     </td>
 
                                     <td>
+                                        {item?.status ? <span className="text-green-600 px-4 py-2">Active</span> : <span className="text-red-600 px-4 py-2"> Inactive</span>}
+                                    </td>
+                                    <td>
 
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -225,28 +244,55 @@ const DiscountDatatTable = () => {
                                                 >
                                                     <Pencil className="mr-2 h-4 w-4" /> Edit
                                                 </DropdownMenuItem>
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
-                                                            <Trash2 className="mr-2 h-4 w-4" />
-                                                            Delete
-                                                        </div>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Delete User?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                Are you sure you want to delete? This action cannot be undone.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction onClick={() => handleDelete(item?.id)}>
-                                                                Confirm Delete
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
+
+                                                {
+                                                    item?.status ? (<AlertDialog>
+                                                        <AlertDialogTrigger asChild>
+                                                            <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-red-600 hover:text-white hover:bg-red-600 rounded-sm">
+                                                                <Trash2 className="mr-2 h-4 w-4" />
+                                                                Deactivate
+                                                            </div>
+                                                        </AlertDialogTrigger>
+                                                        <AlertDialogContent>
+                                                            <AlertDialogHeader>
+                                                                <AlertDialogTitle>Deactivate Discount?</AlertDialogTitle>
+                                                                <AlertDialogDescription>
+                                                                    Are you sure you want to deactivate this Discount?
+                                                                </AlertDialogDescription>
+                                                            </AlertDialogHeader>
+                                                            <AlertDialogFooter>
+                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                <AlertDialogAction onClick={() => handleDelete(item?.id)}>
+                                                                    Confirm Delete
+                                                                </AlertDialogAction>
+                                                            </AlertDialogFooter>
+                                                        </AlertDialogContent>
+                                                    </AlertDialog>) : (
+                                                        <AlertDialog>
+                                                            <AlertDialogTrigger asChild>
+                                                                <div className="px-2 py-1.5 text-sm cursor-pointer flex items-center text-green-600 hover:text-white hover:bg-green-600 rounded-sm">
+                                                                    <ShieldCheck className="mr-2 h-4 w-4" />
+                                                                    Activate
+                                                                </div>
+                                                            </AlertDialogTrigger>
+                                                            <AlertDialogContent>
+                                                                <AlertDialogHeader>
+                                                                    <AlertDialogTitle>Activate Discount?</AlertDialogTitle>
+                                                                    <AlertDialogDescription>
+                                                                        Are you sure you want to deactivate this Discount?
+                                                                    </AlertDialogDescription>
+                                                                </AlertDialogHeader>
+                                                                <AlertDialogFooter>
+                                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                    <AlertDialogAction onClick={() => handleActivate(item?.id)}>
+                                                                        Confirm Activate
+                                                                    </AlertDialogAction>
+                                                                </AlertDialogFooter>
+                                                            </AlertDialogContent>
+                                                        </AlertDialog>
+                                                    )
+                                                }
+
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </td>

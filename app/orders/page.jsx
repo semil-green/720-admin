@@ -19,7 +19,7 @@ export default function Orders() {
     const [loading, setLoading] = useState(true);
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(9);
+    const [limit, setLimit] = useState(50);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("");

@@ -34,7 +34,7 @@ export default function Categories() {
     const [searchCategories, setSearchCategories] = useState("");
     const [sortCategories, setSortCategories] = useState(null)
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(50);
 
     const dispatch = useDispatch();
 

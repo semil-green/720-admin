@@ -38,11 +38,11 @@ export default function Inventory() {
     const [typeOfFinishedProduct, setTypeOfFinishedProduct] = useState("packagingCenter");
 
     const [rawItemPage, setRawItemPage] = useState(1);
-    const [rawItemsLimit, setRawItemLimit] = useState(5);
+    const [rawItemsLimit, setRawItemLimit] = useState(50);
     const [totalRawItemsPage, setRawItemTotalPages] = useState(1);
 
     const [finishedProductPage, setFinishedProductPage] = useState(1);
-    const [finishedProductLimit, setFinishedProductLimit] = useState(5);
+    const [finishedProductLimit, setFinishedProductLimit] = useState(50);
     const [totalFinishedProductPage, setFinishedProductTotalPages] = useState(1);
 
     const [selectedRawMaterialId, setSelectedRawMaterialId] = useState("");

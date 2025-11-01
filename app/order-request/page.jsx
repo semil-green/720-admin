@@ -43,7 +43,7 @@ export default function StoreOrders() {
     const [editData, setEditData] = useState({});
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(50);
     const [totalPage, setTotalPage] = useState(0);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("");

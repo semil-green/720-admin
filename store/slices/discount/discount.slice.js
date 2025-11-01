@@ -12,10 +12,21 @@ const discountSlice = createSlice({
             state.paginatedDiscountData = action.payload
         },
         deleteDiscount(state, action) {
-            state.paginatedDiscountData = state.paginatedDiscountData.filter((item) => item.id !== action.payload);
-        }
+            state.paginatedDiscountData = state.paginatedDiscountData.map((item) =>
+                item.id === action.payload
+                    ? { ...item, status: false }
+                    : item
+            );
+        },
+        activateDiscount(state, action) {
+            state.paginatedDiscountData = state.paginatedDiscountData.map((item) =>
+                item.id === action.payload
+                    ? { ...item, status: true }
+                    : item
+            );
+        },
     }
 })
 
-export const { setAllDiscounts, deleteDiscount } = discountSlice.actions;
+export const { setAllDiscounts, deleteDiscount, activateDiscount } = discountSlice.actions;
 export default discountSlice.reducer
