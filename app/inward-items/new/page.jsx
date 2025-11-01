@@ -44,12 +44,26 @@ function CreateInwardItem() {
     const [loading, setLoading] = useState(false);
     const [vendorPage, setVendorPage] = useState(1)
     const [vendorLimit, setVendorLimit] = useState(10000)
+    const [rawItemUnit, setRawItemUnit] = useState("")
 
 
     const router = useRouter();
     const dispatch = useDispatch();
 
     const editId = useSearchParams().get("id");
+
+
+
+    const allPackagingCentersData = useSelector(
+        (state) => state.packagingStoreSlice.allPackagingCenters
+    );
+    const allVendorsData = useSelector(
+        (state) => state.vendorMasterSlice.allVendorsData
+    );
+
+    const allRawItemsData = useSelector(
+        (state) => state.rawItemSlice.allRawItemsData
+    );
 
     useEffect(() => {
         if (!editId) return;
@@ -65,6 +79,12 @@ function CreateInwardItem() {
                     batch: res?.data?.batch,
                     quantity: res?.data?.quantity,
                 });
+                const selectedItem = allRawItemsData?.find(
+                    (item) => item.raw_id === res?.data?.rawitem_id
+                );
+
+                setRawItemUnit(selectedItem?.unit || "");
+
                 setLoading(false);
             }
             else {
@@ -75,17 +95,6 @@ function CreateInwardItem() {
 
         fetchEditData();
     }, [editId]);
-
-    const allPackagingCentersData = useSelector(
-        (state) => state.packagingStoreSlice.allPackagingCenters
-    );
-    const allVendorsData = useSelector(
-        (state) => state.vendorMasterSlice.allVendorsData
-    );
-
-    const allRawItemsData = useSelector(
-        (state) => state.rawItemSlice.allRawItemsData
-    );
 
     useEffect(() => {
         if (!allPackagingCentersData || allPackagingCentersData.length === 0) {
@@ -287,8 +296,14 @@ function CreateInwardItem() {
                         </Label>
                         <Select
                             value={formData.rawitem_id?.toString()}
-                            onValueChange={(value) =>
+                            onValueChange={(value) => {
+                                const selectedItem = allRawItemsData.find(
+                                    (item) => item.raw_id.toString() === value
+                                );
+
                                 setFormData((prev) => ({ ...prev, rawitem_id: value }))
+                                setRawItemUnit(selectedItem?.unit || "")
+                            }
                             }
                         >
                             <SelectTrigger className="w-full">
@@ -353,14 +368,20 @@ function CreateInwardItem() {
                             <CardContent>
                                 <Label className="pb-1">Quantity <span className="text-red-500">*</span>
                                 </Label>
-                                <Input
-                                    name="quantity"
-                                    value={formData.quantity}
-                                    onChange={handleChange}
-                                    placeholder="120"
-                                    type="number"
-                                    required
-                                />
+                                <div className="flex justify-center items-center gap-4">
+
+                                    <Input
+                                        name="quantity"
+                                        value={formData.quantity}
+                                        onChange={handleChange}
+                                        placeholder="120"
+                                        type="number"
+                                        required
+                                    />
+                                    {
+                                        rawItemUnit && <p>{rawItemUnit}</p>
+                                    }
+                                </div>
 
                                 <div className="flex justify-end gap-4 mt-6">
                                     <Button
