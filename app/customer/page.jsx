@@ -17,7 +17,7 @@ import * as XLSX from "xlsx";
 const CustomerPage = () => {
 
     const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(10)
+    const [limit, setLimit] = useState(50)
     const [search, setSearch] = useState('')
     const searchParams = useSearchParams();
     const searchFromUrl = searchParams.get("search");

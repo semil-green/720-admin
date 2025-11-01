@@ -42,7 +42,7 @@ export default function StoreOrders() {
     const [isStoreOrderModalOpen, setIsStoreOrderModalOpen] = useState(false);
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(10);
+    const [limit, setLimit] = useState(50);
     const [totalPages, setTotalPages] = useState(0);
     const [search, setSearch] = useState("");
     const [sort, setSort] = useState("");
