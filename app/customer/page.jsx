@@ -75,6 +75,8 @@ const CustomerPage = () => {
         const dataToExport = allCustomersData.map((customer) => ({
             "Customer Name": customer.customer_name || "-",
             "Contact Number": customer.mobile_no || "-",
+            "Success Orders": customer.success_orders ?? "-",
+            "Failed/Pending Orders": customer.failed_pending_orders ?? "-",
             "Total Orders": customer.total_orders ?? "-",
             "Amount Spent": customer.total_spent ?? "-",
         }));

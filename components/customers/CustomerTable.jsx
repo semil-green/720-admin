@@ -50,6 +50,10 @@ const columns = [
     //     },
     // },
     {
+        header: 'Customer Id',
+        accessorKey: 'customer_id',
+    },
+    {
         header: 'Customer name',
         accessorKey: 'customer_name',
         cell: ({ row }) => {
@@ -66,6 +70,14 @@ const columns = [
     {
         header: 'Contact Number',
         accessorKey: 'mobile_no',
+    },
+    {
+        header: 'Success orders',
+        accessorKey: 'success_orders',
+    },
+    {
+        header: 'Failed/Pendng orders',
+        accessorKey: 'failed_pending_orders',
     },
     {
         header: 'Total orders',
