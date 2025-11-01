@@ -36,7 +36,7 @@ export default function InwardItems() {
 
     // Inward states
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(50);
     const [totalPages, setTotalPages] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedStore, setSelectedStore] = useState("");
@@ -44,7 +44,7 @@ export default function InwardItems() {
 
     // Workflow states
     const [workFlowPage, setWorkFlowPage] = useState(1);
-    const [workFlowLimit, setWorkFlowLimit] = useState(5);
+    const [workFlowLimit, setWorkFlowLimit] = useState(50);
     const [workFlowTotalPages, setWorkFlowTotalPages] = useState(1);
     const [searchWorkFlow, setSearchWorkFlow] = useState("");
     const [workfloeSort, setWorkFlowSort] = useState("");

@@ -18,7 +18,7 @@ import * as XLSX from "xlsx";
 const page = () => {
 
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(50);
     const [totalPages, setTotalPages] = useState(1);
     const [vendorSort, setVendorSort] = useState("ASC");
     const [vendorSearch, setVendorSearch] = useState("");

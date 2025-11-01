@@ -37,14 +37,14 @@ export default function Items() {
 
     const [productSortState, setProductSortState] = useState();
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(50);
     const [totalItems, setTotalItems] = useState(0);
     const [searchProduct, setSearchProduct] = useState("");
     const [totalProductCount, setTotalProductCount] = useState(0);
 
     const [rawItemSortState, setRawItemSortState] = useState();
     const [rawItemPage, setRawItemPage] = useState(1);
-    const [rawItemLimit, setRawItemLimit] = useState(10);
+    const [rawItemLimit, setRawItemLimit] = useState(50);
     const [totalRawItems, settotalRawItems] = useState(0);
     const [units, setUnits] = useState([]);
     const [editRawItem, setEditRawItem] = useState({});
