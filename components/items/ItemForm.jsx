@@ -522,11 +522,9 @@ export default function ItemForm({ editItemId }) {
                 dispatch(clearAllItemsData());
                 toast.success("Item added successfully");
                 router.push("/items");
-            } else {
-                toast.error("Failed to add item");
             }
         } catch (error) {
-            toast.error("Something went wrong");
+            toast.error(error?.response?.data?.message ?? "Something went wrong! Failed to add item");
         } finally {
             setLoading(false);
         }
@@ -820,7 +818,7 @@ export default function ItemForm({ editItemId }) {
                 toast.error("Failed to update item");
             }
         } catch (error) {
-            toast.error("Something went wrong");
+            toast.error(error?.response?.data?.message ?? "Something went wrong! Failed to update item");
         } finally {
             setLoading(false);
         }
