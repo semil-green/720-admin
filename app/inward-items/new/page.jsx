@@ -45,7 +45,8 @@ function CreateInwardItem() {
     const [vendorPage, setVendorPage] = useState(1)
     const [vendorLimit, setVendorLimit] = useState(10000)
     const [rawItemUnit, setRawItemUnit] = useState("")
-
+    const [rawItemPage, setRawItemPage] = useState(1)
+    const [rawItemLimit, setRawItemLimit] = useState(100000)
 
     const router = useRouter();
     const dispatch = useDispatch();
@@ -130,11 +131,10 @@ function CreateInwardItem() {
     useEffect(() => {
         if (!allRawItemsData || allRawItemsData.length === 0) {
             const fetchRawItems = async () => {
-                const res = await getAllRawItemsService({
-                    page: 1,
-                    limit: 10000,
-                    search: "",
-                });
+                const res = await getAllRawItemsService(
+                    rawItemPage,
+                    rawItemLimit,
+                );
                 if (res) {
                     dispatch(setAllRawItems(res?.items || []));
                 }
