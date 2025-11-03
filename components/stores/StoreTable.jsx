@@ -117,6 +117,11 @@ export default function StoreDataTable({
     manualSorting: true,
     pageCount: totalPages,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 50,
+      },
+    },
   });
 
   return (

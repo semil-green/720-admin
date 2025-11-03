@@ -38,6 +38,11 @@ export default function FinishedProductTable({ data, totalPage, page, setRawItem
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     })
 
     return (

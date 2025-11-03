@@ -115,6 +115,11 @@ export default function PackagingStoreTable({
     manualSorting: true,
     pageCount: totalPages,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      pagination: {
+        pageSize: 50,
+      },
+    },
   });
 
   return (

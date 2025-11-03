@@ -204,6 +204,11 @@ export default function CollectionsTable({
         data: allCollectionsData,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     });
 
     return (
