@@ -112,6 +112,11 @@ const DraftOrderTable = ({ data, page, setPage, totalPages }) => {
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     })
 
     return (

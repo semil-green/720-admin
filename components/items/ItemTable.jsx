@@ -276,6 +276,7 @@ export default function ItemTable({
         pageCount: totalPages,
     })
 
+
     return (
         <div className="rounded border p-4 pt-0 shadow overflow-x-auto">
             <Table className="min-w-full">

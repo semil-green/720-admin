@@ -160,6 +160,11 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
 
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
         onPaginationChange: (updater) => {
             const newPagination =
                 typeof updater === "function"
@@ -169,6 +174,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             setPage(newPagination.pageIndex + 1);
         },
     });
+
 
 
     return (

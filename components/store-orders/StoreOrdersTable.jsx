@@ -97,6 +97,11 @@ export default function StoreOrdersTable({
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     });
 
     return (

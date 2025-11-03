@@ -138,7 +138,13 @@ export default function ItemWorkflowTable({ data, totalPages, page, setPage, lim
             },
         },
         getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     });
+
 
     return (
         <div className="rounded border p-4 pt-0 shadow">
