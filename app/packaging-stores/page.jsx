@@ -207,6 +207,12 @@ export default function PackagingStores() {
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    handleSearch();
+                                }
+                            }}
                         />
                         <Button onClick={handleSearch}>Search</Button>
                         <Button onClick={handleClear} variant="link">

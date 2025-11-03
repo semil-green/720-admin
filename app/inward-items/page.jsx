@@ -288,6 +288,12 @@ export default function InwardItems() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search Items"
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        fetchInwardMaterials()
+                                    }
+                                }}
                             />
 
                             <Button className="cursor-pointer" onClick={() => fetchInwardMaterials()}>
@@ -332,6 +338,12 @@ export default function InwardItems() {
                                 value={searchWorkFlow}
                                 onChange={(e) => setSearchWorkFlow(e.target.value)}
                                 placeholder="Search Workflow"
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault();
+                                        handleWorkflowSearch();
+                                    }
+                                }}
                             />
                             <Button className="cursor-pointer" onClick={handleWorkflowSearch}>
                                 Search
