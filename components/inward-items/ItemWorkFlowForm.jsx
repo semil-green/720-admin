@@ -26,6 +26,8 @@ export default function ItemWorkFlowForm({ editData }) {
     const dispatch = useDispatch();
 
     const [loading, setLoading] = useState(false);
+    const [rawItemPage, setRawItemPage] = useState(1)
+    const [rawItemLimit, setRawItemLimit] = useState(100000)
 
     const [workflowName, setWorkflowName] = useState("");
     const [description, setDescription] = useState("");
@@ -132,7 +134,7 @@ export default function ItemWorkFlowForm({ editData }) {
     useEffect(() => {
         if (!allRawItemsData || allRawItemsData.length === 0) {
             const fetchRawItems = async () => {
-                const res = await getAllRawItemsService({ page: 1, limit: 10000 });
+                const res = await getAllRawItemsService(rawItemPage, rawItemLimit);
                 if (res) {
                     dispatch(setAllRawItems(res?.items || []));
                 }
