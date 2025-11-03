@@ -98,6 +98,13 @@ export default function Orders() {
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchCustomerOrders(page, limit, search);
+                                    setPage(1);
+                                }
+                            }}
                         />
                         <Button
                             onClick={() => { setPage(1); fetchCustomerOrders(page, limit, search) }}

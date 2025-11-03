@@ -27,27 +27,31 @@ export default function Collections() {
     const dispatch = useDispatch();
 
     const allCollectionsData = useSelector((state) => state.collectionsSlice.allCollections)
-    useEffect(() => {
-        const fetchCollectionData = async () => {
-            setLoading(true)
-            try {
-                const res = await getAllCollectionsService(page, limit, searchCollections, sortCollection?.sortBy, sortCollection?.sortOrder)
 
-                if (res?.data) {
-                    setTotalPage(Math.ceil(res?.data?.total / limit))
-                    setTotalRecordCount(res?.data?.total)
-                    dispatch(setCollections(res?.data?.data))
 
-                    setLoading(false)
-                }
-            }
-            catch (error) {
-                toast.error("Error in fetching collections");
+    const fetchCollectionData = async () => {
+        setLoading(true)
+        try {
+            const res = await getAllCollectionsService(page, limit, searchCollections, sortCollection?.sortBy, sortCollection?.sortOrder)
+
+            if (res?.data) {
+                setTotalPage(Math.ceil(res?.data?.total / limit))
+                setTotalRecordCount(res?.data?.total)
+                dispatch(setCollections(res?.data?.data))
+
+                setLoading(false)
             }
         }
+        catch (error) {
+            toast.error("Error in fetching collections");
+        }
+    }
+
+    useEffect(() => {
+
 
         fetchCollectionData()
-    }, [page, searchCollections, sortCollection])
+    }, [page, limit, sortCollection])
 
     const exportToExcelCollectionsData = (collectionsData = []) => {
         if (!collectionsData || collectionsData.length === 0) {
@@ -82,6 +86,7 @@ export default function Collections() {
     const collectionsColumns = [
         { label: "Collections", value: "title" },
         { label: "Products", value: "no_of_products" },
+        { label: "Status", value: "status" },
     ];
 
     const handleProductSortChange = (sort) => {
@@ -114,9 +119,15 @@ export default function Collections() {
                             className="flex-1 sm:flex-[2]"
                             onChange={(e) => setSearchCollections(e.target.value)}
                             value={searchCollections}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchCollectionData(page, limit, searchCollections, sortCollection?.sortBy, sortCollection?.sortOrder)
+                                }
+                            }}
                         />
                         <Button
-                            onClick={() => fetchCollectionData(page, limit, searchState, sortState?.sortBy, sortState?.sortOrder)}
+                            onClick={() => fetchCollectionData(page, limit, searchCollections, sortCollection?.sortBy, sortCollection?.sortOrder)}
                         >
                             Search
                         </Button>

@@ -377,6 +377,21 @@ export default function Inventory() {
                                     className="w-2xl"
                                     onChange={(e) => setSearchRawMaterial(e.target.value)}
                                     value={searchRawMaterial}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            setAppliedSearch(searchRawMaterial);
+                                            setRawItemPage(1);
+                                            fetchAllRawITemsData(
+                                                1,
+                                                rawItemsLimit,
+                                                selectedRawMaterialId,
+                                                searchRawMaterial,
+                                                rawItemSort?.sortBy,
+                                                rawItemSort?.sortOrder
+                                            );
+                                        }
+                                    }}
                                 />
                                 <Button
                                     onClick={() => {
@@ -483,6 +498,21 @@ export default function Inventory() {
                                         className="w-2xl"
                                         onChange={(e) => setSearchFinishedProduct(e.target.value)}
                                         value={searchFinishedProduct}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                setAppliedFinishedSearch(searchFinishedProduct);
+                                                setFinishedProductPage(1);
+                                                fetchAllFinishedProductData(
+                                                    1,
+                                                    finishedProductLimit,
+                                                    selectedFinishedProductId,
+                                                    searchFinishedProduct,
+                                                    finishedProductSort?.sortBy,
+                                                    finishedProductSort?.sortOrder
+                                                );
+                                            }
+                                        }}
                                     />
                                     <Button
                                         onClick={() => {

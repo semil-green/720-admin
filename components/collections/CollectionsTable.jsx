@@ -207,7 +207,7 @@ export default function CollectionsTable({
     });
 
     return (
-        <div className="p-4">
+        <div className="">
             <div className="overflow-x-auto rounded-lg shadow border">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-50 text-left">

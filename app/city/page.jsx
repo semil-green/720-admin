@@ -115,6 +115,12 @@ const Page = () => {
                         className="flex-1 sm:flex-[2]"
                         onChange={(e) => setSearchCity(e.target.value)}
                         value={searchCity}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                fetchCities(1, limit, searchCity, sortCity?.sortBy, sortCity?.sortOrder);
+                            }
+                        }}
                     />
                     <Button onClick={() => fetchCities(1, limit, searchCity, sortCity?.sortBy, sortCity?.sortOrder)}>
                         Search

@@ -150,6 +150,12 @@ const page = () => {
                             className="flex-1 sm:flex-[2]"
                             onChange={(e) => setVendorSearch(e.target.value)}
                             value={vendorSearch}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchVendors(1, limit, vendorSearch)
+                                }
+                            }}
                         />
                         <Button onClick={() => fetchVendors(1, limit, vendorSearch)}>
                             Search

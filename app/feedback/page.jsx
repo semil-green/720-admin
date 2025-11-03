@@ -85,6 +85,12 @@ const page = () => {
                         className="w-2xl"
                         onChange={(e) => setSearch(e.target.value)}
                         value={search}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                fetchFeedbackData(page, limit, search, feedbackSort?.sortBy, feedbackSort?.sortOrder)
+                            }
+                        }}
                     />
                     <Button
                         onClick={() => fetchFeedbackData(page, limit, search, feedbackSort?.sortBy, feedbackSort?.sortOrder)}
