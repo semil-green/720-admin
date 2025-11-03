@@ -267,6 +267,12 @@ export default function Items() {
                                     className="flex-1 sm:flex-[2]"
                                     onChange={(e) => setSearchProduct(e.target.value)}
                                     value={searchProduct}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            fetchItems(page, limit, searchProduct, productSortState?.sortBy, productSortState?.sortOrder);
+                                        }
+                                    }}
                                 />
                                 <Button
                                     onClick={() => fetchItems(page, limit, searchProduct)}
@@ -321,6 +327,13 @@ export default function Items() {
                                     className="w-2xl"
                                     onChange={(e) => setSearchRawItem(e.target.value)}
                                     value={searchRawItem}
+
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            fetchALlRawItems()
+                                        }
+                                    }}
                                 />
                                 <Button onClick={() => fetchALlRawItems()}>
                                     Search

@@ -226,9 +226,15 @@ export default function StoreOrders() {
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchALlOrderRequestData(page, limit, search, sort?.sortBy, sort?.sortOrder);
+                                }
+                            }}
                         />
                         <Button
-                            onClick={() => fetchALlOrderRequestData(page, limit, search)}
+                            onClick={() => fetchALlOrderRequestData(page, limit, search, sort?.sortBy, sort?.sortOrder)}
                         >
                             Search
                         </Button>

@@ -128,6 +128,12 @@ export default function Users() {
                             className="w-2xl"
                             onChange={(e) => setSearch(e.target.value)}
                             value={search}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchAllUsers(1, limit, search, sort?.sortBy, sort?.sortOrder);
+                                }
+                            }}
                         />
                         <Button
                             onClick={() => {

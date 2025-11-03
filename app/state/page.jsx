@@ -87,6 +87,12 @@ const page = () => {
                         className="flex-1 sm:flex-[2]"
                         onChange={(e) => setSearchState(e.target.value)}
                         value={searchState}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                fetchStates(page, limit, searchState)
+                            }
+                        }}
                     />
                     <Button
                         onClick={() => fetchStates(page, limit, searchState)}

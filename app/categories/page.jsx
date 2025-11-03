@@ -78,24 +78,52 @@ export default function Categories() {
 
     const totalRecordCount = useSelector((state) => state.categoeySlice.totalCategoriesCount)
 
-    useEffect(() => {
-        const fetchCategories = async () => {
-            if (!allCategoriesData || allCategoriesData.length == 0) {
-                const response = await getAllCategoriesService(page, limit, searchCategories, sortCategories?.sortBy, sortCategories?.sortOrder);
+    // const fetchCategories = async () => {
+    //     if (!allCategoriesData || allCategoriesData.length == 0) {
+    //         const response = await getAllCategoriesService(page, limit, searchCategories, sortCategories?.sortBy, sortCategories?.sortOrder);
 
-                if (response?.status === 200) {
-                    dispatch(setCategoriesData(response?.data));
-                } else {
-                    toast.error("Error fetching categories", {
-                        description: response?.data?.message || "Something went wrong",
-                    });
-                }
+    //         if (response?.status === 200) {
+    //             dispatch(setCategoriesData(response?.data));
+    //         } else {
+    //             toast.error("Error fetching categories", {
+    //                 description: response?.data?.message || "Something went wrong",
+    //             });
+    //         }
+    //     }
+    //     setLoading(false);
+    // };
+
+    const fetchCategories = async (
+        currentPage = page,
+        currentLimit = limit,
+        search = searchCategories,
+        sortBy = sortCategories?.sortBy,
+        sortOrder = sortCategories?.sortOrder
+    ) => {
+        setLoading(true);
+        try {
+            const response = await getAllCategoriesService(currentPage, currentLimit, search, sortBy, sortOrder);
+
+            if (response?.status === 200) {
+                dispatch(setCategoriesData(response?.data));
+            } else {
+                toast.error("Error fetching categories", {
+                    description: response?.data?.message || "Something went wrong",
+                });
             }
+        } catch (err) {
+            toast.error("Something went wrong while fetching categories");
+        } finally {
             setLoading(false);
-        };
+        }
+    };
+
+
+    useEffect(() => {
+
 
         fetchCategories();
-    }, [page, limit, searchCategories, sortCategories]);
+    }, [page, limit, sortCategories]);
 
     const exportToExcelCategoriesData = (categoriesData = []) => {
         if (!categoriesData || categoriesData.length === 0) {
@@ -127,8 +155,8 @@ export default function Categories() {
     };
 
     const categoriesColumns = [
-        { label: "Collections", value: "title" },
-        { label: "Products", value: "no_of_products" },
+        { label: "Category", value: "category_name" },
+        { label: "Status", value: "status" },
     ];
 
     const handleCategorieSortChange = (sort) => {
@@ -161,9 +189,17 @@ export default function Categories() {
                             className="flex-1 sm:flex-[2]"
                             onChange={(e) => setSearchCategories(e.target.value)}
                             value={searchCategories}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    fetchCategories(1, limit, searchCategories, sortCategories?.sortBy, sortCategories?.sortOrder);
+                                }
+                            }}
                         />
                         <Button
-                            onClick={() => fetchCategories(page, limit, searchState, sortState?.sortBy, sortState?.sortOrder)}
+                            onClick={() =>
+                                fetchCategories(1, limit, searchCategories, sortCategories?.sortBy, sortCategories?.sortOrder)
+                            }
                         >
                             Search
                         </Button>
@@ -222,6 +258,6 @@ export default function Categories() {
                     </div>
                 </DialogContent>
             </Dialog>
-        </MainLayout>
+        </MainLayout >
     );
 }

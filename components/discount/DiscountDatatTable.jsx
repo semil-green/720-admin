@@ -151,6 +151,13 @@ const DiscountDatatTable = () => {
                         className="border rounded-md px-2 py-2"
                         onChange={(e) => setSearch(e.target.value)}
                         value={search}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                fetchDiscounts(page, limit, search);
+                                setPage(1);
+                            }
+                        }}
                     />
                     <Button
                         onClick={() => { fetchDiscounts(page, limit, search), setPage(1); }}
