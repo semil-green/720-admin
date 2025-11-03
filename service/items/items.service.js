@@ -32,7 +32,7 @@ export const addNewItemService = async (data) => {
         return addItem?.data
     }
     catch (error) {
-        return error;
+        throw error;
     }
 }
 
