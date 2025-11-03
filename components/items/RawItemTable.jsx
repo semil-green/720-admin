@@ -140,16 +140,16 @@ export default function RawItemTable({ data, onDelete, page, limit, setPage, tot
 
     const table = useReactTable({
         data,
-        columns: storeColumns(
-            (store) => { },
-            onDelete
-        ),
+        columns: storeColumns(() => { }, onDelete),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        manualPagination: true,
-        pageCount: -1
-    })
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
+    });
 
     return (
         <div className="rounded border p-4 pt-0 shadow">

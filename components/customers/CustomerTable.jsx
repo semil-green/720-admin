@@ -94,6 +94,11 @@ export default function CustomerTable({ data, page, setPage, totalPages }) {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     });
 
     return (

@@ -139,6 +139,11 @@ export default function VendorsTable({
         getCoreRowModel: getCoreRowModel(),
         manualPagination: true,
         pageCount: totalPages,
+        initialState: {
+            pagination: {
+                pageSize: 50,
+            },
+        },
     });
 
     return (
