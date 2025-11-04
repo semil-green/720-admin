@@ -28,7 +28,7 @@ export const getDiscountsService = async (
 
         return result?.data;
     } catch (error) {
-        return error;
+        throw error;
     }
 };
 
