@@ -12,21 +12,21 @@ import { activateCateoryService } from "@/service/category/category.service"
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import { activateCategory } from "@/store/slices/category/category.slice";
+
 export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategoryModal, totalRecordCount }) {
     const dispatch = useDispatch();
+
     const handleCategoryActivate = async (category_id, status) => {
 
         try {
-
-
             const updatedStatus = status == true ? false : true
 
             const res = await activateCateoryService(category_id, updatedStatus)
 
-
             if (res?.status == 200 || res?.status == 201) {
                 dispatch(activateCategory(res.data));
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to update status");
         }
         catch (error) {
             toast.error("Failed to update status");

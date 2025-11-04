@@ -198,7 +198,7 @@ function CreateInwardItem() {
             dispatch(getAllInwardMaterials([]));
             router.push("/inward-items");
         } else {
-            toast.error("Error in adding Inward material");
+            toast.error(addData?.response?.data?.message || "Failed to add Inward material");
         }
     };
 
@@ -254,7 +254,7 @@ function CreateInwardItem() {
             router.push("/inward-items");
         }
         else {
-            toast.error("Error in updating Inward material");
+            toast.error(res?.response?.data?.message || "Failed to update Inward material");
         }
     }
 

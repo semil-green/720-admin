@@ -61,12 +61,11 @@ export default function DarkStores() {
             const totalCount = result?.data?.total || 0;
 
             if (result?.status === 200) {
-
                 dispatch(setDarkStores(storeList));
                 setTotalPages(Math.ceil(totalCount / limit));
             } else {
                 toast.error("Error fetching Packaging Centers", {
-                    description: result?.data?.message || "Something went wrong",
+                    description: result?.response?.data?.message || "Failed to fetch Packaging Centers",
                 });
             }
         } catch (error) {
@@ -110,7 +109,7 @@ export default function DarkStores() {
                     resolve(result.data);
                 } else {
                     toast.error("Error fetching Day Off", {
-                        description: result?.message || "Something went wrong",
+                        description: result?.response?.data?.message || "Failed to fetch Day Off",
                     });
                     resolve([]);
                 }

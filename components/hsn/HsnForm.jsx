@@ -70,7 +70,9 @@ const HsnForm = ({ editStateData, handleClose, setEditData }) => {
                 })
                 dispatch(addHsnCode(res?.data))
                 setEditData(null);
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to add HSN codes");
+
             handleClose();
         } catch (err) {
             toast.error("Something went wrong");
@@ -114,8 +116,9 @@ const HsnForm = ({ editStateData, handleClose, setEditData }) => {
                 })
                 dispatch(updateHsnCode(res?.data))
                 setEditData(null);
+            } else
+                toast.error(res?.response?.data?.message || "Failed to update HSN codes");
 
-            }
             handleClose();
         }
         catch (eror) {

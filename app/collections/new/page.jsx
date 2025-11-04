@@ -154,7 +154,7 @@ const Page = () => {
                 router.push("/collections")
             }
             else {
-                toast.error("Error in adding collection");
+                toast.error(response?.response?.data?.message || "Failed to add collection");
             }
 
         } catch (error) {
@@ -199,7 +199,7 @@ const Page = () => {
                 toast.success("Collection updated successfully");
                 router.push("/collections")
             } else {
-                toast.error("Error in updating collection");
+                toast.error(response?.response?.data?.message || "Failed to update collection");
             }
         } catch (error) {
             toast.error("Error in updating collection");

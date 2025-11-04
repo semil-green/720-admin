@@ -174,17 +174,15 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
 
             const newUser = await addNewUserService(formDataToSend);
 
-            if (newUser?.response?.status == 400) {
-                toast.error("", {
-                    description: newUser?.response?.data?.message || "An error occurred",
-                }, { autoClose: 6000 });
-            }
             if (newUser?.status === 200) {
                 toast.success("Created", {
                     description: "User created successfully",
                 })
                 router.push("/users");
-            }
+            } else
+                toast.error("Failed to add user", {
+                    description: newUser?.response?.data?.message || "Failed to add user",
+                }, { autoClose: 6000 });
         } catch (error) {
             toast.error("User creation failed", {
                 description: error?.message || "An error occurred",

@@ -116,8 +116,6 @@ export default function AvailablePincodes({ editId }) {
         const res = await addNewPincodeService(data);
 
         if (res?.status === 200) {
-
-
             const newPincode = {
                 storeId: editId,
                 pincodeData: {
@@ -142,7 +140,7 @@ export default function AvailablePincodes({ editId }) {
         } else if (res?.status == 409) {
             toast.error("Pincode already exists");
         } else {
-            toast.error("Failed to add pincode");
+            toast.error(res?.response?.data?.message || "Failed to add pincode");
         }
     };
 
@@ -182,7 +180,6 @@ export default function AvailablePincodes({ editId }) {
         const res = await updatePincodeService(pincodeId, data);
 
         if (res?.status === 200) {
-
             const updatedPincode = {
                 id: res.data.id,
                 pincode: res.data.pincode,
@@ -199,7 +196,7 @@ export default function AvailablePincodes({ editId }) {
             setPincodeStatus(true);
             toast.success("Updated", { description: "Pincode updated successfully" });
         } else {
-            toast.error("Failed to update pincode");
+            toast.error(res?.response?.data?.message || "Failed to update pincode");
         }
     };
 

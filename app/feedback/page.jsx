@@ -41,7 +41,8 @@ const page = () => {
             if (res?.status === 200) {
                 dispatch(setFeedback(res?.data?.data));
                 setTotalPages(Math.ceil(res?.data?.total / limit));
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to fetch feedback");
         } catch (error) {
             toast.error("Error in fetching feedback");
         } finally {

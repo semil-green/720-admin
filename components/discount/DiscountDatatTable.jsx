@@ -76,7 +76,7 @@ const DiscountDatatTable = () => {
                 setTotalPages(Math.ceil(res?.data?.total_count / limitVal));
                 dispatch(setAllDiscounts(res?.data?.data));
             } else {
-                toast.error("Failed to fetch discounts");
+                toast.error(res?.response?.data?.message || "Failed to fetch discounts");
             }
         } catch (err) {
             toast.error("Failed to fetch discounts");

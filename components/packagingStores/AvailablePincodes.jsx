@@ -145,7 +145,7 @@ export default function AvailablePincodes({
         } else if (res?.status == 409) {
             toast.error("Pincode already exists");
         } else {
-            toast.error("Failed to add pincode");
+            toast.error(res?.response?.data?.message || "Failed to add pincode");
         }
     };
 

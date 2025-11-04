@@ -30,6 +30,7 @@ export default function Users() {
     const dispatch = useDispatch();
 
     const allUsersData = useSelector((state) => state.userSlice.users);
+
     const handleDelete = async (id) => {
         setLoading(true);
 
@@ -42,9 +43,7 @@ export default function Users() {
             });
         }
         else {
-            toast.error("Error deleting user", {
-                description: res?.data?.message || "Something went wrong",
-            });
+            toast.error(res?.response?.data?.message || "Failed to delete user");
         }
         setLoading(false);
     };
@@ -71,7 +70,8 @@ export default function Users() {
                 dispatch(setAllUSers(usersArray));
                 const totalCount = Number(res?.data?.total) || 0;
                 setTotalPages(Math.ceil(totalCount / limitParam));
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to fetch user");
         } catch (err) {
             const status = err?.response?.status;
             const message = err?.response?.data?.message || "Something went wrong";

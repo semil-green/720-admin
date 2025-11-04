@@ -30,7 +30,7 @@ const page = () => {
                 const res = await getAllHSNCodeService();
                 if (res?.status === 200) dispatch(setHsnCodes(res?.data));
             } catch (err) {
-                toast.error("Failed to fetch HSN codes");
+                toast.error(res?.response?.data?.message || "Failed to fetch HSN codes");
             }
         };
         if (!allHsnCodes || allHsnCodes.length === 0) {

@@ -144,7 +144,8 @@ export default function Inventory() {
                 );
 
                 dispatch(setPaginatedRawItemsData(result?.data?.data));
-            }
+            } else
+                toast.error(result?.response?.data?.message || "Failed to fetch raw material");
         } catch (error) {
             toast.error("Error fetching raw items", {
                 description: "Something went wrong",
@@ -210,7 +211,8 @@ export default function Inventory() {
                 );
 
                 dispatch(setPaginatedFinishedProductData(result?.data?.data));
-            }
+            } else
+                toast.error(result?.response?.data?.message || "Failed to fetch finished product");
         } catch (error) {
             toast.error("Error fetching finished product ", {
                 description: "Something went wrong",

@@ -34,7 +34,7 @@ const CityForm = ({ editCityData, handleClose }) => {
                 if (data?.status === 200) {
                     dispatch(setAllStates(data?.data?.data));
                 } else {
-                    toast.error("Failed to get all states");
+                    toast.error(data?.response?.data?.message || "Failed to get all states");
                 }
             }
         };
@@ -78,7 +78,7 @@ const CityForm = ({ editCityData, handleClose }) => {
                         description: "City added successfully",
                     });
                 } else {
-                    toast.error("Failed to add city");
+                    toast.error(res?.response?.data?.message || "Failed to add city");
                 }
             }
             handleClose();

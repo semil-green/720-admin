@@ -49,9 +49,7 @@ export default function Categories() {
                 description: "Category deleted successfully",
             });
         } else {
-            toast.error("Error deleting category", {
-                description: res?.data?.message || "Something went wrong",
-            });
+            toast.error(res?.response?.data?.message || "Failed to delete category");
         }
         setLoading(false);
     };
@@ -107,9 +105,7 @@ export default function Categories() {
             if (response?.status === 200) {
                 dispatch(setCategoriesData(response?.data));
             } else {
-                toast.error("Error fetching categories", {
-                    description: response?.data?.message || "Something went wrong",
-                });
+                toast.error(response?.response?.data?.message || "Failed to fetching categories");
             }
         } catch (err) {
             toast.error("Something went wrong while fetching categories");
