@@ -38,7 +38,8 @@ const CustomerPage = () => {
 
                 setTotalPages(Math.ceil(response?.data?.total / limit))
                 dispatch(setCustomers(response?.data?.rows))
-            }
+            } else
+                toast.error(response?.response?.data?.message || "Failed to fetch customers");
         } catch (error) {
             toast.error("Error in fetching customers");
         }

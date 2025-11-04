@@ -111,7 +111,8 @@ export default function StoreOrders() {
                 setLoading(false);
                 setTotalPage(Math.ceil(res?.data?.total_count / customLimit));
                 dispatch(getAllOrderRequests(res?.data?.rows));
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to fetch order requests");
         } catch (error) {
             toast.error("Error in fetching order requests ");
             setLoading(false);
@@ -168,7 +169,7 @@ export default function StoreOrders() {
                     }
                     else {
                         toast.error("Error fetching dark stores", {
-                            description: result?.data?.message || "Something went wrong",
+                            description: result?.response?.data?.message || "Something went wrong",
                         });
                     }
 

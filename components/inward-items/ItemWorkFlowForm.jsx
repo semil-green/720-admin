@@ -123,7 +123,8 @@ export default function ItemWorkFlowForm({ editData }) {
                 dispatch(setWorkFlows([]))
                 toast.success("Workflow saved successfully");
                 router.push("/inward-items");
-            }
+            } else
+                toast.error(saveData?.response?.data?.message || "Failed to save workflow");
         } catch (error) {
             toast.error("Failed to save workflow");
         } finally {

@@ -87,10 +87,12 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
         const res = await addNewCategoryService(formDataToSend);
 
-        if (res?.data) {
+        if (res?.status == 200) {
             dispatch(addNewCategory(res?.data));
             toast.success("Added", { description: "Category added successfully" });
-        }
+        } else
+            toast.error(res?.response?.data?.message || "Failed to add category");
+
         handleCose();
         setLoading(false);
     };

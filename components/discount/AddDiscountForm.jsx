@@ -188,7 +188,7 @@ const AddDiscountForm = () => {
             }
             else {
                 setLoading(false);
-                toast.error("Failed to add discount");
+                toast.error(res?.response?.data?.message || "Failed to add discount");
             }
         }
         catch (error) {

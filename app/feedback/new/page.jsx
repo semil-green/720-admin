@@ -81,7 +81,8 @@ const Page = () => {
                 toast.success("Feedback submitted successfully!");
                 dispatch(addNewFeedback(res?.data));
                 router.push("/feedback");
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to add feedback");
         } catch (err) {
             toast.error("Failed to submit feedback!");
         } finally {
@@ -137,7 +138,8 @@ const Page = () => {
                 toast.success("Feedback updated successfully!");
                 dispatch(updateFeedback(res?.data));
                 router.push("/feedback");
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to update feedback");
         } catch (err) {
             toast.error("Failed to update feedback!");
         } finally {

@@ -40,7 +40,8 @@ const page = () => {
             if (res?.status == 200 || res?.status == 201) {
                 dispatch(setDraftOrders(res?.data?.data));
                 setTotalCount(Math.ceil(res?.data?.total_count / limit));
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to fetch draft orders");
         }
         catch (err) {
             toast.error("Failed to fetch draft orders")

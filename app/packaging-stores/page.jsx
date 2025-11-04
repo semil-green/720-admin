@@ -65,7 +65,7 @@ export default function PackagingStores() {
                 setTotalPages(Math.ceil(totalCount / limit));
             } else {
                 toast.error("Error fetching Packaging Centers", {
-                    description: result?.data?.message || "Something went wrong",
+                    description: result?.response?.data?.message || "Failed to fetch Packaging Centers",
                 });
             }
         } catch (error) {
@@ -109,7 +109,7 @@ export default function PackagingStores() {
                     resolve(result.data);
                 } else {
                     toast.error("Error fetching Day Off", {
-                        description: result?.message || "Something went wrong",
+                        description: result?.response?.data?.message || "Something went wrong",
                     });
                     resolve([]);
                 }

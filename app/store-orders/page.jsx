@@ -73,10 +73,10 @@ export default function StoreOrders() {
                 setTotalPages(Math.ceil(response?.data?.total_count / limit));
                 dispatch(setStoreOrders(response?.data?.rows));
             } else {
-                toast.error("Error in fetching store orders 456");
+                toast.error(response?.response?.data?.message || "Failed to fetch store orders");
             }
         } catch (error) {
-            toast.error("Error in fetching store orders 123");
+            toast.error("Error in fetching store orders");
         }
         finally {
             setLoading(false);

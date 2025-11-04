@@ -108,7 +108,8 @@ const StoreOrderForm = ({
                         : "Order request added successfully",
                 });
                 handleCose();
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to add order request");
         } catch (err) {
             toast.error("Failed to add order request");
         } finally {
@@ -172,7 +173,8 @@ const StoreOrderForm = ({
                         description: "Order request updated successfully",
                     })
                     handleCose();
-                }
+                } else
+                    toast.error(res?.response?.data?.message || "Failed to updated order request");
             }
             else {
                 const res = await updateOrderRequestService(editData?.id, payload);

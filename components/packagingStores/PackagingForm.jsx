@@ -166,7 +166,7 @@ export default function PackagingForm({ editId, type }) {
             toast.success("Added", { description: "Packaging center added successfully" });
         }
         else {
-            toast.error("Failed to add new packaging center");
+            toast.error(res?.response?.data?.message || "Failed to add new packaging center");
         }
         setLoading(false);
     };
@@ -214,7 +214,7 @@ export default function PackagingForm({ editId, type }) {
             toast.success("Updated", { description: "Packaging center updated successfully" })
         }
         else {
-            toast.error("Failed to update packaging center")
+            toast.error(res?.response?.data?.message || "Failed to update packaging center");
         }
     };
 

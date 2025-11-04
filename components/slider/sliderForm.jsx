@@ -144,7 +144,8 @@ export default function SliderForm({ editId }) {
                 dispatch(setSliders([]));
                 toast.success("Added", { description: "Slider added successfully" });
                 router.push("/slider");
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to add slider");
         } catch (error) {
             toast.error("Failed to add slider");
         }
@@ -194,7 +195,8 @@ export default function SliderForm({ editId }) {
                     description: "Slider updated successfully",
                 });
                 router.push("/slider");
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to update slider");
         } catch (error) {
             toast.error("Failed to update slider");
         }

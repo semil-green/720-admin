@@ -137,7 +137,8 @@ export default function VendorForm({ editId }) {
                 router.push("/vendors");
                 setAttachment(null);
                 setImages([]);
-            }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to add vendor");
         } catch (error) {
             toast.error("Failed to add vendor");
         } finally {
@@ -191,7 +192,7 @@ export default function VendorForm({ editId }) {
                 toast.success("Vendor updated successfully");
                 router.push("/vendors");
             } else {
-                toast.error("Failed to update vendor");
+                toast.error(res?.response?.data?.message || "Failed to update vendor");
             }
         } catch (error) {
             toast.error("Error updating vendor");
