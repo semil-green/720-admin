@@ -78,8 +78,16 @@ export default function ItemForm({ editItemId }) {
         }
     }, []);
 
+    // const filteredTags = alltagsData.filter((tag) =>
+    //     tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
+    // );
     const filteredTags = alltagsData.filter((tag) =>
         tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
+    );
+
+    // 2️⃣ Check if an exact tag already exists
+    const exactMatch = alltagsData.some(
+        (tag) => tag.tag_name.toLowerCase() === searchtag.toLowerCase()
     );
 
     const productTags = alltagsData.filter(tag =>
@@ -1035,37 +1043,56 @@ export default function ItemForm({ editItemId }) {
                                         />
 
                                         <div className="max-h-60 overflow-y-auto border rounded-md p-2 space-y-2">
-                                            {filteredTags.length > 0
-                                                ? filteredTags.map((tag) => (
-                                                    <div
-                                                        key={tag.id}
-                                                        className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
-                                                    // onClick={() => handleTagSelect(tag.id)}
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={selectedTags.some((t) => t.tag_id === tag.id)}
-                                                            onChange={() => handleTagSelect(tag.id)}
-                                                            className="w-4 h-4 accent-blue-600 cursor-pointer"
-                                                        />
-                                                        <span>{tag.tag_name}</span>
-                                                    </div>
-                                                ))
-                                                :
-                                                searchtag && (
-                                                    <div className="p-2 text-sm text-center">
-                                                        No tags found.
-                                                        <Button
-                                                            variant="link"
-                                                            className="text-blue-600"
-                                                            onClick={handleAddNewTag}
-                                                            disabled={tagLoading}
+                                            {filteredTags.length > 0 && (
+                                                <>
+                                                    {filteredTags.map((tag) => (
+                                                        <div
+                                                            key={tag.id}
+                                                            className="flex items-center gap-2 p-2 rounded-md hover:bg-gray-50 cursor-pointer"
                                                         >
-                                                            Add new tag: "{searchtag}"
-                                                        </Button>
-                                                    </div>
-                                                )}
+                                                            <input
+                                                                type="checkbox"
+                                                                checked={selectedTags.some((t) => t.tag_id === tag.id)}
+                                                                onChange={() => handleTagSelect(tag.id)}
+                                                                className="w-4 h-4 accent-blue-600 cursor-pointer"
+                                                            />
+                                                            <span>{tag.tag_name}</span>
+                                                        </div>
+                                                    ))}
+
+
+                                                    {!exactMatch && searchtag && (
+                                                        <div className="p-2 text-sm text-center border-t pt-2">
+                                                            <Button
+                                                                variant="link"
+                                                                className="text-blue-600"
+                                                                onClick={handleAddNewTag}
+                                                                disabled={tagLoading}
+                                                            >
+                                                                Add new tag: "{searchtag}"
+                                                            </Button>
+                                                        </div>
+                                                    )}
+                                                </>
+                                            )}
+
+                                            {/* 4️⃣ If no partial matches at all */}
+                                            {filteredTags.length === 0 && searchtag && (
+                                                <div className="p-2 text-sm text-center">
+                                                    No tags found.
+                                                    <Button
+                                                        variant="link"
+                                                        className="text-blue-600"
+                                                        onClick={handleAddNewTag}
+                                                        disabled={tagLoading}
+                                                    >
+                                                        Add new tag: "{searchtag}"
+                                                    </Button>
+                                                </div>
+                                            )}
                                         </div>
+
+
                                     </div>
 
                                     <DialogFooter>

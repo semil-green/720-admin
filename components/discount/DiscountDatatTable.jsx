@@ -79,7 +79,7 @@ const DiscountDatatTable = () => {
                 toast.error(res?.response?.data?.message || "Failed to fetch discounts");
             }
         } catch (err) {
-            toast.error("Failed to fetch discounts");
+            toast.error(err?.response?.data?.message ?? "Failed to fetch discounts");
         } finally {
             setLoading(false);
         }

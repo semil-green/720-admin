@@ -18,7 +18,6 @@ import { deleteWorkFlow } from "@/store/slices/work-flow/workflow.slice"
 export default function ItemWorkflowTable({ data, totalPages, page, setPage, limit }) {
     const router = useRouter();
     const dispatch = useDispatch();
-
     const handleDelete = async (workflow_id) => {
         const res = await deleteWorkflowService(workflow_id);
         if (res?.status === 200 || res?.status === 201) {
@@ -127,7 +126,7 @@ export default function ItemWorkflowTable({ data, totalPages, page, setPage, lim
     ];
 
     const table = useReactTable({
-        data,
+        data: Array.isArray(data) ? data : [],
         columns: storeColumns(),
         pageCount: totalPages,
         manualPagination: true,
@@ -161,7 +160,7 @@ export default function ItemWorkflowTable({ data, totalPages, page, setPage, lim
                     ))}
                 </TableHeader>
                 <TableBody>
-                    {table.getRowModel().rows.length > 0 ? (
+                    {table?.getRowModel()?.rows?.length > 0 ? (
                         table.getRowModel().rows.map((row) => (
                             <TableRow key={row.id}>
                                 {row.getVisibleCells().map((cell) => (
