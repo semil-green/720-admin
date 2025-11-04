@@ -522,6 +522,8 @@ export default function ItemForm({ editItemId }) {
                 dispatch(clearAllItemsData());
                 toast.success("Item added successfully");
                 router.push("/items");
+            } else {
+                toast.error(res?.response?.data?.message || "Failed to add item");
             }
         } catch (error) {
             toast.error(error?.response?.data?.message ?? "Something went wrong! Failed to add item");
@@ -815,7 +817,7 @@ export default function ItemForm({ editItemId }) {
                 toast.success("Item updated successfully");
                 router.push("/items");
             } else {
-                toast.error("Failed to update item");
+                toast.error(res?.response?.data?.message || "Failed to update item");
             }
         } catch (error) {
             toast.error(error?.response?.data?.message ?? "Something went wrong! Failed to update item");

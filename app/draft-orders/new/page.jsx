@@ -320,6 +320,8 @@ const page = () => {
                     toast.error("Error in creating pidge order");
                 }
             }
+            else
+                toast.error(createDraftOrder?.response?.data?.message || "Failed to create draft order");
         } catch (err) {
             toast.error("Error in creating draft order");
         } finally {

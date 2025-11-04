@@ -71,14 +71,17 @@ export default function Items() {
         try {
             setLoading(true);
             const res = await getAllItemsService(page, limit, search, sortBy, sortOrder);
-            if (res && res.data) {
-                setTotalProductCount(res?.data?.total)
-                dispatch(getAllItems(res?.data?.data || []));
-                setTotalItems(res?.data?.total ?? 0);
-            } else {
-                dispatch(getAllItems([]));
-                setTotalItems(0);
-            }
+            if (res?.status == 200) {
+                if (res && res.data) {
+                    setTotalProductCount(res?.data?.total)
+                    dispatch(getAllItems(res?.data?.data || []));
+                    setTotalItems(res?.data?.total ?? 0);
+                } else {
+                    dispatch(getAllItems([]));
+                    setTotalItems(0);
+                }
+            } else
+                toast.error(res?.response?.data?.message || "Failed to fetch product list");
         } catch (err) {
             toast.error("Failed to fetch product list");
             dispatch(getAllItems([]));

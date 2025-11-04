@@ -57,7 +57,7 @@ const Page = () => {
             if (data?.status === 200) {
                 dispatch(setPaginatedCityData(data?.data?.data));
             } else {
-                toast.error("Failed to get all cities");
+                toast.error(data?.response?.data?.message || "Failed to get all cities");
             }
         } catch (error) {
             toast.error("Something went wrong");

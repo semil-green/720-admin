@@ -100,8 +100,7 @@ const PincodeSlotForm = () => {
                     if (result?.status === 200) {
                         dispatch(getAllPincodesWiseSlot(result?.data));
                     } else {
-
-                        toast.error("Failed to fetch slot data");
+                        toast.error(result?.response?.data?.message || "Failed to fetch slot data");
                     }
                 } catch (error) {
                     toast.error("Failed to fetch slot data");

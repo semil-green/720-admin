@@ -171,7 +171,7 @@ export default function StoreForm({ editId, type }) {
             router.push(`/stores/new?id=${res.data.id}`, undefined, { shallow: true });
         }
         else {
-            toast.error("Failed to add new store");
+            toast.error(res?.response?.data?.message || "Failed to add new store");
         }
         setLoading(false);
     };
@@ -224,7 +224,7 @@ export default function StoreForm({ editId, type }) {
             toast.success("Updated", { description: "Store updated successfully" })
         }
         else {
-            toast.error("Failed to update store")
+            toast.error(res?.response?.data?.message || "Failed to update store");
         }
     };
 

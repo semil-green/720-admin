@@ -28,6 +28,8 @@ const page = () => {
                 setTotalPages(Math.ceil(res?.total / limit));
                 dispatch(setSliders(res?.data));
                 setLoading(false);
+            } else {
+                setLoading(false);
             }
         };
 

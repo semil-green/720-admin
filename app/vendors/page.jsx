@@ -54,7 +54,7 @@ const page = () => {
                 setTotalPages(Math.ceil(totalCount / currentLimit));
                 setLoading(false);
             } else {
-                toast.error("Error in fetching vendors");
+                toast.error(result?.response?.data?.message || "Failed to fetch vendors");
                 setLoading(false);
             }
         } catch (error) {

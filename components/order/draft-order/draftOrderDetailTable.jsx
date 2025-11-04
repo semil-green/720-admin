@@ -206,6 +206,8 @@ const DraftOrderDetailTable = ({ order_id }) => {
                 toast.success("Order status updated successfully");
                 router.push("/draft-orders")
             }
+            else
+                toast.error(res?.response?.data?.message || "Failed to update order status");
         }
         catch (error) {
             toast.error("Failed to update order status");

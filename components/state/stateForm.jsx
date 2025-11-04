@@ -64,7 +64,7 @@ const StateForm = ({ editStateData, handleClose }) => {
                         description: "State added successfully",
                     });
                 } else {
-                    toast.error("Failed to add new state");
+                    toast.error(res?.response?.data?.message || "Failed to add new state");
                 }
             }
             handleClose();

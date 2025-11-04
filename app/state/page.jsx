@@ -42,7 +42,7 @@ const page = () => {
                 setTotalCount(data?.data?.total_count);
                 dispatch(setAllStates(data?.data?.data));
             } else {
-                toast.error("Failed to get all states");
+                toast.error(data?.response?.data?.message || "Failed to get all states");
             }
         } catch (err) {
             toast.error("Something went wrong");
