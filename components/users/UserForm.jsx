@@ -296,9 +296,9 @@ export default function UserForm({ initialData = {}, onSubmit, userEditId }) {
                         <SelectValue placeholder="Select a role" />
                     </SelectTrigger>
                     <SelectContent>
-                        {roles.map((role) => (
-                            <SelectItem key={role.id} value={role.id.toString()}>
-                                {role.name}
+                        {roles?.map((role, index) => (
+                            <SelectItem key={index} value={role?.id?.toString()}>
+                                {role?.name}
                             </SelectItem>
                         ))}
                     </SelectContent>

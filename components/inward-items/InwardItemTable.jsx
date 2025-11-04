@@ -147,7 +147,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
     ]
 
     const table = useReactTable({
-        data,
+        data: Array.isArray(data) ? data : [],
         columns: storeColumns(),
         pageCount: totalPages,
         state: {
