@@ -8,6 +8,7 @@ import {
     fetchOrderStatusTypesService,
     getCustomerOrderByIdService,
     updateOrderStatusService,
+    updatePaymentStatusService,
 } from "@/service/cutomer-order/cutomer-order.service";
 import { toast } from "sonner";
 import printJS from "print-js";
@@ -20,6 +21,7 @@ import { fetchItemLabelService } from "@/service/items/items.service";
 const OrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
+    const [paymentStatus, setPaymentStatus] = useState("");
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const router = useRouter()
@@ -38,6 +40,7 @@ const OrderDetailTable = ({ order_id }) => {
 
                 if (response?.status == 200) {
                     setOrderData(response?.data);
+                    setPaymentStatus(response?.data?.payment_status)
                 }
             } catch (error) {
                 toast.error("Failed to fetch order data");
@@ -225,7 +228,6 @@ const OrderDetailTable = ({ order_id }) => {
     const currentStatus = orderStatus.find(
         (s) => s.value === orderData?.order_status
     );
-
     const handlePrintLabel = async (order_id, product_id) => {
         try {
             const res = await fetchItemLabelService(order_id, product_id);
@@ -321,8 +323,21 @@ const OrderDetailTable = ({ order_id }) => {
         }
     };
 
+    const handlePaymentStatus = async () => {
 
+        try {
 
+            const res = await updatePaymentStatusService(order_id, paymentStatus);
+
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Payment status updated successfully");
+                router.push("/orders")
+            }
+        }
+        catch (err) {
+            toast.error("Failed to update payment status");
+        }
+    }
 
     return (
         <>
@@ -475,10 +490,21 @@ const OrderDetailTable = ({ order_id }) => {
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
-                <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
-                    <CheckCircle size={16} className="stroke-grey-700" />
-                    <span>Paid</span>
-                </div>
+
+                {
+                    orderData?.payment_status == 0 ? (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700" />
+                            <span>  Pending</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700 " />
+                            <span >  Paid</span>
+                        </div>
+                    )
+                }
+
                 <div className="mt-4 space-y-4 border rounded-md shadow px-4 py-4">
                     <div className="space-y-2 px-4">
                         <div className="grid grid-cols-4 items-start">
@@ -620,37 +646,65 @@ const OrderDetailTable = ({ order_id }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 items-center mt-4 gap-4">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
-                        Order Status:
-                    </span>
-                    <select className="border rounded-md px-3 py-2"
-                        value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                    >
-                        {orderStatus.map((status) => (
-                            <option key={status.value} value={status.value}>
-                                {status.label}
-                            </option>
-                        ))}
-                    </select>
+            <div className="grid grid-cols-2 items-center mt-4 gap-4">
+                <div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-gray-700">
+                            Order Status:
+                        </span>
+                        <select className="border rounded-md px-3 py-2"
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                        >
+                            {orderStatus.map((status) => (
+                                <option key={status.value} value={status.value}>
+                                    {status.label}
+                                </option>
+                            ))}
+                        </select>
 
-                    <Button type="submit" variant="default" onClick={handleOrderStatus}>
-                        Submit
-                    </Button>
+                        <Button type="submit" variant="default" onClick={handleOrderStatus}>
+                            Update Order Status
+                        </Button>
+                    </div>
+
                 </div>
 
                 <div className="flex justify-center">
-                    <Link href="/orders">
-                        <Button type="button" variant="outline">
-                            Back to list
-                        </Button>
-                    </Link>
-                </div>
+                    <div>
 
-                <div></div>
+                        {
+                            orderData?.payment_mode == "COD" && <div className="flex items-center gap-4">
+                                <span className="text-sm font-medium text-gray-700">
+                                    Payment Status:
+                                </span>
+                                <select className="border rounded-md px-3 py-2"
+                                    value={paymentStatus}
+                                    onChange={(e) => setPaymentStatus(e.target.value)}
+                                >
+                                    <option value={0}>Unpaid</option>
+                                    <option value={1}>paid</option>
+                                </select>
+
+                                <Button type="submit" variant="default" onClick={handlePaymentStatus}>
+                                    Update Payment Status
+                                </Button>
+                            </div>
+                        }
+
+
+                    </div>
+                </div>
             </div>
+
+            <div className="flex justify-center mt-3">
+                <Link href="/orders">
+                    <Button type="button" variant="outline">
+                        Back to list
+                    </Button>
+                </Link>
+            </div>
+
         </>
     );
 };
