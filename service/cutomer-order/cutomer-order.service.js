@@ -97,3 +97,24 @@ export const getCustomerOrdersHistoryService = async (customer_id, page) => {
         return error;
     }
 };
+
+export const updatePaymentStatusService = async (order_id, payment_status) => {
+
+    try {
+        const auth_token = localStorage.getItem("token");
+
+        const updatePaymentStatus = await axios.put(
+            `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/api/admin-customer-orders/update-payment-status`,
+            { orderId: order_id, paymentStatus: payment_status },
+            {
+                headers: {
+                    Authorization: auth_token,
+                },
+            }
+        );
+        return updatePaymentStatus?.data;
+    } catch (error) {
+        throw error;
+    }
+
+};
