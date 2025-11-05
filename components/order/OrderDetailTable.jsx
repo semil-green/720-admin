@@ -95,18 +95,18 @@ const OrderDetailTable = ({ order_id }) => {
             totalItemPrice += itemTotal;
 
             itemsHtml += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <div style="text-align:left;">
-                        <p style="margin:0;">${item.title}</p>
-                        <p style="margin:0; font-size:12px;">Price: ₹${item.price}</p>
-                        <p style="margin:0; font-size:12px;">GST: ${gst}%</p>
-                        <p style="margin:0; font-size:12px;">Tax Amount: ₹${tax}</p>
-                    </div>
-                    <div style="text-align:right; width:40px;">
-                        <p style="margin:0;">${item.item_quantity}</p>
-                    </div>
-                </div>
-            `;
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+              <div style="text-align:left; width:140px; word-wrap:break-word;">
+                <p style="margin:0; font-size:12px; font-weight:600;">${item.title}</p>
+                <p style="margin:0; font-size:11px;">Price: ₹${item.price}</p>
+                <p style="margin:0; font-size:11px;">GST: ${gst}%</p>
+                <p style="margin:0; font-size:11px;">Tax Amt: ₹${tax}</p>
+              </div>
+              <div style="text-align:right; width:30px;">
+                <p style="margin:0; font-size:12px; font-weight:600;">${item.item_quantity}</p>
+              </div>
+            </div>
+          `;
         });
 
         const discountAmount = parseFloat(orderData?.discount_amount || 0);
@@ -114,65 +114,68 @@ const OrderDetailTable = ({ order_id }) => {
         const totalPrice = totalBeforeDiscount - discountAmount;
 
         const printableHtml = `
-          <div style="width:200px; font-family: 'Courier New', monospace; font-size:14px; text-align:center; margin:0 auto; padding:20px;">
-            <h2 style="margin:0 0 10px 0;">DAM GOOD FISH</h2>
+          <div style="
+            width:260px; 
+            font-family:'Courier New', monospace; 
+            font-size:12px; 
+            font-weight:600; 
+            text-align:center; 
+            margin:0 auto; 
+            padding:8px; 
+            color:#000;
+          ">
+            <h2 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">DAM GOOD FISH</h2>
             <p style="margin:0;">Order No: ${orderData.order_id}</p>
-            <p style="margin-top:10px;">${formattedDate}</p>
-    
-            <div style="text-align:center; margin-top:10px;">
-              <p style="margin:0;">GST:</p>
-              <p style="margin:3px 0 0 0;">06AAKCD3257D1ZU</p>
+            <p style="margin-top:5px;">${formattedDate}</p>
+      
+            <div style="margin-top:6px;">
+              <p style="margin:0;">GSTIN: 06AAKCD3257D1ZU</p>
             </div>
-    
-            <div style="text-align:left; margin-top:15px;">
+      
+            <div style="text-align:left; margin-top:8px; line-height:1.2;">
               <p style="margin:0;">Ship To:</p>
-              <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
-              <p style="margin:5px 0 0 0;">${orderData.address}</p>
-              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no}</p>
-              <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
+              <p style="margin:2px 0 0 0;">${orderData.customer_name}</p>
+              <p style="margin:2px 0 0 0;">${orderData.address}</p>
+              <p style="margin:2px 0 0 0;">Mobile: ${orderData.mobile_no}</p>
+              <p style="margin:2px 0 0 0;">Pincode: ${orderData.pincode}</p>
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <!-- Items Table -->
-            <div style="text-align:left; margin-top:10px;">
-              <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <div style="text-align:left;">
+              <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:3px;">
                 <div>Items</div>
                 <div>Qty</div>
               </div>
               ${itemsHtml}
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <!-- Order Summary -->
-            <div style="text-align:left; margin-top:10px;">
-              <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
-                <div>Order Summary</div>
-              </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <div style="text-align:left;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Total Tax:</div>
                 <div>₹${totalTax.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Delivery Charge:</div>
                 <div>₹${deliveryCharge.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Discount:</div>
                 <div>₹${discountAmount.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight:bold;">
+              <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-top:4px;">
                 <div>Total Price:</div>
                 <div>₹${totalPrice.toFixed(2)}</div>
               </div>
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <h4 style="margin:0 0 10px 0;">Thank you for shopping with us!</h4>
-            <p style="margin:0;">Dam Good Fish Private Limited</p>
-            <p style="margin:0;">Gurugram, HR, 122004</p>
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <p style="margin:0; font-size:12px; font-weight:700;">Thank you for shopping with us!</p>
+            <p style="margin:2px 0 0 0;">Dam Good Fish Pvt Ltd</p>
+            <p style="margin:0;">Gurugram, HR - 122004</p>
             <p style="margin:0;">hello@damgoodfish.com</p>
             <p style="margin:0;">damgoodfish.com</p>
           </div>
@@ -182,13 +185,21 @@ const OrderDetailTable = ({ order_id }) => {
             printable: printableHtml,
             type: "raw-html",
             style: `
-                @page { margin: 0; }
-                body { display:flex; justify-content:center; }
-                h2 { font-weight:bold; text-align:center; }
-                p { margin:0; }
-            `,
+            @page { margin: 0; }
+            body {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #000;
+              font-weight: 600;
+            }
+            h2, p, div {
+              color: #000 !important;
+            }
+          `,
         });
     };
+
 
     const handleOrderStatus = async () => {
         try {
@@ -248,58 +259,77 @@ const OrderDetailTable = ({ order_id }) => {
             const sectionHtml = (title, data) => {
                 if (!data.length) return "";
                 return `
-                    <div style="margin-top:10px; text-align:left;">
-                        <p style="margin:0; font-weight:bold;">${title}:</p>
-                        ${data
+              <div style="margin-top:6px; text-align:left;">
+                <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
+                ${data
                         .map(
                             (item) =>
-                                `<p style="margin:0; font-size:12px;">${item.label}: ${item.value}</p>`
+                                `<p style="margin:0; font-size:11px;">${item.label}: ${item.value}</p>`
                         )
                         .join("")}
-                    </div>
-                `;
+              </div>
+            `;
             };
 
             const printableHtml = `
-    <div style="width:200px; font-family:'Courier New', monospace; font-size:13px; margin:0 auto; padding:10px;">
-        
-        <!-- Header Section -->
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div style="flex:1; text-align:left; padding-right:5px;">
-                <p style="margin:0; font-weight:bold; word-wrap:break-word;">${product_title}</p>
+            <div style="
+              width:260px;
+              font-family:'Courier New', monospace;
+              font-size:12px;
+              font-weight:600;
+              color:#000;
+              margin:0 auto;
+              padding:8px;
+              line-height:1.2;
+            ">
+              <!-- Header Section -->
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex:1; text-align:left; padding-right:5px;">
+                  <p style="margin:0; font-weight:700; font-size:13px; word-wrap:break-word;">${product_title}</p>
+                </div>
+                <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
+                  <p style="margin:0;">${formattedDate}</p>
+                  <p style="margin:2px 0 0 0;">#${oid}</p>
+                </div>
+              </div>
+      
+              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+              ${sectionHtml("Nutrients", nutrients)}
+              ${sectionHtml("Vitamins", vitamins)}
+              ${sectionHtml("Minerals", minerals)}
+      
+              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+              <p style="text-align:center; margin:0; font-size:11px; font-weight:700;">
+                Dam Good Fish Pvt Ltd
+              </p>
+              <p style="text-align:center; margin:0;">damgoodfish.com</p>
             </div>
-            <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
-                <p style="margin:0;">${formattedDate}</p>
-                <p style="margin:2px 0 0 0;">Order #${oid}</p>
-            </div>
-        </div>
-
-        <hr style="border:none; border-top:1px dashed #000; margin:8px 0;">
-
-        ${sectionHtml("Nutrients", nutrients)}
-        ${sectionHtml("Vitamins", vitamins)}
-        ${sectionHtml("Minerals", minerals)}
-
-    </div>
-`;
-
-
-
+          `;
 
             printJS({
                 printable: printableHtml,
                 type: "raw-html",
                 style: `
-                    @page { margin: 0; }
-                    body { display:flex; justify-content:center; }
-                    p { margin:0; }
-                    h3 { font-weight:bold; text-align:center; }
-                `,
+              @page { margin: 0; }
+              body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #000;
+                font-weight: 600;
+              }
+              p, div {
+                color: #000 !important;
+              }
+            `,
             });
         } catch (err) {
             toast.error(err?.response?.data?.message ?? "Failed to print label");
         }
     };
+
 
 
     return (
