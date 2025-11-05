@@ -229,6 +229,7 @@ const OrderDetailTable = ({ order_id }) => {
     const handlePrintLabel = async (order_id, product_id) => {
         try {
             const res = await fetchItemLabelService(order_id, product_id);
+
             const labelData = res?.data;
 
             if (!labelData) {
@@ -236,7 +237,7 @@ const OrderDetailTable = ({ order_id }) => {
                 return;
             }
 
-            const { product_title, order_date, order_id: oid, Nutrient, Vitamin, Mineral } = labelData;
+            const { product_title, order_date, order_id: oid, ingredients, self_life } = labelData;
 
             const formattedDate = new Intl.DateTimeFormat("en-GB", {
                 year: "numeric",
@@ -246,29 +247,24 @@ const OrderDetailTable = ({ order_id }) => {
 
             const parseLabelValue = (str) => {
                 if (!str) return [];
-                return str.split(",").map((pair) => {
-                    const [label, value] = pair.split(":").map((s) => s.trim());
-                    return { label, value };
-                });
+                return str.split(",").map((item) => item.trim());
             };
 
-            const nutrients = parseLabelValue(Nutrient);
-            const vitamins = parseLabelValue(Vitamin);
-            const minerals = parseLabelValue(Mineral);
+            const ingredientList = parseLabelValue(ingredients);
 
-            const sectionHtml = (title, data) => {
-                if (!data.length) return "";
+            const sectionHtml = (title, lines) => {
+                if (!lines.length) return "";
                 return `
-              <div style="margin-top:6px; text-align:left;">
-                <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
-                ${data
+                  <div style="margin-top:6px; text-align:left;">
+                    <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
+                    ${lines
                         .map(
-                            (item) =>
-                                `<p style="margin:0; font-size:11px;">${item.label}: ${item.value}</p>`
+                            (line) =>
+                                `<p style="margin:0; font-size:11px; line-height:1.2;">${line}</p>`
                         )
                         .join("")}
-              </div>
-            `;
+                  </div>
+                `;
             };
 
             const printableHtml = `
@@ -289,22 +285,17 @@ const OrderDetailTable = ({ order_id }) => {
                 </div>
                 <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
                   <p style="margin:0;">${formattedDate}</p>
-                  <p style="margin:2px 0 0 0;">#${oid}</p>
+                  <p style="margin:2px 0 0 0;">Order #${oid}</p>
                 </div>
               </div>
-      
+    
               <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-      
-              ${sectionHtml("Nutrients", nutrients)}
-              ${sectionHtml("Vitamins", vitamins)}
-              ${sectionHtml("Minerals", minerals)}
-      
-              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-      
-              <p style="text-align:center; margin:0; font-size:11px; font-weight:700;">
-                Dam Good Fish Pvt Ltd
-              </p>
-              <p style="text-align:center; margin:0;">damgoodfish.com</p>
+            
+                <p> Ingredients: ${product_title} </p>
+
+              <p> Nutritional Value: ${ingredientList} </p>
+        
+              ${sectionHtml("Shelf Life", [self_life])}
             </div>
           `;
 
@@ -312,23 +303,24 @@ const OrderDetailTable = ({ order_id }) => {
                 printable: printableHtml,
                 type: "raw-html",
                 style: `
-              @page { margin: 0; }
-              body {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: #000;
-                font-weight: 600;
-              }
-              p, div {
-                color: #000 !important;
-              }
-            `,
+                  @page { margin: 0; }
+                  body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #000;
+                    font-weight: 600;
+                  }
+                  p, div {
+                    color: #000 !important;
+                  }
+                `,
             });
         } catch (err) {
             toast.error(err?.response?.data?.message ?? "Failed to print label");
         }
     };
+
 
 
 

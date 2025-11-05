@@ -145,9 +145,9 @@ export default function ItemForm({ editItemId }) {
         no_antibiotic: false,
         seo_title: "",
         seo_description: "",
-        // display_quantity: "",
-        // ingredients: "",
-        // self_life: ""
+        display_quantity: "",
+        ingredients: "",
+        self_life: ""
     });
 
     const [images, setImages] = useState([]);
@@ -501,6 +501,9 @@ export default function ItemForm({ editItemId }) {
                         : "",
                     seo_title: formData.seo_title,
                     seo_description: formData.seo_description,
+                    display_quantity: formData.display_quantity,
+                    ingredients: formData.ingredients,
+                    self_life: formData.self_life,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -578,6 +581,9 @@ export default function ItemForm({ editItemId }) {
                     hsn_id: editData.hsn_id || null,
                     seo_title: editData.seo_title || "",
                     seo_description: editData.seo_description || "",
+                    display_quantity: editData.display_quantity || "",
+                    ingredients: editData.ingredients || "",
+                    self_life: editData.self_life || "",
                 });
 
                 if (editData.categories) {
@@ -825,6 +831,9 @@ export default function ItemForm({ editItemId }) {
                         : productDisplayImagePreview?.split("/").pop() || "",
                     seo_title: formData.seo_title,
                     seo_description: formData.seo_description,
+                    display_quantity: formData.display_quantity,
+                    ingredients: formData.ingredients,
+                    self_life: formData.self_life,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -960,10 +969,10 @@ export default function ItemForm({ editItemId }) {
                         </Label>
                         <Input
                             name="display_quantity"
-                            value={formData.quantity}
+                            value={formData.display_quantity}
                             onChange={handleChange}
                             placeholder="1"
-                            type="number"
+                            type="text"
                             required
                         />
                     </div>
@@ -1613,9 +1622,9 @@ export default function ItemForm({ editItemId }) {
                     <Label className="pb-1">Ingredients <span className="text-red-500">*</span></Label>
                     <Textarea
                         name="ingredients"
+                        value={formData.ingredients}
                         className="min-h-[110px]"
-                        value={productTags.map(tag => tag.tag_name).join(", ")}
-                        readOnly
+                        onChange={handleChange}
                     />
                 </div>
                 <div className="flex-1">
@@ -1623,8 +1632,8 @@ export default function ItemForm({ editItemId }) {
                     <Textarea
                         name="self_life"
                         className="min-h-[110px]"
-                        value={productTags.map(tag => tag.tag_name).join(", ")}
-                        readOnly
+                        value={formData.self_life}
+                        onChange={handleChange}
                     />
                 </div>
             </div>
