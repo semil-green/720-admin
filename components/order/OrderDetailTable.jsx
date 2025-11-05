@@ -8,6 +8,7 @@ import {
     fetchOrderStatusTypesService,
     getCustomerOrderByIdService,
     updateOrderStatusService,
+    updatePaymentStatusService,
 } from "@/service/cutomer-order/cutomer-order.service";
 import { toast } from "sonner";
 import printJS from "print-js";
@@ -15,10 +16,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchItemLabelService } from "@/service/items/items.service";
 
 const OrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
+    const [paymentStatus, setPaymentStatus] = useState("");
     const [loading, setLoading] = useState(false)
     const dispatch = useDispatch()
     const router = useRouter()
@@ -37,6 +40,7 @@ const OrderDetailTable = ({ order_id }) => {
 
                 if (response?.status == 200) {
                     setOrderData(response?.data);
+                    setPaymentStatus(response?.data?.payment_status)
                 }
             } catch (error) {
                 toast.error("Failed to fetch order data");
@@ -94,18 +98,18 @@ const OrderDetailTable = ({ order_id }) => {
             totalItemPrice += itemTotal;
 
             itemsHtml += `
-                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                    <div style="text-align:left;">
-                        <p style="margin:0;">${item.title}</p>
-                        <p style="margin:0; font-size:12px;">Price: ₹${item.price}</p>
-                        <p style="margin:0; font-size:12px;">GST: ${gst}%</p>
-                        <p style="margin:0; font-size:12px;">Tax Amount: ₹${tax}</p>
-                    </div>
-                    <div style="text-align:right; width:40px;">
-                        <p style="margin:0;">${item.item_quantity}</p>
-                    </div>
-                </div>
-            `;
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+              <div style="text-align:left; width:140px; word-wrap:break-word;">
+                <p style="margin:0; font-size:12px; font-weight:600;">${item.title}</p>
+                <p style="margin:0; font-size:11px;">Price: ₹${item.price}</p>
+                <p style="margin:0; font-size:11px;">GST: ${gst}%</p>
+                <p style="margin:0; font-size:11px;">Tax Amt: ₹${tax}</p>
+              </div>
+              <div style="text-align:right; width:30px;">
+                <p style="margin:0; font-size:12px; font-weight:600;">${item.item_quantity}</p>
+              </div>
+            </div>
+          `;
         });
 
         const discountAmount = parseFloat(orderData?.discount_amount || 0);
@@ -113,65 +117,68 @@ const OrderDetailTable = ({ order_id }) => {
         const totalPrice = totalBeforeDiscount - discountAmount;
 
         const printableHtml = `
-          <div style="width:200px; font-family: 'Courier New', monospace; font-size:14px; text-align:center; margin:0 auto; padding:20px;">
-            <h2 style="margin:0 0 10px 0;">DAM GOOD FISH</h2>
+          <div style="
+            width:260px; 
+            font-family:'Courier New', monospace; 
+            font-size:12px; 
+            font-weight:600; 
+            text-align:center; 
+            margin:0 auto; 
+            padding:8px; 
+            color:#000;
+          ">
+            <h2 style="margin:0 0 4px 0; font-size:15px; font-weight:700;">DAM GOOD FISH</h2>
             <p style="margin:0;">Order No: ${orderData.order_id}</p>
-            <p style="margin-top:10px;">${formattedDate}</p>
-    
-            <div style="text-align:center; margin-top:10px;">
-              <p style="margin:0;">GST:</p>
-              <p style="margin:3px 0 0 0;">06AAKCD3257D1ZU</p>
+            <p style="margin-top:5px;">${formattedDate}</p>
+      
+            <div style="margin-top:6px;">
+              <p style="margin:0;">GSTIN: 06AAKCD3257D1ZU</p>
             </div>
-    
-            <div style="text-align:left; margin-top:15px;">
+      
+            <div style="text-align:left; margin-top:8px; line-height:1.2;">
               <p style="margin:0;">Ship To:</p>
-              <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
-              <p style="margin:5px 0 0 0;">${orderData.address}</p>
-              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no}</p>
-              <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
+              <p style="margin:2px 0 0 0;">${orderData.customer_name}</p>
+              <p style="margin:2px 0 0 0;">${orderData.address}</p>
+              <p style="margin:2px 0 0 0;">Mobile: ${orderData.mobile_no}</p>
+              <p style="margin:2px 0 0 0;">Pincode: ${orderData.pincode}</p>
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <!-- Items Table -->
-            <div style="text-align:left; margin-top:10px;">
-              <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <div style="text-align:left;">
+              <div style="display:flex; justify-content:space-between; font-weight:700; margin-bottom:3px;">
                 <div>Items</div>
                 <div>Qty</div>
               </div>
               ${itemsHtml}
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <!-- Order Summary -->
-            <div style="text-align:left; margin-top:10px;">
-              <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:5px;">
-                <div>Order Summary</div>
-              </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <div style="text-align:left;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Total Tax:</div>
                 <div>₹${totalTax.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Delivery Charge:</div>
                 <div>₹${deliveryCharge.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+              <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
                 <div>Discount:</div>
                 <div>₹${discountAmount.toFixed(2)}</div>
               </div>
-              <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-weight:bold;">
+              <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-top:4px;">
                 <div>Total Price:</div>
                 <div>₹${totalPrice.toFixed(2)}</div>
               </div>
             </div>
-    
-            <hr style="border: none; border-top: 1px dashed #000; margin:10px 0;">
-    
-            <h4 style="margin:0 0 10px 0;">Thank you for shopping with us!</h4>
-            <p style="margin:0;">Dam Good Fish Private Limited</p>
-            <p style="margin:0;">Gurugram, HR, 122004</p>
+      
+            <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+      
+            <p style="margin:0; font-size:12px; font-weight:700;">Thank you for shopping with us!</p>
+            <p style="margin:2px 0 0 0;">Dam Good Fish Pvt Ltd</p>
+            <p style="margin:0;">Gurugram, HR - 122004</p>
             <p style="margin:0;">hello@damgoodfish.com</p>
             <p style="margin:0;">damgoodfish.com</p>
           </div>
@@ -181,13 +188,21 @@ const OrderDetailTable = ({ order_id }) => {
             printable: printableHtml,
             type: "raw-html",
             style: `
-                @page { margin: 0; }
-                body { display:flex; justify-content:center; }
-                h2 { font-weight:bold; text-align:center; }
-                p { margin:0; }
-            `,
+            @page { margin: 0; }
+            body {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              color: #000;
+              font-weight: 600;
+            }
+            h2, p, div {
+              color: #000 !important;
+            }
+          `,
         });
     };
+
 
     const handleOrderStatus = async () => {
         try {
@@ -213,6 +228,116 @@ const OrderDetailTable = ({ order_id }) => {
     const currentStatus = orderStatus.find(
         (s) => s.value === orderData?.order_status
     );
+    const handlePrintLabel = async (order_id, product_id) => {
+        try {
+            const res = await fetchItemLabelService(order_id, product_id);
+
+            const labelData = res?.data;
+
+            if (!labelData) {
+                toast.error("No label data found");
+                return;
+            }
+
+            const { product_title, order_date, order_id: oid, ingredients, self_life } = labelData;
+
+            const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            }).format(new Date(order_date));
+
+            const parseLabelValue = (str) => {
+                if (!str) return [];
+                return str.split(",").map((item) => item.trim());
+            };
+
+            const ingredientList = parseLabelValue(ingredients);
+
+            const sectionHtml = (title, lines) => {
+                if (!lines.length) return "";
+                return `
+                  <div style="margin-top:6px; text-align:left;">
+                    <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
+                    ${lines
+                        .map(
+                            (line) =>
+                                `<p style="margin:0; font-size:11px; line-height:1.2;">${line}</p>`
+                        )
+                        .join("")}
+                  </div>
+                `;
+            };
+
+            const printableHtml = `
+            <div style="
+              width:260px;
+              font-family:'Courier New', monospace;
+              font-size:12px;
+              font-weight:600;
+              color:#000;
+              margin:0 auto;
+              padding:8px;
+              line-height:1.2;
+            ">
+              <!-- Header Section -->
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex:1; text-align:left; padding-right:5px;">
+                  <p style="margin:0; font-weight:700; font-size:13px; word-wrap:break-word;">${product_title}</p>
+                </div>
+                <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
+                  <p style="margin:0;">${formattedDate}</p>
+                  <p style="margin:2px 0 0 0;">Order #${oid}</p>
+                </div>
+              </div>
+    
+              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+            
+                <p> Ingredients: ${product_title} </p>
+
+              <p> Nutritional Value: ${ingredientList} </p>
+        
+              ${sectionHtml("Shelf Life", [self_life])}
+            </div>
+          `;
+
+            printJS({
+                printable: printableHtml,
+                type: "raw-html",
+                style: `
+                  @page { margin: 0; }
+                  body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #000;
+                    font-weight: 600;
+                  }
+                  p, div {
+                    color: #000 !important;
+                  }
+                `,
+            });
+        } catch (err) {
+            toast.error(err?.response?.data?.message ?? "Failed to print label");
+        }
+    };
+
+    const handlePaymentStatus = async () => {
+
+        try {
+
+            const res = await updatePaymentStatusService(order_id, paymentStatus);
+
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Payment status updated successfully");
+                router.push("/orders")
+            }
+        }
+        catch (err) {
+            toast.error("Failed to update payment status");
+        }
+    }
 
     return (
         <>
@@ -350,6 +475,7 @@ const OrderDetailTable = ({ order_id }) => {
                                         <p className="col-span-1 text-center">
                                             {food?.tracking_status || "-"}
                                         </p>
+                                        <p><Button onClick={() => handlePrintLabel(food?.order_id, food?.item_id)} >Print Label</Button></p>
                                     </div>
                                 ))}
 
@@ -364,10 +490,21 @@ const OrderDetailTable = ({ order_id }) => {
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
-                <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
-                    <CheckCircle size={16} className="stroke-grey-700" />
-                    <span>Paid</span>
-                </div>
+
+                {
+                    orderData?.payment_status == 0 ? (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700" />
+                            <span>  Pending</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700 " />
+                            <span >  Paid</span>
+                        </div>
+                    )
+                }
+
                 <div className="mt-4 space-y-4 border rounded-md shadow px-4 py-4">
                     <div className="space-y-2 px-4">
                         <div className="grid grid-cols-4 items-start">
@@ -509,37 +646,65 @@ const OrderDetailTable = ({ order_id }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 items-center mt-4 gap-4">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700">
-                        Order Status:
-                    </span>
-                    <select className="border rounded-md px-3 py-2"
-                        value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                    >
-                        {orderStatus.map((status) => (
-                            <option key={status.value} value={status.value}>
-                                {status.label}
-                            </option>
-                        ))}
-                    </select>
+            <div className="grid grid-cols-2 items-center mt-4 gap-4">
+                <div>
+                    <div className="flex items-center gap-4">
+                        <span className="text-sm font-medium text-gray-700">
+                            Order Status:
+                        </span>
+                        <select className="border rounded-md px-3 py-2"
+                            value={selectedStatus}
+                            onChange={(e) => setSelectedStatus(e.target.value)}
+                        >
+                            {orderStatus.map((status) => (
+                                <option key={status.value} value={status.value}>
+                                    {status.label}
+                                </option>
+                            ))}
+                        </select>
 
-                    <Button type="submit" variant="default" onClick={handleOrderStatus}>
-                        Submit
-                    </Button>
+                        <Button type="submit" variant="default" onClick={handleOrderStatus}>
+                            Update Order Status
+                        </Button>
+                    </div>
+
                 </div>
 
                 <div className="flex justify-center">
-                    <Link href="/orders">
-                        <Button type="button" variant="outline">
-                            Back to list
-                        </Button>
-                    </Link>
-                </div>
+                    <div>
 
-                <div></div>
+                        {
+                            orderData?.payment_mode == "COD" && <div className="flex items-center gap-4">
+                                <span className="text-sm font-medium text-gray-700">
+                                    Payment Status:
+                                </span>
+                                <select className="border rounded-md px-3 py-2"
+                                    value={paymentStatus}
+                                    onChange={(e) => setPaymentStatus(e.target.value)}
+                                >
+                                    <option value={0}>Unpaid</option>
+                                    <option value={1}>paid</option>
+                                </select>
+
+                                <Button type="submit" variant="default" onClick={handlePaymentStatus}>
+                                    Update Payment Status
+                                </Button>
+                            </div>
+                        }
+
+
+                    </div>
+                </div>
             </div>
+
+            <div className="flex justify-center mt-3">
+                <Link href="/orders">
+                    <Button type="button" variant="outline">
+                        Back to list
+                    </Button>
+                </Link>
+            </div>
+
         </>
     );
 };

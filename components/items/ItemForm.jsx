@@ -78,14 +78,11 @@ export default function ItemForm({ editItemId }) {
         }
     }, []);
 
-    // const filteredTags = alltagsData.filter((tag) =>
-    //     tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
-    // );
+
     const filteredTags = alltagsData.filter((tag) =>
         tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
     );
 
-    // 2️⃣ Check if an exact tag already exists
     const exactMatch = alltagsData.some(
         (tag) => tag.tag_name.toLowerCase() === searchtag.toLowerCase()
     );
@@ -148,6 +145,9 @@ export default function ItemForm({ editItemId }) {
         no_antibiotic: false,
         seo_title: "",
         seo_description: "",
+        display_quantity: "",
+        ingredients: "",
+        self_life: ""
     });
 
     const [images, setImages] = useState([]);
@@ -455,12 +455,22 @@ export default function ItemForm({ editItemId }) {
                     value,
                 }));
 
-            const benefitsPayload = benefits.map((b) => ({
-                benefit_id: b.Id || null,
-                title: b.title,
-                description: b.description,
-                image: b.image?.file ? b.image.file.name : "",
-            }));
+            // const benefitsPayload = benefits.map((b) => ({
+            //     benefit_id: b.Id || null,
+            //     title: b.title,
+            //     description: b.description,
+            //     image: b.image?.file ? b.image.file.name : "",
+            // }));
+
+            const benefitsPayload = benefits
+                .filter((b) => b.title.trim() || b.description.trim() || b.image)
+                .map((b) => ({
+                    benefit_id: b.Id || null,
+                    title: b.title,
+                    description: b.description,
+                    image: b.image?.file ? b.image.file.name : "",
+                }));
+
 
             const tagsPayload = selectedTags.map((tag) => ({
                 tag_id: Number(tag.tag_id),
@@ -491,6 +501,9 @@ export default function ItemForm({ editItemId }) {
                         : "",
                     seo_title: formData.seo_title,
                     seo_description: formData.seo_description,
+                    display_quantity: formData.display_quantity,
+                    ingredients: formData.ingredients,
+                    self_life: formData.self_life,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -568,6 +581,9 @@ export default function ItemForm({ editItemId }) {
                     hsn_id: editData.hsn_id || null,
                     seo_title: editData.seo_title || "",
                     seo_description: editData.seo_description || "",
+                    display_quantity: editData.display_quantity || "",
+                    ingredients: editData.ingredients || "",
+                    self_life: editData.self_life || "",
                 });
 
                 if (editData.categories) {
@@ -731,25 +747,53 @@ export default function ItemForm({ editItemId }) {
                     value,
                 }));
 
-            const benefitsPayload = benefits.map((b) => {
-                let imageName = "";
+            // const benefitsPayload = benefits.map((b) => {
+            //     let imageName = "";
 
-                if (b.image?.file) {
-                    imageName = b.image.file.name;
-                } else if (typeof b.image === "string") {
-                    imageName = b.image.substring(b.image.lastIndexOf("/") + 1);
-                }
+            //     if (b.image?.file) {
+            //         imageName = b.image.file.name;
+            //     } else if (typeof b.image === "string") {
+            //         imageName = b.image.substring(b.image.lastIndexOf("/") + 1);
+            //     }
 
-                return {
-                    benefit_id:
-                        typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647
-                            ? b.Id
-                            : null,
-                    title: b.title,
-                    description: b.description,
-                    image: imageName || "",
-                };
-            });
+            //     return {
+            //         benefit_id:
+            //             typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647
+            //                 ? b.Id
+            //                 : null,
+            //         title: b.title,
+            //         description: b.description,
+            //         image: imageName || "",
+            //     };
+            // });
+
+            const benefitsPayload = benefits
+                .filter(
+                    (b) =>
+                        b.title.trim() !== "" ||
+                        b.description.trim() !== "" ||
+                        (b.image && (typeof b.image === "string" || b.image?.file))
+                )
+                .map((b) => {
+                    let imageName = "";
+
+                    if (b.image?.file) {
+                        imageName = b.image.file.name;
+                    } else if (typeof b.image === "string") {
+                        imageName = b.image.substring(b.image.lastIndexOf("/") + 1);
+                    }
+
+                    return {
+                        benefit_id:
+                            typeof b.Id === "number" && b.Id > 0 && b.Id < 2147483647
+                                ? b.Id
+                                : null,
+                        title: b.title,
+                        description: b.description,
+                        image: imageName || "",
+                    };
+                });
+
 
             const imagesPayload = images
                 .filter((img) => !img.file && img.preview)
@@ -787,6 +831,9 @@ export default function ItemForm({ editItemId }) {
                         : productDisplayImagePreview?.split("/").pop() || "",
                     seo_title: formData.seo_title,
                     seo_description: formData.seo_description,
+                    display_quantity: formData.display_quantity,
+                    ingredients: formData.ingredients,
+                    self_life: formData.self_life,
                 },
                 categories: categoriesPayload,
                 collections: collectionsPayload,
@@ -902,17 +949,33 @@ export default function ItemForm({ editItemId }) {
                     </Select>
                 </div>
 
-                <div className="flex-1">
-                    <Label className="pb-1">Quantity <span className="text-red-500 ">*</span>
-                    </Label>
-                    <Input
-                        name="quantity"
-                        value={formData.quantity}
-                        onChange={handleChange}
-                        placeholder="300"
-                        type="number"
-                        required
-                    />
+                <div className="flex gap-2">
+                    <div>
+
+                        <Label className="pb-1">Quantity <span className="text-red-500 ">*</span>
+                        </Label>
+                        <Input
+                            name="quantity"
+                            value={formData.quantity}
+                            onChange={handleChange}
+                            placeholder="300"
+                            type="number"
+                            required
+                        />
+                    </div>
+                    <div>
+
+                        <Label className="pb-1">Display Quantity <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                            name="display_quantity"
+                            value={formData.display_quantity}
+                            onChange={handleChange}
+                            placeholder="1"
+                            type="text"
+                            required
+                        />
+                    </div>
                 </div>
             </div>
 
@@ -1551,6 +1614,27 @@ export default function ItemForm({ editItemId }) {
                             </div>
                         </Fragment>
                     ))}
+                </div>
+            </div>
+
+            <div className="flex gap-3">
+                <div className="flex-1">
+                    <Label className="pb-1">Ingredients <span className="text-red-500">*</span></Label>
+                    <Textarea
+                        name="ingredients"
+                        value={formData.ingredients}
+                        className="min-h-[110px]"
+                        onChange={handleChange}
+                    />
+                </div>
+                <div className="flex-1">
+                    <Label className="pb-1">Shelf Life <span className="text-red-500">*</span></Label>
+                    <Textarea
+                        name="self_life"
+                        className="min-h-[110px]"
+                        value={formData.self_life}
+                        onChange={handleChange}
+                    />
                 </div>
             </div>
 
