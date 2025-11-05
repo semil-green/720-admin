@@ -78,14 +78,11 @@ export default function ItemForm({ editItemId }) {
         }
     }, []);
 
-    // const filteredTags = alltagsData.filter((tag) =>
-    //     tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
-    // );
+
     const filteredTags = alltagsData.filter((tag) =>
         tag.tag_name.toLowerCase().includes(searchtag.toLowerCase())
     );
 
-    // 2️⃣ Check if an exact tag already exists
     const exactMatch = alltagsData.some(
         (tag) => tag.tag_name.toLowerCase() === searchtag.toLowerCase()
     );

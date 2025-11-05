@@ -15,6 +15,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { fetchItemLabelService } from "@/service/items/items.service";
 
 const OrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
@@ -214,6 +215,93 @@ const OrderDetailTable = ({ order_id }) => {
         (s) => s.value === orderData?.order_status
     );
 
+    const handlePrintLabel = async (order_id, product_id) => {
+        try {
+            const res = await fetchItemLabelService(order_id, product_id);
+            const labelData = res?.data;
+
+            if (!labelData) {
+                toast.error("No label data found");
+                return;
+            }
+
+            const { product_title, order_date, order_id: oid, Nutrient, Vitamin, Mineral } = labelData;
+
+            const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            }).format(new Date(order_date));
+
+            const parseLabelValue = (str) => {
+                if (!str) return [];
+                return str.split(",").map((pair) => {
+                    const [label, value] = pair.split(":").map((s) => s.trim());
+                    return { label, value };
+                });
+            };
+
+            const nutrients = parseLabelValue(Nutrient);
+            const vitamins = parseLabelValue(Vitamin);
+            const minerals = parseLabelValue(Mineral);
+
+            const sectionHtml = (title, data) => {
+                if (!data.length) return "";
+                return `
+                    <div style="margin-top:10px; text-align:left;">
+                        <p style="margin:0; font-weight:bold;">${title}:</p>
+                        ${data
+                        .map(
+                            (item) =>
+                                `<p style="margin:0; font-size:12px;">${item.label}: ${item.value}</p>`
+                        )
+                        .join("")}
+                    </div>
+                `;
+            };
+
+            const printableHtml = `
+    <div style="width:200px; font-family:'Courier New', monospace; font-size:13px; margin:0 auto; padding:10px;">
+        
+        <!-- Header Section -->
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="flex:1; text-align:left; padding-right:5px;">
+                <p style="margin:0; font-weight:bold; word-wrap:break-word;">${product_title}</p>
+            </div>
+            <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
+                <p style="margin:0;">${formattedDate}</p>
+                <p style="margin:2px 0 0 0;">Order #${oid}</p>
+            </div>
+        </div>
+
+        <hr style="border:none; border-top:1px dashed #000; margin:8px 0;">
+
+        ${sectionHtml("Nutrients", nutrients)}
+        ${sectionHtml("Vitamins", vitamins)}
+        ${sectionHtml("Minerals", minerals)}
+
+    </div>
+`;
+
+
+
+
+            printJS({
+                printable: printableHtml,
+                type: "raw-html",
+                style: `
+                    @page { margin: 0; }
+                    body { display:flex; justify-content:center; }
+                    p { margin:0; }
+                    h3 { font-weight:bold; text-align:center; }
+                `,
+            });
+        } catch (err) {
+            toast.error(err?.response?.data?.message ?? "Failed to print label");
+        }
+    };
+
+
     return (
         <>
             {loading && (
@@ -350,6 +438,7 @@ const OrderDetailTable = ({ order_id }) => {
                                         <p className="col-span-1 text-center">
                                             {food?.tracking_status || "-"}
                                         </p>
+                                        <p><Button onClick={() => handlePrintLabel(food?.order_id, food?.item_id)} >Print Label</Button></p>
                                     </div>
                                 ))}
 
