@@ -43,7 +43,7 @@ export const deleteWorkflowService = async (workflow_id) => {
         })
         return data?.data
     } catch (err) {
-        return err
+        throw err
     }
 }
 

@@ -41,6 +41,16 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             }
         },
         {
+            accessorKey: "store_name",
+            header: "Store",
+            cell: ({ row }) => {
+                const item = row.original
+                return (
+                    <div className="">{item?.store_name}</div>
+                )
+            }
+        },
+        {
             accessorKey: "quantity",
             header: "Quantity",
             cell: ({ row }) => {
@@ -76,7 +86,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">{item.date}</div>
+                    <div className="">{item?.date}</div>
                 )
             }
         },
@@ -86,7 +96,7 @@ export default function ItemTable({ data, totalPages, page, setPage, limit }) {
             cell: ({ row }) => {
                 const item = row.original
                 return (
-                    <div className="">{item.time}</div>
+                    <div className="">{item?.time}</div>
                 )
             }
         },
