@@ -7,6 +7,7 @@ import {
     fetchOrderStatusTypesService,
     getCustomerOrderByIdService,
     updateOrderStatusService,
+    updatePaymentStatusService,
 } from "@/service/cutomer-order/cutomer-order.service";
 import { toast } from "sonner";
 import printJS from "print-js";
@@ -15,11 +16,14 @@ import { setOrderStatus } from "@/store/slices/order-status/order-status.slice";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { fetchItemLabelService } from "@/service/items/items.service";
 
 const DraftOrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
     const [loading, setLoading] = useState(false)
+    const [paymentStatus, setPaymentStatus] = useState("");
+
     const dispatch = useDispatch()
     const router = useRouter()
     useEffect(() => {
@@ -37,6 +41,8 @@ const DraftOrderDetailTable = ({ order_id }) => {
 
                 if (response?.status == 200) {
                     setOrderData(response?.data);
+                    setPaymentStatus(response?.data?.payment_status)
+
                 }
             } catch (error) {
                 toast.error("Failed to fetch order data");
@@ -218,6 +224,116 @@ const DraftOrderDetailTable = ({ order_id }) => {
         (s) => s.value === orderData?.order_status
     );
 
+    const handlePrintLabel = async (order_id, product_id) => {
+        try {
+            const res = await fetchItemLabelService(order_id, product_id);
+
+            const labelData = res?.data;
+
+            if (!labelData) {
+                toast.error("No label data found");
+                return;
+            }
+
+            const { product_title, order_date, order_id: oid, ingredients, self_life } = labelData;
+
+            const formattedDate = new Intl.DateTimeFormat("en-GB", {
+                year: "numeric",
+                month: "short",
+                day: "numeric",
+            }).format(new Date(order_date));
+
+            const parseLabelValue = (str) => {
+                if (!str) return [];
+                return str.split(",").map((item) => item.trim());
+            };
+
+            const ingredientList = parseLabelValue(ingredients);
+
+            const sectionHtml = (title, lines) => {
+                if (!lines.length) return "";
+                return `
+                  <div style="margin-top:6px; text-align:left;">
+                    <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
+                    ${lines
+                        .map(
+                            (line) =>
+                                `<p style="margin:0; font-size:11px; line-height:1.2;">${line}</p>`
+                        )
+                        .join("")}
+                  </div>
+                `;
+            };
+
+            const printableHtml = `
+            <div style="
+              width:260px;
+              font-family:'Courier New', monospace;
+              font-size:12px;
+              font-weight:600;
+              color:#000;
+              margin:0 auto;
+              padding:8px;
+              line-height:1.2;
+            ">
+              <!-- Header Section -->
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div style="flex:1; text-align:left; padding-right:5px;">
+                  <p style="margin:0; font-weight:700; font-size:13px; word-wrap:break-word;">${product_title}</p>
+                </div>
+                <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
+                  <p style="margin:0;">${formattedDate}</p>
+                  <p style="margin:2px 0 0 0;">Order #${oid}</p>
+                </div>
+              </div>
+    
+              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
+            
+                <p> Ingredients: ${product_title} </p>
+
+              <p> Nutritional Value: ${ingredientList} </p>
+        
+              ${sectionHtml("Shelf Life", [self_life])}
+            </div>
+          `;
+
+            printJS({
+                printable: printableHtml,
+                type: "raw-html",
+                style: `
+                  @page { margin: 0; }
+                  body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    color: #000;
+                    font-weight: 600;
+                  }
+                  p, div {
+                    color: #000 !important;
+                  }
+                `,
+            });
+        } catch (err) {
+            toast.error(err?.response?.data?.message ?? "Failed to print label");
+        }
+    };
+
+    const handlePaymentStatus = async () => {
+
+        try {
+
+            const res = await updatePaymentStatusService(order_id, paymentStatus);
+
+            if (res?.status == 200 || res?.status == 201) {
+                toast.success("Payment status updated successfully");
+                router.push("/draft-orders")
+            }
+        }
+        catch (err) {
+            toast.error("Failed to update payment status");
+        }
+    }
     return (
         <>
             {loading && (
@@ -354,6 +470,7 @@ const DraftOrderDetailTable = ({ order_id }) => {
                                         <p className="col-span-1 text-center">
                                             {food?.tracking_status || "-"}
                                         </p>
+                                        <p><Button onClick={() => handlePrintLabel(food?.order_id, food?.item_id)} >Print Label</Button></p>
                                     </div>
                                 ))}
 
@@ -368,10 +485,19 @@ const DraftOrderDetailTable = ({ order_id }) => {
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
-                <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
-                    <CheckCircle size={16} className="stroke-grey-700" />
-                    <span>Paid</span>
-                </div>
+                {
+                    orderData?.payment_status == 0 ? (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700" />
+                            <span>  Pending</span>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                            <CheckCircle size={16} className="stroke-grey-700 " />
+                            <span >  Paid</span>
+                        </div>
+                    )
+                }
                 <div className="mt-4 space-y-4 border rounded-md shadow px-4 py-4">
                     <div className="space-y-2 px-4">
                         <div className="grid grid-cols-4 items-start">
@@ -495,7 +621,7 @@ const DraftOrderDetailTable = ({ order_id }) => {
                 </div>
             </div>
 
-            <div className="grid grid-cols-3 items-center mt-4 gap-4">
+            <div className="grid grid-cols-2 items-center mt-4 gap-4">
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-medium text-gray-700">
                         Order Status:
@@ -517,14 +643,38 @@ const DraftOrderDetailTable = ({ order_id }) => {
                 </div>
 
                 <div className="flex justify-center">
-                    <Link href="/draft-orders">
-                        <Button type="button" variant="outline">
-                            Back to list
-                        </Button>
-                    </Link>
+                    <div>
+
+                        <div className="flex items-center gap-4">
+                            <span className="text-sm font-medium text-gray-700">
+                                Payment Status:
+                            </span>
+                            <select className="border rounded-md px-3 py-2"
+                                value={paymentStatus}
+                                onChange={(e) => setPaymentStatus(e.target.value)}
+                            >
+                                <option value={0}>Unpaid</option>
+                                <option value={1}>paid</option>
+                            </select>
+
+                            <Button type="submit" variant="default" onClick={handlePaymentStatus}>
+                                Update Payment Status
+                            </Button>
+                        </div>
+
+
+
+                    </div>
                 </div>
 
-                <div></div>
+            </div>
+
+            <div className="flex justify-center mt-3">
+                <Link href="/draft-orders">
+                    <Button type="button" variant="outline">
+                        Back to list
+                    </Button>
+                </Link>
             </div>
         </>
     );

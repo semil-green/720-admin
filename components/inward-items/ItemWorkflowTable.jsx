@@ -19,10 +19,17 @@ export default function ItemWorkflowTable({ data, totalPages, page, setPage, lim
     const router = useRouter();
     const dispatch = useDispatch();
     const handleDelete = async (workflow_id) => {
-        const res = await deleteWorkflowService(workflow_id);
-        if (res?.status === 200 || res?.status === 201) {
-            toast.success("Deleted", { description: "Workflow deleted successfully" });
-            dispatch(deleteWorkFlow(workflow_id));
+
+        try {
+
+            const res = await deleteWorkflowService(workflow_id);
+            if (res?.status === 200 || res?.status === 201) {
+                toast.success("Deleted", { description: "Workflow deleted successfully" });
+                dispatch(deleteWorkFlow(workflow_id));
+            }
+        }
+        catch (err) {
+            toast.error(err?.response?.data?.message ?? "Failed to delete workflow");
         }
     };
 

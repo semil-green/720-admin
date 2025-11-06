@@ -417,6 +417,11 @@ export default function ItemForm({ editItemId }) {
                 return setLoading(false);
             }
 
+            if (!formData?.display_quantity || Number(formData.display_quantity) <= 0) {
+                toast.error("Display quantity is required");
+                return setLoading(false);
+            }
+
             if (!formData.price || Number(formData.price) <= 0) {
                 toast.error("Price is required");
                 return setLoading(false);
@@ -436,6 +441,8 @@ export default function ItemForm({ editItemId }) {
                 toast.error("At least one product image is required");
                 return setLoading(false);
             }
+
+
 
             const categoriesPayload = selectedCategories.map((cat) => ({
                 category_id: Number(cat.value ?? cat),
@@ -706,6 +713,11 @@ export default function ItemForm({ editItemId }) {
 
             if (!formData.quantity || Number(formData.quantity) <= 0) {
                 toast.error("Quantity is required");
+                return setLoading(false);
+            }
+
+            if (!formData?.display_quantity || Number(formData.display_quantity) <= 0) {
+                toast.error("Display quantity is required");
                 return setLoading(false);
             }
 
@@ -1619,7 +1631,7 @@ export default function ItemForm({ editItemId }) {
 
             <div className="flex gap-3">
                 <div className="flex-1">
-                    <Label className="pb-1">Ingredients <span className="text-red-500">*</span></Label>
+                    <Label className="pb-1">Ingredients</Label>
                     <Textarea
                         name="ingredients"
                         value={formData.ingredients}
@@ -1628,7 +1640,7 @@ export default function ItemForm({ editItemId }) {
                     />
                 </div>
                 <div className="flex-1">
-                    <Label className="pb-1">Shelf Life <span className="text-red-500">*</span></Label>
+                    <Label className="pb-1">Shelf Life </Label>
                     <Textarea
                         name="self_life"
                         className="min-h-[110px]"
