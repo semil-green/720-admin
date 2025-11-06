@@ -19,7 +19,6 @@ export default function InventoryRawItemTable({ data, totalPage, rawItemPage, se
             header: "In Hand"
         },
     ]
-
     const table = useReactTable({
         data,
         columns: storeColumns(),
