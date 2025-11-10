@@ -21,34 +21,34 @@ import { fetchItemLabelService } from "@/service/items/items.service";
 const DraftOrderDetailTable = ({ order_id }) => {
     const [orderData, setOrderData] = useState("");
     const [selectedStatus, setSelectedStatus] = useState("0");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     const [paymentStatus, setPaymentStatus] = useState("");
 
-    const dispatch = useDispatch()
-    const router = useRouter()
+    const dispatch = useDispatch();
+    const router = useRouter();
     useEffect(() => {
         if (orderData) {
             setSelectedStatus(String(orderData.order_status));
         }
     }, [orderData]);
-    const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
+    const orderStatus = useSelector(
+        (state) => state.orderStatusSlice.allOrderStatus
+    );
 
     useEffect(() => {
         const fetchOrderData = async () => {
             try {
-                setLoading(true)
+                setLoading(true);
                 const response = await getCustomerOrderByIdService(order_id);
 
                 if (response?.status == 200) {
                     setOrderData(response?.data);
-                    setPaymentStatus(response?.data?.payment_status)
-
+                    setPaymentStatus(response?.data?.payment_status);
                 }
             } catch (error) {
                 toast.error("Failed to fetch order data");
-            }
-            finally {
-                setLoading(false)
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -62,7 +62,7 @@ const DraftOrderDetailTable = ({ order_id }) => {
             const res = await fetchOrderStatusTypesService();
 
             if (res?.status == 200 || res?.status == 201) {
-                dispatch(setOrderStatus(res?.data))
+                dispatch(setOrderStatus(res?.data));
             }
         } catch (error) {
             toast.error("Failed to fetch order status");
@@ -73,7 +73,6 @@ const DraftOrderDetailTable = ({ order_id }) => {
             fetchOrderStatus();
         }
     }, [orderStatus]);
-
 
     const handlePrint = (storeItems) => {
         if (!storeItems || storeItems.length === 0) return;
@@ -97,7 +96,8 @@ const DraftOrderDetailTable = ({ order_id }) => {
             const tax = parseFloat(item.gst_amount) || 0;
             totalTax += tax;
 
-            const itemTotal = (parseFloat(item.price) || 0) * (item.item_quantity || 0);
+            const itemTotal =
+                (parseFloat(item.price) || 0) * (item.item_quantity || 0);
             totalItemPrice += itemTotal;
 
             itemsHtml += `
@@ -134,7 +134,8 @@ const DraftOrderDetailTable = ({ order_id }) => {
               <p style="margin:0;">Ship To:</p>
               <p style="margin:5px 0 0 0;">${orderData.customer_name}</p>
               <p style="margin:5px 0 0 0;">${orderData.address}</p>
-              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no}</p>
+              <p style="margin:5px 0 0 0;">Mobile Number: ${orderData.mobile_no
+            }</p>
               <p style="margin:5px 0 0 0;">Pincode: ${orderData.pincode}</p>
             </div>
     
@@ -196,29 +197,25 @@ const DraftOrderDetailTable = ({ order_id }) => {
         });
     };
 
-
     const handleOrderStatus = async () => {
         try {
-
             const res = await updateOrderStatusService(order_id, selectedStatus);
 
-
             if (res?.status == 200 || res?.status == 201) {
-
                 setOrderData((prev) => ({
                     ...prev,
-                    order_status: res?.data?.order_status
-                }))
+                    order_status: res?.data?.order_status,
+                }));
                 toast.success("Order status updated successfully");
-                router.push("/draft-orders")
-            }
-            else
-                toast.error(res?.response?.data?.message || "Failed to update order status");
-        }
-        catch (error) {
+                router.push("/draft-orders");
+            } else
+                toast.error(
+                    res?.response?.data?.message || "Failed to update order status"
+                );
+        } catch (error) {
             toast.error("Failed to update order status");
         }
-    }
+    };
 
     const currentStatus = orderStatus.find(
         (s) => s.value === orderData?.order_status
@@ -235,7 +232,14 @@ const DraftOrderDetailTable = ({ order_id }) => {
                 return;
             }
 
-            const { product_title, order_date, order_id: oid, ingredients, self_life } = labelData;
+            const {
+                product_title,
+                order_date,
+                order_id: oid,
+                ingredients,
+                self_life,
+                formattedNutrition,
+            } = labelData;
 
             const formattedDate = new Intl.DateTimeFormat("en-GB", {
                 year: "numeric",
@@ -277,23 +281,23 @@ const DraftOrderDetailTable = ({ order_id }) => {
               line-height:1.2;
             ">
               <!-- Header Section -->
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;  gap:5px;">
                 <div style="flex:1; text-align:left; padding-right:5px;">
-                  <p style="margin:0; font-weight:700; font-size:13px; word-wrap:break-word;">${product_title}</p>
+                  <p style="margin:0; font-weight:900; font-size:13px; word-wrap:break-word;">${product_title}</p>
                 </div>
                 <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
-                  <p style="margin:0;">${formattedDate}</p>
-                  <p style="margin:2px 0 0 0;">Order #${oid}</p>
+                  <p style="margin:0; font-size:12px; font-weight:900;">${formattedDate}</p>
+                  <p style="margin:2px 0 0 0; font-size:12px; font-weight:600;">Order #${oid}</p>
                 </div>
               </div>
-    
-              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-            
-                <p> Ingredients: ${product_title} </p>
+                
+             <p style="font-weight:900;  font-size:13px;">  Ingredients:<span style="font-weight:530;"> ${ingredientList} </span> </p>
 
-              <p> Nutritional Value: ${ingredientList} </p>
-        
-              ${sectionHtml("Shelf Life", [self_life])}
+            <p style="font-weight:900;  font-size:13px;"> Nutritional Value: <span style="font-weight:530;">${formattedNutrition}</span> </p>    
+    
+              <p style="font-weight:900;  font-size:13px;"> Shelf Life: <span style="font-weight:530;">${self_life}</span> </p>
+
+            </div>
             </div>
           `;
 
@@ -320,20 +324,17 @@ const DraftOrderDetailTable = ({ order_id }) => {
     };
 
     const handlePaymentStatus = async () => {
-
         try {
-
             const res = await updatePaymentStatusService(order_id, paymentStatus);
 
             if (res?.status == 200 || res?.status == 201) {
                 toast.success("Payment status updated successfully");
-                router.push("/draft-orders")
+                router.push("/draft-orders");
             }
-        }
-        catch (err) {
+        } catch (err) {
             toast.error("Failed to update payment status");
         }
-    }
+    };
     return (
         <>
             {loading && (
@@ -348,7 +349,6 @@ const DraftOrderDetailTable = ({ order_id }) => {
                     <div className="flex items-center gap-2 bg-yellow-100 text-yellow-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
                         <AlertCircle size={16} className="stroke-yellow-700" />
                         <span>{currentStatus?.label || "Unknown"}</span>
-
                     </div>
 
                     <div className="px-4 py-3 mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -407,7 +407,7 @@ const DraftOrderDetailTable = ({ order_id }) => {
                             >
                                 <div className="flex justify-between items-center border-b pb-2 mb-3">
                                     <p className="font-semibold text-gray-700 px-7">
-                                        Shipment: {shipmentIndex + 1} ,  {storeItems[0]?.store_name}
+                                        Shipment: {shipmentIndex + 1} , {storeItems[0]?.store_name}
                                     </p>
                                     <p className="text-sm text-gray-500 px-7">
                                         Status: {storeItems[0]?.tracking_status || "-"}
@@ -470,7 +470,15 @@ const DraftOrderDetailTable = ({ order_id }) => {
                                         <p className="col-span-1 text-center">
                                             {food?.tracking_status || "-"}
                                         </p>
-                                        <p><Button onClick={() => handlePrintLabel(food?.order_id, food?.item_id)} >Print Label</Button></p>
+                                        <p>
+                                            <Button
+                                                onClick={() =>
+                                                    handlePrintLabel(food?.order_id, food?.item_id)
+                                                }
+                                            >
+                                                Print Label
+                                            </Button>
+                                        </p>
                                     </div>
                                 ))}
 
@@ -485,19 +493,17 @@ const DraftOrderDetailTable = ({ order_id }) => {
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
-                {
-                    orderData?.payment_status == 0 ? (
-                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
-                            <CheckCircle size={16} className="stroke-grey-700" />
-                            <span>  Pending</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
-                            <CheckCircle size={16} className="stroke-grey-700 " />
-                            <span >  Paid</span>
-                        </div>
-                    )
-                }
+                {orderData?.payment_status == 0 ? (
+                    <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                        <CheckCircle size={16} className="stroke-grey-700" />
+                        <span> Pending</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 bg-gray-300 text-grey-700 px-3 py-2 rounded-md text-sm font-medium w-fit">
+                        <CheckCircle size={16} className="stroke-grey-700 " />
+                        <span> Paid</span>
+                    </div>
+                )}
                 <div className="mt-4 space-y-4 border rounded-md shadow px-4 py-4">
                     <div className="space-y-2 px-4">
                         <div className="grid grid-cols-4 items-start">
@@ -530,20 +536,22 @@ const DraftOrderDetailTable = ({ order_id }) => {
                     <div className="space-y-2 px-4">
                         <div className="grid grid-cols-4 items-start">
                             <p className="col-span-1">Shipping</p>
-                            <p className="col-span-2 text-gray-600">
-                                -
-                            </p>
+                            <p className="col-span-2 text-gray-600">-</p>
                             {/* <p className="col-span-1 text-right">
                                 ₹ {orderData?.delivery_charges}
                             </p> */}
                             <p className="col-span-1 text-right">
                                 ₹{" "}
                                 {orderData?.items
-                                    ? Object.values(orderData.items).reduce((total, storeItems) => {
-                                        // assume all items in the same store have same delivery charge
-                                        const storeDeliveryCharge = storeItems[0]?.delivery_charge || 0;
-                                        return total + Number(storeDeliveryCharge);
-                                    }, 0)
+                                    ? Object.values(orderData.items).reduce(
+                                        (total, storeItems) => {
+                                            // assume all items in the same store have same delivery charge
+                                            const storeDeliveryCharge =
+                                                storeItems[0]?.delivery_charge || 0;
+                                            return total + Number(storeDeliveryCharge);
+                                        },
+                                        0
+                                    )
                                     : orderData?.delivery_charges || 0}
                             </p>
                         </div>
@@ -570,19 +578,23 @@ const DraftOrderDetailTable = ({ order_id }) => {
                                 ₹{" "}
                                 {orderData?.items
                                     ? (
-                                        (
-                                            Object.values(orderData.items).reduce((sum, storeItems) => {
+                                        Object.values(orderData.items).reduce(
+                                            (sum, storeItems) => {
                                                 const itemTotal = storeItems.reduce(
-                                                    (acc, item) => acc + Number(item.price) * Number(item.item_quantity),
+                                                    (acc, item) =>
+                                                        acc +
+                                                        Number(item.price) * Number(item.item_quantity),
                                                     0
                                                 );
-                                                const deliveryCharge = Number(storeItems[0]?.delivery_charge || 0);
+                                                const deliveryCharge = Number(
+                                                    storeItems[0]?.delivery_charge || 0
+                                                );
                                                 return sum + itemTotal + deliveryCharge;
-                                            }, 0)
-                                            - Number(orderData?.discount_amount || 0)
-                                        ).toFixed(2)
-                                    )
-                                    : (orderData?.final_price || 0)}
+                                            },
+                                            0
+                                        ) - Number(orderData?.discount_amount || 0)
+                                    ).toFixed(2)
+                                    : orderData?.final_price || 0}
                             </p>
                         </div>
                     </div>
@@ -602,19 +614,23 @@ const DraftOrderDetailTable = ({ order_id }) => {
                                 ₹{" "}
                                 {orderData?.items
                                     ? (
-                                        (
-                                            Object.values(orderData.items).reduce((sum, storeItems) => {
+                                        Object.values(orderData.items).reduce(
+                                            (sum, storeItems) => {
                                                 const itemTotal = storeItems.reduce(
-                                                    (acc, item) => acc + Number(item.price) * Number(item.item_quantity),
+                                                    (acc, item) =>
+                                                        acc +
+                                                        Number(item.price) * Number(item.item_quantity),
                                                     0
                                                 );
-                                                const deliveryCharge = Number(storeItems[0]?.delivery_charge || 0);
+                                                const deliveryCharge = Number(
+                                                    storeItems[0]?.delivery_charge || 0
+                                                );
                                                 return sum + itemTotal + deliveryCharge;
-                                            }, 0)
-                                            - Number(orderData?.discount_amount || 0)
-                                        ).toFixed(2)
-                                    )
-                                    : (orderData?.final_price || 0)}
+                                            },
+                                            0
+                                        ) - Number(orderData?.discount_amount || 0)
+                                    ).toFixed(2)
+                                    : orderData?.final_price || 0}
                             </p>
                         </div>
                     </div>
@@ -626,7 +642,8 @@ const DraftOrderDetailTable = ({ order_id }) => {
                     <span className="text-sm font-medium text-gray-700">
                         Order Status:
                     </span>
-                    <select className="border rounded-md px-3 py-2"
+                    <select
+                        className="border rounded-md px-3 py-2"
                         value={selectedStatus}
                         onChange={(e) => setSelectedStatus(e.target.value)}
                     >
@@ -644,12 +661,12 @@ const DraftOrderDetailTable = ({ order_id }) => {
 
                 <div className="flex justify-center">
                     <div>
-
                         <div className="flex items-center gap-4">
                             <span className="text-sm font-medium text-gray-700">
                                 Payment Status:
                             </span>
-                            <select className="border rounded-md px-3 py-2"
+                            <select
+                                className="border rounded-md px-3 py-2"
                                 value={paymentStatus}
                                 onChange={(e) => setPaymentStatus(e.target.value)}
                             >
@@ -657,16 +674,16 @@ const DraftOrderDetailTable = ({ order_id }) => {
                                 <option value={1}>paid</option>
                             </select>
 
-                            <Button type="submit" variant="default" onClick={handlePaymentStatus}>
+                            <Button
+                                type="submit"
+                                variant="default"
+                                onClick={handlePaymentStatus}
+                            >
                                 Update Payment Status
                             </Button>
                         </div>
-
-
-
                     </div>
                 </div>
-
             </div>
 
             <div className="flex justify-center mt-3">
