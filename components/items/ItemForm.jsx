@@ -44,6 +44,7 @@ import {
     fetchAlltagsService,
 } from "@/service/store-order/tags.service";
 import { addNewTag, setTags } from "@/store/slices/tags/tags.slice";
+import { Loader2 } from "lucide-react";
 
 export default function ItemForm({ editItemId }) {
     const router = useRouter();
@@ -565,6 +566,13 @@ export default function ItemForm({ editItemId }) {
 
         const fetchData = async () => {
             try {
+                setLoading(true);
+                let unitsData = units;
+                if (units.length === 0) {
+                    const res = await getAllUnitsService();
+                    unitsData = res?.data || [];
+                    setUnits(unitsData);
+                }
                 const editData = await getitemById(editItemId);
 
                 setFormData({
@@ -680,6 +688,9 @@ export default function ItemForm({ editItemId }) {
                 }
             } catch (err) {
                 toast.error("Failed to fetch item");
+            }
+            finally {
+                setLoading(false);
             }
         };
 
@@ -895,6 +906,14 @@ export default function ItemForm({ editItemId }) {
 
     return (
         <form className="grid gap-6">
+
+            {loading && (
+                <div className="fixed flex w-full h-full top-0 left-0 z-10">
+                    <div className="flex-1 flex justify-center items-center">
+                        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                    </div>
+                </div>
+            )}
             {/* ---------- ITEM FORM ---------- */}
             <div className="flex gap-3">
                 <div className="flex-1">
@@ -952,9 +971,9 @@ export default function ItemForm({ editItemId }) {
                         </SelectTrigger>
 
                         <SelectContent>
-                            {units.map((unit) => (
-                                <SelectItem key={unit.unit_id} value={unit.unit_id.toString()}>
-                                    {unit.unit}
+                            {units?.map((unit) => (
+                                <SelectItem key={unit?.unit_id} value={unit?.unit_id?.toString()}>
+                                    {unit?.unit}
                                 </SelectItem>
                             ))}
                         </SelectContent>
