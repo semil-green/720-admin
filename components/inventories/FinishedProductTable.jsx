@@ -4,7 +4,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button"
 
 export default function FinishedProductTable({ data, totalPage, page, setRawItemPage }) {
-
     const storeColumns = () => [
 
         {
@@ -27,8 +26,16 @@ export default function FinishedProductTable({ data, totalPage, page, setRawItem
             header: "SKU"
         },
         {
+            accessorKey: "committed",
+            header: "Committed"
+        },
+        {
             accessorKey: "in_hand",
-            header: "In Hand"
+            header: "Available"
+        },
+        {
+            accessorKey: "on_hand",
+            header: "On hand"
         },
     ]
 

@@ -144,6 +144,7 @@ export default function ItemForm({ editItemId }) {
         chemical_free: false,
         natural: false,
         no_antibiotic: false,
+        force_feed: false,
         seo_title: "",
         seo_description: "",
         display_quantity: "",
@@ -504,6 +505,7 @@ export default function ItemForm({ editItemId }) {
                     chemical_free: Boolean(formData.chemical_free),
                     natural: Boolean(formData.natural),
                     no_antibiotic: Boolean(formData.no_antibiotic),
+                    force_feed: Boolean(formData.force_feed),
                     product_display_image: productDisplayImageFile
                         ? productDisplayImageFile.name
                         : "",
@@ -593,6 +595,7 @@ export default function ItemForm({ editItemId }) {
                     chemical_free: editData.chemical_free || false,
                     natural: editData.natural || false,
                     no_antibiotic: editData.no_antibiotic || false,
+                    force_feed: editData.force_feed || false,
                     hsn_id: editData.hsn_id || null,
                     seo_title: editData.seo_title || "",
                     seo_description: editData.seo_description || "",
@@ -849,6 +852,7 @@ export default function ItemForm({ editItemId }) {
                     chemical_free: Boolean(formData.chemical_free),
                     natural: Boolean(formData.natural),
                     no_antibiotic: Boolean(formData.no_antibiotic),
+                    force_feed: Boolean(formData.force_feed),
                     product_display_image: productDisplayImageFile
                         ? productDisplayImageFile.name
                         : productDisplayImagePreview?.split("/").pop() || "",
@@ -1393,6 +1397,7 @@ export default function ItemForm({ editItemId }) {
                     { id: "chemical_free", label: "Chemicals Free?" },
                     { id: "natural", label: "Natural?" },
                     { id: "no_antibiotic", label: "No Antibiotic?" },
+                    { id: "force_feed", label: "Force Feed?" },
                 ].map(({ id, label }) => (
                     <div key={id}>
                         <Label className="pb-1">{label}</Label>
