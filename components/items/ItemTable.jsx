@@ -97,14 +97,15 @@ export default function ItemTable({
                             height={50}
                             className="rounded-full flex-shrink-0"
                         />
-                        <div className="flex flex-col overflow-hidden">
-                            <div className="font-semibold truncate">
+                        <div className="flex flex-col">
+                            <div className="font-semibold whitespace-normal break-words">
                                 {item?.title}
                             </div>
-                            <div className="text-sm text-gray-500 truncate">
+                            <div className="text-sm text-gray-500">
                                 {item?.sku}
                             </div>
                         </div>
+
                     </div>
                 )
             },
