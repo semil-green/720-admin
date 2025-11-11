@@ -34,7 +34,7 @@ import * as XLSX from "xlsx";
 
 export default function Inventory() {
     const [loading, setLoading] = useState(true);
-    const [selectedItem, setSelectedItem] = useState("Item");
+    const [selectedItem, setSelectedItem] = useState("RawItem");
     const [typeOfFinishedProduct, setTypeOfFinishedProduct] = useState("packagingCenter");
 
     const [rawItemPage, setRawItemPage] = useState(1);
@@ -313,16 +313,8 @@ export default function Inventory() {
 
             <div className="flex justify-between">
                 <div>
-                    <Tabs defaultValue="Item">
+                    <Tabs defaultValue="RawItem">
                         <TabsList>
-                            <TabsTrigger
-                                value="Item"
-                                onClick={() => {
-                                    setSelectedItem("Item");
-                                }}
-                            >
-                                Raw Material
-                            </TabsTrigger>
                             <TabsTrigger
                                 value="RawItem"
                                 onClick={() => {
@@ -331,6 +323,15 @@ export default function Inventory() {
                             >
                                 Finished Product
                             </TabsTrigger>
+                            <TabsTrigger
+                                value="Item"
+                                onClick={() => {
+                                    setSelectedItem("Item");
+                                }}
+                            >
+                                Raw Material
+                            </TabsTrigger>
+
                         </TabsList>
                     </Tabs>
 
