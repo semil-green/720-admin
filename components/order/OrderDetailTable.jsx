@@ -239,7 +239,7 @@ const OrderDetailTable = ({ order_id }) => {
                 return;
             }
 
-            const { product_title, order_date, order_id: oid, ingredients, self_life } = labelData;
+            const { product_title, order_date, order_id: oid, ingredients, self_life, formattedNutrition } = labelData;
 
             const formattedDate = new Intl.DateTimeFormat("en-GB", {
                 year: "numeric",
@@ -281,23 +281,21 @@ const OrderDetailTable = ({ order_id }) => {
               line-height:1.2;
             ">
               <!-- Header Section -->
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:5px;">
                 <div style="flex:1; text-align:left; padding-right:5px;">
-                  <p style="margin:0; font-weight:700; font-size:13px; word-wrap:break-word;">${product_title}</p>
+                  <p style="margin:0; font-weight:900; font-size:13px; word-wrap:break-word;">${product_title}</p>
                 </div>
                 <div style="text-align:right; white-space:nowrap; font-size:10px; line-height:1.1;">
-                  <p style="margin:0;">${formattedDate}</p>
-                  <p style="margin:2px 0 0 0;">Order #${oid}</p>
+                  <p style="margin:0; font-size:12px; font-weight:900;">${formattedDate}</p>
+                  <p style="margin:2px 0 0 0; font-size:12px; font-weight:600;">Order #${oid}</p>
                 </div>
               </div>
-    
-              <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
-            
-                <p> Ingredients: ${product_title} </p>
+                
+             <p style="font-weight:900;  font-size:13px;">  Ingredients:<span style="font-weight:530;"> ${ingredientList} </span> </p>
 
-              <p> Nutritional Value: ${ingredientList} </p>
+              <p style="font-weight:900;  font-size:13px;"> Nutritional Value: <span style="font-weight:530;">${formattedNutrition}</span> </p>
         
-              ${sectionHtml("Shelf Life", [self_life])}
+              <p style="font-weight:900;  font-size:13px;"> Shelf Life: <span style="font-weight:530;">${self_life}</span> </p>
             </div>
           `;
 
