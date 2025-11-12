@@ -75,6 +75,6 @@ export const editWorkflowService = async (workflow_id, data) => {
         return result?.data
     }
     catch (error) {
-        return error
+        throw error
     }
 }

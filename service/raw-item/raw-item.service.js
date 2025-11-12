@@ -56,7 +56,7 @@ export const updateRawItemService = async (id, data) => {
         return result?.data
     }
     catch (error) {
-        return error
+        throw error
     }
 }
 
