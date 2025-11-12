@@ -153,20 +153,27 @@ const RawItemForm = ({ handleClose, units, setEditRawItem }) => {
             tag_ids: tagIds,
         };
 
-        const res = await updateRawItemService(setEditRawItem?.raw_id, payload)
+        try {
 
-        if (res?.status == 200 || res?.status == 200) {
-            toast.success("Updated", {
-                description: "Raw Item updated successfully",
-            });
-            handleClose();
-            const newRawItem = { ...formData, raw_id: res.data.raw_id };
-            dispatch(updateRawItem(newRawItem));
+            const res = await updateRawItemService(setEditRawItem?.raw_id, payload)
 
-            const allRawItems = await getAllRawItemsService(1, 10);
-            dispatch(setRawItems(allRawItems?.items || []));
+            if (res?.status == 200 || res?.status == 200) {
+                toast.success("Updated", {
+                    description: "Raw Item updated successfully",
+                });
+                handleClose();
+                const newRawItem = { ...formData, raw_id: res.data.raw_id };
+                dispatch(updateRawItem(newRawItem));
 
-            handleClose();
+                const allRawItems = await getAllRawItemsService(1, 10);
+                dispatch(setRawItems(allRawItems?.items || []));
+
+                handleClose();
+            }
+        }
+        catch (err) {
+            toast.error(err?.response?.data?.message ?? "Failed to update raw item");
+
         }
     }
 
