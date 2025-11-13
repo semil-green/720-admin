@@ -224,7 +224,6 @@ const DraftOrderDetailTable = ({ order_id }) => {
     const handlePrintLabel = async (order_id, product_id) => {
         try {
             const res = await fetchItemLabelService(order_id, product_id);
-
             const labelData = res?.data;
 
             if (!labelData) {
@@ -257,31 +256,33 @@ const DraftOrderDetailTable = ({ order_id }) => {
             const sectionHtml = (title, lines) => {
                 if (!lines.length) return "";
                 return `
-                  <div style="margin-top:6px; text-align:left;">
-                    <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
-                    ${lines
+              <div style="margin-top:6px; text-align:left;">
+                <p style="margin:0; font-weight:700; font-size:12px;">${title}:</p>
+                ${lines
                         .map(
                             (line) =>
                                 `<p style="margin:0; font-size:11px; line-height:1.2;">${line}</p>`
                         )
                         .join("")}
-                  </div>
-                `;
+              </div>
+            `;
             };
 
             const printableHtml = `
             <div style="
-              width:260px;
+              width:100%;
+              max-width:800px;
               font-family:'Courier New', monospace;
               font-size:12px;
               font-weight:600;
               color:#000;
               margin:0 auto;
-              padding:8px;
-              line-height:1.2;
+              padding:20px;
+              line-height:1.3;
+              box-sizing:border-box;
             ">
               <!-- Header Section -->
-              <div style="display:flex; justify-content:space-between; align-items:flex-start;  gap:5px;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:5px;">
                 <div style="flex:1; text-align:left; padding-right:5px;">
                   <p style="margin:0; font-weight:900; font-size:13px; word-wrap:break-word;">${product_title}</p>
                 </div>
@@ -290,14 +291,18 @@ const DraftOrderDetailTable = ({ order_id }) => {
                   <p style="margin:2px 0 0 0; font-size:12px; font-weight:600;">Order #${oid}</p>
                 </div>
               </div>
-                
-             <p style="font-weight:900;  font-size:13px;">  Ingredients:<span style="font-weight:530;"> ${ingredientList} </span> </p>
-
-            <p style="font-weight:900;  font-size:13px;"> Nutritional Value: <span style="font-weight:530;">${formattedNutrition}</span> </p>    
-    
-              <p style="font-weight:900;  font-size:13px;"> Shelf Life: <span style="font-weight:530;">${self_life}</span> </p>
-
-            </div>
+                    
+              <p style="font-weight:900; font-size:13px; margin-top:10px;">
+                Ingredients: <span style="font-weight:540;">${ingredientList}</span>
+              </p>
+      
+              <p style="font-weight:900; font-size:13px;">
+                Nutritional Value: <span style="font-weight:540;">${formattedNutrition}</span>
+              </p>    
+      
+              <p style="font-weight:900; font-size:13px;">
+                Shelf Life: <span style="font-weight:540;">${self_life}</span>
+              </p>
             </div>
           `;
 
@@ -305,18 +310,25 @@ const DraftOrderDetailTable = ({ order_id }) => {
                 printable: printableHtml,
                 type: "raw-html",
                 style: `
-                  @page { margin: 0; }
-                  body {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    color: #000;
-                    font-weight: 600;
-                  }
-                  p, div {
-                    color: #000 !important;
-                  }
-                `,
+              @page {
+                size: A4;
+                margin: 0;
+              }
+              body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                background: #fff;
+                color: #000;
+                font-weight: 600;
+                font-family: 'Courier New', monospace;
+              }
+              p, div {
+                color: #000 !important;
+              }
+            `,
             });
         } catch (err) {
             toast.error(err?.response?.data?.message ?? "Failed to print label");
