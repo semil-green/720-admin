@@ -241,7 +241,8 @@ export default function ItemWorkFlowForm({ editData }) {
                 router.push("/inward-items");
             }
         } catch (error) {
-            toast.error("Failed to update workflow");
+
+            toast.error(error?.response?.data?.message ?? "Failed to update workflow");
         } finally {
             setLoading(false);
         }
