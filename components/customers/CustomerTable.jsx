@@ -9,30 +9,6 @@ import {
 import Link from 'next/link';
 import { Button } from '../ui/button';
 
-const data = [
-    {
-        name: 'Dipshankar Sur',
-        emailStatus: 'Not subscribed',
-        location: 'Gurgaon HR, India',
-        orders: '2 orders',
-        amount: '₹2,625.00',
-    },
-    {
-        name: 'Prarthita Sengupta',
-        emailStatus: 'Subscribed',
-        location: 'West Delhi DL, India',
-        orders: '1 order',
-        amount: '₹329.00',
-    },
-    {
-        name: 'Samit Ray',
-        emailStatus: 'Not subscribed',
-        location: 'Noida UP, India',
-        orders: '6 orders',
-        amount: '₹5,800.25',
-    },
-];
-
 const columns = [
 
     // {
@@ -86,6 +62,19 @@ const columns = [
     {
         header: 'Amount spent',
         accessorKey: 'total_spent',
+    },
+    {
+        header: 'Edit ',
+        accessorKey: 'customer_id',
+        cell: ({ row }) => {
+            const customerId = row.original.customer_id;
+
+            return (
+                <Link href={`/customer/add?id=${customerId}`} className=" underline underline-offset-4">
+                    Edit
+                </Link>
+            );
+        },
     },
 ];
 
