@@ -13,6 +13,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 import * as XLSX from "xlsx";
+import Link from 'next/link'
 
 const CustomerPage = () => {
 
@@ -117,6 +118,9 @@ const CustomerPage = () => {
                         {/* <Button className='cursor-pointer' variant={'secondary'}>Import</Button>
                         <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
                         <Button className='cursor-pointer'>Add Customer</Button> */}
+                        <Link href="/customer/add">
+                            <Button className='cursor-pointer' onClick >Add Customer</Button>
+                        </Link>
                     </div>
                 </div>
 
