@@ -64,6 +64,7 @@ const columns = [
         accessorKey: 'total_spent',
     },
     {
+        id: 'edit',
         header: 'Edit ',
         accessorKey: 'customer_id',
         cell: ({ row }) => {
@@ -83,6 +84,7 @@ export default function CustomerTable({ data, page, setPage, totalPages }) {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
+        getRowId: row => row.customer_id?.toString(),
         initialState: {
             pagination: {
                 pageSize: 50,

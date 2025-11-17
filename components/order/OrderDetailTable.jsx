@@ -417,13 +417,39 @@ const OrderDetailTable = ({ order_id }) => {
                             >
                                 <div className="flex justify-between items-center border-b pb-2 mb-3">
                                     <p className="font-semibold text-gray-700 px-7">
-                                        Shipment: {shipmentIndex + 1} ,  {storeItems[0]?.store_name}
+                                        Shipment: {shipmentIndex + 1} , {storeItems[0]?.store_name},
+                                        <span className="ml-2">
+                                            Delivery:{" "}
+                                            {storeItems[0]?.exp_delivery_datetime ? (
+                                                <>
+                                                    {
+                                                        new Date(
+                                                            storeItems[0].exp_delivery_datetime
+                                                        ).toLocaleString("en-IN", {
+                                                            day: "2-digit",
+                                                            month: "short",
+                                                            year: "numeric",
+                                                        })
+                                                    }
+                                                    {"  "}
+                                                    {storeItems[0]?.from_time && storeItems[0]?.to_time && (
+                                                        <span className="text-gray-600">
+                                                            ({storeItems[0].from_time} – {storeItems[0].to_time})
+                                                        </span>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                "-"
+                                            )}
+                                        </span>
                                     </p>
+
                                     <p className="text-sm text-gray-500 px-7">
                                         Status: {storeItems[0]?.tracking_status || "-"}
                                     </p>
                                 </div>
 
+                                {/* ===== Items Loop ===== */}
                                 {storeItems.map((food, index) => (
                                     <div
                                         key={index}
@@ -432,7 +458,7 @@ const OrderDetailTable = ({ order_id }) => {
                                         {food?.product_display_image && (
                                             <div className="col-span-1 flex justify-center">
                                                 <Image
-                                                    src={food?.product_display_image}
+                                                    src={food.product_display_image}
                                                     alt="image"
                                                     width={40}
                                                     height={40}
@@ -444,24 +470,28 @@ const OrderDetailTable = ({ order_id }) => {
                                         <div className="col-span-5">
                                             <div className="flex flex-col gap-2">
                                                 <p className="font-medium">{food?.title}</p>
+
                                                 {food?.sku && (
                                                     <p className="text-sm text-gray-500">
-                                                        SKU: {food?.sku}
+                                                        SKU: {food.sku}
                                                     </p>
                                                 )}
+
                                                 {food?.free_product && (
                                                     <p className="text-xs text-gray-500">
                                                         Free Product: true
                                                     </p>
                                                 )}
+
                                                 {food?.kite_promo_name && (
                                                     <p className="text-xs text-gray-500">
-                                                        Kite Promo Name: {food?.kite_promo_name}
+                                                        Kite Promo Name: {food.kite_promo_name}
                                                     </p>
                                                 )}
+
                                                 {food?.rule_id && (
                                                     <p className="text-xs text-gray-500">
-                                                        Rule Id: {food?.rule_id}
+                                                        Rule Id: {food.rule_id}
                                                     </p>
                                                 )}
                                             </div>
@@ -480,7 +510,16 @@ const OrderDetailTable = ({ order_id }) => {
                                         <p className="col-span-1 text-center">
                                             {food?.tracking_status || "-"}
                                         </p>
-                                        <p><Button onClick={() => handlePrintLabel(food?.order_id, food?.item_id)} >Print Label</Button></p>
+
+                                        <p>
+                                            <Button
+                                                onClick={() =>
+                                                    handlePrintLabel(food?.order_id, food?.item_id)
+                                                }
+                                            >
+                                                Print Label
+                                            </Button>
+                                        </p>
                                     </div>
                                 ))}
 
@@ -492,6 +531,7 @@ const OrderDetailTable = ({ order_id }) => {
                             </div>
                         )
                     )}
+
             </div>
 
             <div className="mt-4 border shadow px-3 py-4">
