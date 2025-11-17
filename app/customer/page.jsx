@@ -97,6 +97,7 @@ const CustomerPage = () => {
         XLSX.utils.book_append_sheet(wb, ws, "Customers");
         XLSX.writeFile(wb, "customer-data.xlsx");
     };
+
     return (
         <MainLayout>
             {loading && (
@@ -119,7 +120,7 @@ const CustomerPage = () => {
                         <Button className='cursor-pointer' variant={'secondary'}>More Actions</Button>
                         <Button className='cursor-pointer'>Add Customer</Button> */}
                         <Link href="/customer/add">
-                            <Button className='cursor-pointer' onClick >Add Customer</Button>
+                            <Button className='cursor-pointer'  >Add Customer</Button>
                         </Link>
                     </div>
                 </div>

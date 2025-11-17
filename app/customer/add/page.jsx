@@ -105,6 +105,29 @@ const CustomerPageContent = () => {
 
     const handleSubmit = async () => {
         try {
+
+            for (let i = 0; i < addresses.length; i++) {
+                const address = addresses[i];
+
+                if (!address.pincode?.trim()) {
+                    toast.error(`Pincode is required in address ${i + 1}`);
+                    return;
+                }
+                if (!address.building_name?.trim()) {
+                    toast.error(`Building name is required in address ${i + 1}`);
+                    return;
+                }
+
+                if (!address.nearby_landmark?.trim()) {
+                    toast.error(`Nearby landmark is required in address ${i + 1}`);
+                    return;
+                }
+                if (!address.address_type?.trim()) {
+                    toast.error(`Address type is required in address ${i + 1}`);
+                    return;
+                }
+            }
+
             setLoading(true)
             const payload = {
                 customer_name: customerName,
@@ -134,25 +157,39 @@ const CustomerPageContent = () => {
         const fetchCustomerData = async () => {
             try {
                 const customerData = await getCustomerByIdService(editItemId)
-
                 if (customerData?.status === 200 || customerData?.status === 201) {
 
-                    setCustomerName(customerData?.data?.customer_name)
-                    setCustomerContact(customerData?.data?.mobile_no)
-                    // setAddresses(customerData?.data?.addresses)
+                    setCustomerName(customerData?.data?.customer_name ?? "")
+                    setCustomerContact(customerData?.data?.mobile_no ?? "")
+
                     setAddresses(
-                        customerData?.data?.addresses?.map(addr => ({
-                            id: addr.address_id,   // important!
-                            address: addr.address,
-                            pincode: addr.pincode,
-                            latitude: addr.latitude,
-                            longitude: addr.longitude,
-                            building_name: addr.building_name,
-                            nearby_landmark: addr.nearby_landmark,
-                            address_type: addr.address_type?.toString(),
-                            is_default_address: addr.is_default_address,
-                        }))
+                        customerData?.data?.addresses?.length > 0
+                            ? customerData.data.addresses.map(addr => ({
+                                id: addr.address_id ?? Date.now(),
+                                address: addr.address ?? "",
+                                pincode: addr.pincode ?? "",
+                                latitude: addr.latitude ?? "",
+                                longitude: addr.longitude ?? "",
+                                building_name: addr.building_name ?? "",
+                                nearby_landmark: addr.nearby_landmark ?? "",
+                                address_type: addr.address_type ? addr.address_type.toString() : "",
+                                is_default_address: Boolean(addr.is_default_address),
+                            }))
+                            : [
+                                {
+                                    id: Date.now(),
+                                    address: "",
+                                    pincode: "",
+                                    latitude: "",
+                                    longitude: "",
+                                    building_name: "",
+                                    nearby_landmark: "",
+                                    address_type: "",
+                                    is_default_address: false,
+                                },
+                            ]
                     );
+
                 }
             }
             catch (err) {
@@ -175,6 +212,29 @@ const CustomerPageContent = () => {
     const handleUpdate = async () => {
 
         try {
+
+            for (let i = 0; i < addresses.length; i++) {
+                const address = addresses[i];
+
+                if (!address.pincode?.trim()) {
+                    toast.error(`Pincode is required in address ${i + 1}`);
+                    return;
+                }
+                if (!address.building_name?.trim()) {
+                    toast.error(`Building name is required in address ${i + 1}`);
+                    return;
+                }
+
+                if (!address.nearby_landmark?.trim()) {
+                    toast.error(`Nearby landmark is required in address ${i + 1}`);
+                    return;
+                }
+                if (!address.address_type?.trim()) {
+                    toast.error(`Address type is required in address ${i + 1}`);
+                    return;
+                }
+            }
+
             setLoading(true)
             const payload = {
                 customer_name: customerName,
