@@ -439,10 +439,10 @@ export default function ItemForm({ editItemId }) {
                 return setLoading(false);
             }
 
-            if (!images || images.length === 0) {
-                toast.error("At least one product image is required");
-                return setLoading(false);
-            }
+            // if (!images || images.length === 0) {
+            //     toast.error("At least one product image is required");
+            //     return setLoading(false);
+            // }
 
 
 
@@ -750,10 +750,10 @@ export default function ItemForm({ editItemId }) {
                 return setLoading(false);
             }
 
-            if (!images || images.length === 0) {
-                toast.error("At least one product image is required");
-                return setLoading(false);
-            }
+            // if (!images || images.length === 0) {
+            //     toast.error("At least one product image is required");
+            //     return setLoading(false);
+            // }
 
             const categoriesPayload = selectedCategories.map((cat) => ({
                 category_id: Number(cat.value ?? cat),
@@ -1350,7 +1350,7 @@ export default function ItemForm({ editItemId }) {
             </div>
 
             <div>
-                <Label className="pb-1">Images <span className="text-red-500">*</span>
+                <Label className="pb-1">Images
                 </Label>
                 <div className="border rounded-lg p-3 flex flex-wrap items-center gap-5 mt-2">
                     {images.map((img, index) => (
