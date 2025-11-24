@@ -328,6 +328,148 @@ const OrderDetailTable = ({ order_id }) => {
     };
 
 
+
+    const handlePrintInvoice = (storeItems) => {
+
+        if (!storeItems || storeItems.length === 0) return;
+
+        const createdDate = new Date(orderData.created_date);
+        const formattedDate = new Intl.DateTimeFormat("en-IN", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+        }).format(createdDate);
+
+        const firstItem = storeItems[0];
+        const deliveryCharge = parseFloat(firstItem?.delivery_charge) || 0;
+
+        let itemsHtml = "";
+        let totalTax = 0;
+        let totalItemPrice = 0;
+
+        storeItems.forEach((item) => {
+            const gst = parseFloat(item.gst_percentage) || 0;
+            const tax = parseFloat(item.gst_amount) || 0;
+            totalTax += tax;
+
+            const itemTotal = (parseFloat(item.price) || 0) * (item.item_quantity || 0);
+            totalItemPrice += itemTotal;
+            itemsHtml += `
+    <tr>
+        <td style="text-align:center; font-size:12px;">${item.item_quantity} x </td>
+
+        <td style="padding:5px 0; font-size:12px;">
+            <strong>${item.title}</strong>
+            <br>
+            <span style="font-size:10px;">GST ${gst}%</span>
+        </td>
+
+        <td style="text-align:right; font-size:12px;">₹${tax.toFixed(2)}</td>
+
+        <td style="text-align:right; font-size:12px;">₹${item.price}</td>
+    </tr>
+`;
+
+        });
+
+        const discountAmount = parseFloat(orderData?.discount_amount || 0);
+        const totalBeforeDiscount = totalItemPrice + deliveryCharge;
+        const totalPrice = totalBeforeDiscount - discountAmount;
+
+        const printableHtml = `
+          <div style="width:280px; font-family:'Courier New', monospace; margin:0 auto;">
+            
+            <!-- HEADER BLOCK LEFT/RIGHT -->
+            <div style="display:flex; justify-content:space-between; font-size:12px; margin-bottom:8px;">
+                <!-- LEFT SIDE -->
+                <div style="text-align:left; line-height:15px;">
+                    <strong style="font-size:20px;">Dam Good Fish </strong><br>
+                    Dam Good Fish Private Limited<br>
+                    Gurugram HR 122004<br>
+                    India<br>
+                    GST #06AAKCD3257D1ZU<br>
+                    Date: ${formattedDate}
+                    <br/>
+Time : ${firstItem?.from_time} - ${firstItem?.to_time}
+                </div>
+    
+                <!-- RIGHT SIDE -->
+                <div style="text-align:right; font-size:12px;">
+                    <strong>Invoice #${orderData.order_id}</strong>
+                </div>
+            </div>
+    
+            <hr style="border:none; border-top:1px solid #000; margin:6px 0;">
+    
+            <!-- Customer Section -->
+            <h3 style="font-size:14px; margin:0 0 4px 0;">Customer Details</h3>
+    
+            <div style="border:1px solid #000; padding:8px; font-size:12px; line-height:15px;">
+                <strong>${orderData.customer_name}</strong><br>
+                 ${orderData?.building_name} , ${orderData.address} , ${orderData?.nearby_landmark}<br>${orderData.pincode}<br>
+                Mobile: ${orderData.mobile_no}<br>
+                ${orderData.email || ""}
+            </div>
+    
+            <!-- Item Details -->
+            <h3 style="margin-top:10px; font-size:14px;">Item Details</h3>
+    
+            <div style="border:1px solid #000; padding:8px; margin-top:8px;">
+    <table style="width:100%; font-size:12px; border-collapse:collapse;">
+        <tr style="border-bottom:1px solid #000;">
+            <th style="text-align:center; width:12%;">Qty</th>
+            <th style="text-align:left; width:45%;">Item</th>
+            <th style="text-align:right; width:18%;">Taxes</th>
+            <th style="text-align:right; width:20%;">Price</th>
+        </tr>
+        ${itemsHtml}
+    </table>
+</div>
+
+
+    
+            <!-- Payment -->
+            <h3 style="margin-top:10px; font-size:14px;">Payment Details</h3>
+    
+            <table style="width:100%; font-size:12px; line-height:18px; border-collapse: collapse; border:1px solid #000;">
+    <tr style="border-bottom:1px solid #000;">
+        <td style="border:1px solid #000; padding:2px 8px;">Subtotal price:</td>
+        <td style="text-align:right; border:1px solid #000; padding:4px 8px;">₹${totalItemPrice.toFixed(2)}</td>
+    </tr>
+
+    <tr style="border-bottom:1px solid #000;">
+        <td style="border:1px solid #000; padding:2px 8px;">Total tax:</td>
+        <td style="text-align:right; border:1px solid #000; padding:4px 8px;">₹${totalTax.toFixed(2)}</td>
+    </tr>
+
+    <tr style="border-bottom:1px solid #000;">
+        <td style="border:1px solid #000; padding:2px 8px;">Shipping:</td>
+        <td style="text-align:right; border:1px solid #000; padding:4px 8px;">₹${deliveryCharge.toFixed(2)}</td>
+    </tr>
+
+    <tr style="font-weight:bold; border-top:1px solid #000;">
+        <td style="border:1px solid #000; padding:2px 8px;">Total price:</td>
+        <td style="text-align:right; border:1px solid #000; padding:4px 8px;">₹${totalPrice.toFixed(2)}</td>
+    </tr>
+</table>
+
+
+    
+            <div style="margin-top:10px; font-size:12px;">If you have any questions, please send an email to hello@damgoodfish.com or
+Whatsapp to +91 989978330  </div>
+          </div>
+        `;
+
+        printJS({
+            printable: printableHtml,
+            type: "raw-html",
+            style: `
+              @page { margin: 10px; }
+              body { font-family: 'Courier New', monospace; }
+            `
+        });
+    };
+
     const handlePaymentStatus = async () => {
 
         try {
@@ -343,6 +485,7 @@ const OrderDetailTable = ({ order_id }) => {
             toast.error("Failed to update payment status");
         }
     }
+
 
     return (
         <>
@@ -368,17 +511,21 @@ const OrderDetailTable = ({ order_id }) => {
                                 <div className="text-gray-500">{orderData?.order_id}</div>
                             </div>
 
-                            <div className="mt-2">
-                                <div className="font-semibold text-gray-500">
-                                    Delivery Method
-                                </div>
-                                <div className="text-gray-500">Standard Shipping</div>
+                            <div className="mt-3">
+                                <p className="font-semibold text-gray-500">Office / Building Name</p>
+                                <p className="text-gray-500">{orderData?.building_name}</p>
+                            </div>
+
+                            <div className="mt-3">
+                                <p className="font-semibold text-gray-500">Nearby Landmark</p>
+                                <p className="text-gray-500">{orderData?.nearby_landmark || "-"}</p>
                             </div>
 
                             <div className="mt-3">
                                 <p className="font-semibold text-gray-500">Paid via</p>
                                 <p className="text-gray-500">{orderData?.payment_mode}</p>
                             </div>
+
                         </div>
 
                         <div>
@@ -523,10 +670,21 @@ const OrderDetailTable = ({ order_id }) => {
                                     </div>
                                 ))}
 
-                                <div className="flex justify-center mt-4">
-                                    <Button type="button" onClick={() => handlePrint(storeItems)}>
-                                        Print
-                                    </Button>
+                                <div className="flex  justify-center gap-4">
+
+                                    <div className="flex justify-center mt-4">
+                                        <Button type="button" onClick={() => handlePrint(storeItems)}>
+                                            Print
+                                        </Button>
+                                    </div>
+
+
+                                    <div className="flex justify-center mt-4">
+                                        <Button type="button" onClick={() => handlePrintInvoice(storeItems)}>
+                                            Print invoice
+                                        </Button>
+                                    </div>
+
                                 </div>
                             </div>
                         )
