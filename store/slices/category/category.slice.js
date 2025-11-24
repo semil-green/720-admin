@@ -14,7 +14,8 @@ const categorySlice = createSlice({
             state.totalCategoriesCount = action.payload.total
         },
         addNewCategory: (state, action) => {
-            state.allCategories.push(action.payload);
+            state.allCategories.unshift(action.payload)
+
         },
 
         updateCategory: (state, action) => {
