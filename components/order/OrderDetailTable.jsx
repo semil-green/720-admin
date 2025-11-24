@@ -31,7 +31,6 @@ const OrderDetailTable = ({ order_id }) => {
         }
     }, [orderData]);
     const orderStatus = useSelector((state) => state.orderStatusSlice.allOrderStatus)
-
     useEffect(() => {
         const fetchOrderData = async () => {
             try {
@@ -116,6 +115,12 @@ const OrderDetailTable = ({ order_id }) => {
         const totalBeforeDiscount = totalItemPrice + deliveryCharge;
         const totalPrice = totalBeforeDiscount - discountAmount;
 
+        const addressLine = [
+            orderData?.building_name,
+            orderData?.nearby_landmark,
+            orderData?.address
+        ].filter(Boolean).join(", ");
+
         const printableHtml = `
           <div style="
             width:260px; 
@@ -138,9 +143,11 @@ const OrderDetailTable = ({ order_id }) => {
             <div style="text-align:left; margin-top:8px; line-height:1.2;">
               <p style="margin:0;">Ship To:</p>
               <p style="margin:2px 0 0 0;">${orderData.customer_name}</p>
-              <p style="margin:2px 0 0 0;">${orderData.address}</p>
+              <p style="margin:2px 0 0 0;">${addressLine}</p>
+
               <p style="margin:2px 0 0 0;">Mobile: ${orderData.mobile_no}</p>
               <p style="margin:2px 0 0 0;">Pincode: ${orderData.pincode}</p>
+              Time : ${firstItem?.from_time} - ${firstItem?.to_time}
             </div>
       
             <hr style="border:none; border-top:1px dashed #000; margin:6px 0;">
@@ -171,6 +178,10 @@ const OrderDetailTable = ({ order_id }) => {
               <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-top:4px;">
                 <div>Total Price:</div>
                 <div>₹${totalPrice.toFixed(2)}</div>
+              </div>
+              <div style="display:flex; justify-content:space-between; font-weight:700; font-size:13px; margin-top:4px;">
+                <div>Payment Mode:</div>
+                <div>${orderData?.payment_mode}</div>
               </div>
             </div>
       
@@ -260,6 +271,7 @@ const OrderDetailTable = ({ order_id }) => {
             };
 
             const ingredientList = parseLabelValue(ingredients);
+
 
             const printableHtml = `
             <div style="
@@ -376,6 +388,12 @@ const OrderDetailTable = ({ order_id }) => {
         const totalBeforeDiscount = totalItemPrice + deliveryCharge;
         const totalPrice = totalBeforeDiscount - discountAmount;
 
+        const addressLine = [
+            orderData?.building_name,
+            orderData?.nearby_landmark,
+            orderData?.address
+        ].filter(Boolean).join(", ");
+
         const printableHtml = `
           <div style="width:280px; font-family:'Courier New', monospace; margin:0 auto;">
             
@@ -406,9 +424,10 @@ Time : ${firstItem?.from_time} - ${firstItem?.to_time}
     
             <div style="border:1px solid #000; padding:8px; font-size:12px; line-height:15px;">
                 <strong>${orderData.customer_name}</strong><br>
-                 ${orderData?.building_name} , ${orderData.address} , ${orderData?.nearby_landmark}<br>${orderData.pincode}<br>
-                Mobile: ${orderData.mobile_no}<br>
-                ${orderData.email || ""}
+                 <p style="margin:2px 0 0 0;">${addressLine}</p> <br/>
+
+                Mobile: ${orderData?.mobile_no}<br>
+                ${orderData?.email || ""}
             </div>
     
             <!-- Item Details -->
@@ -450,6 +469,11 @@ Time : ${firstItem?.from_time} - ${firstItem?.to_time}
     <tr style="font-weight:bold; border-top:1px solid #000;">
         <td style="border:1px solid #000; padding:2px 8px;">Total price:</td>
         <td style="text-align:right; border:1px solid #000; padding:4px 8px;">₹${totalPrice.toFixed(2)}</td>
+    </tr>
+
+     <tr style=" border-top:1px solid #000;">
+        <td style="border:1px solid #000; padding:2px 8px;">Payment mode:</td>
+        <td style="text-align:right; border:1px solid #000; padding:4px 8px;">${orderData?.payment_mode}</td>
     </tr>
 </table>
 
