@@ -21,6 +21,7 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
     const [formData, setFormData] = useState({
         CategoryId: 0,
         category_name: "",
+        order_no: 0,
         category_image: null,
         ImagePreview: "",
         ParentCategoryId: 0,
@@ -32,6 +33,7 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             setFormData({
                 CategoryId: editcategoryData.category_id || 0,
                 category_name: editcategoryData.category_name || "",
+                order_no: editcategoryData.order_no || 0,
                 category_image: editcategoryData.category_image || "",
                 ImagePreview: editcategoryData.category_image || "",
             });
@@ -39,6 +41,7 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             setFormData({
                 CategoryId: initialData.CategoryId || 0,
                 category_name: initialData.category_name || "",
+                order_no: initialData.order_no || 0,
                 category_image: initialData.category_image || "",
                 ImagePreview: initialData.category_image || "",
             });
@@ -72,6 +75,13 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             return;
         }
 
+        if (formData.order_no === "" || formData.order_no === null) {
+            toast.error("Order No is required");
+            return;
+        }
+
+
+
         if (!(formData.category_image instanceof File)) {
             toast.error("Category image is required");
             return;
@@ -80,6 +90,8 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
         setLoading(true);
         const formDataToSend = new FormData();
         formDataToSend.append("category_name", formData.category_name);
+        formDataToSend.append("order_no", Number(formData.order_no));
+
 
         if (formData.category_image instanceof File) {
             formDataToSend.append("category_image", formData.category_image);
@@ -87,7 +99,7 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
         const res = await addNewCategoryService(formDataToSend);
 
-        if (res?.status == 200) {
+        if (res?.status == 201) {
             dispatch(addNewCategory(res?.data));
             toast.success("Added", { description: "Category added successfully" });
         } else
@@ -106,6 +118,10 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
             return;
         }
 
+        if (formData.order_no === "" || formData.order_no === null) {
+            toast.error("Order No is required");
+            return;
+        }
         // if (!(formData.category_image instanceof File)) {
         //     toast.error("Category image is required");
         //     return;
@@ -121,6 +137,7 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
 
         const formDataToSend = new FormData();
         formDataToSend.append("category_name", formData.category_name);
+        formDataToSend.append("order_no", formData.order_no);
 
         if (formData.category_image instanceof File) {
             formDataToSend.append("category_image", formData.category_image);
@@ -159,6 +176,19 @@ const CategoryForm = ({ initialData, handleCose, editcategoryData }) => {
                     required
                 />
             </div>
+
+            <div>
+                <Label className="pb-2">Order No. <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                    type="number"
+                    name="order_no"
+                    value={formData.order_no}
+                    onChange={handleChange}
+                    required
+                />
+            </div>
+
 
             <div>
                 <Label className="pb-2">Category Image <span className="text-red-500">*</span>

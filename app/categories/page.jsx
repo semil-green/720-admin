@@ -130,6 +130,7 @@ export default function Categories() {
         const formattedData = categoriesData.map((item) => ({
             "Category ID": item.category_id || "-",
             "Category Name": item.category_name || "-",
+            "Order No": item.order_no || "-",
             "Status": item.status ? "Active" : "Inactive",
         }));
 
@@ -152,6 +153,7 @@ export default function Categories() {
 
     const categoriesColumns = [
         { label: "Category", value: "category_name" },
+        { label: "Order No", value: "order_no" },
         { label: "Status", value: "status" },
     ];
 

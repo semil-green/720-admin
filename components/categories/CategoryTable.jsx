@@ -63,6 +63,15 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
             ),
         },
         {
+            accessorKey: "order_no",
+            header: ({ column }) => (
+                <Button variant="ghost">
+                    Order No
+                </Button>
+            ),
+            cell: ({ getValue }) => getValue()
+        },
+        {
             accessorKey: "status",
             header: "Status",
             cell: ({ getValue }) => {
@@ -109,7 +118,7 @@ export default function CategoryTable({ data, onEdit, onDelete, onOpenSubCategor
                                         <AlertDialogFooter>
                                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                                             <AlertDialogAction onClick={() => onDelete(category.category_id)}>
-                                                Confirm Deactivatw
+                                                Confirm Deactivate
                                             </AlertDialogAction>
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
