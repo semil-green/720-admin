@@ -310,30 +310,57 @@ const OrderDetailTable = ({ order_id }) => {
             </div>
           `;
 
+            // printJS({
+            //     printable: printableHtml,
+            //     type: "raw-html",
+            //     style: `
+            //   @page {
+            //     size: A4;
+            //     margin: 0;
+            //   }
+            //   body {
+            //     margin: 0;
+            //     padding: 0;
+            //     display: flex;
+            //     justify-content: center;
+            //     align-items: flex-start;
+            //     background: #fff;
+            //     color: #000;
+            //     font-weight: 600;
+            //     font-family: 'Courier New', monospace;
+            //   }
+            //   div, p {
+            //     color: #000 !important;
+            //   }
+            // `,
+            // });
+
             printJS({
                 printable: printableHtml,
                 type: "raw-html",
+                orientation: "landscape",
                 style: `
-              @page {
-                size: A4;
-                margin: 0;
-              }
-              body {
-                margin: 0;
-                padding: 0;
-                display: flex;
-                justify-content: center;
-                align-items: flex-start;
-                background: #fff;
-                color: #000;
-                font-weight: 600;
-                font-family: 'Courier New', monospace;
-              }
-              div, p {
-                color: #000 !important;
-              }
-            `,
+                  @page {
+                    size: A4 landscape;
+                    margin: 0;
+                  }
+                  body {
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    justify-content: center;
+                    align-items: flex-start;
+                    background: #fff;
+                    color: #000;
+                    font-weight: 600;
+                    font-family: 'Courier New', monospace;
+                  }
+                  div, p {
+                    color: #000 !important;
+                  }
+                `,
             });
+
         } catch (err) {
             toast.error(err?.response?.data?.message ?? "Failed to print label");
         }
