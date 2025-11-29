@@ -108,6 +108,15 @@ export default function CollectionsTable({
             accessorKey: "no_of_products",
         },
         {
+            header: "Order No",
+            accessorKey: "collection_order_no",
+            cell: ({ getValue }) => {
+                const value = getValue();
+                return value ?? "";
+            }
+        },
+
+        {
             accessorKey: "status",
             header: "Status",
             cell: ({ getValue }) => {

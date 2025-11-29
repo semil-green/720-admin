@@ -32,7 +32,8 @@ const Page = () => {
         title: "",
         description: "",
         image: {},
-        display_homepage: false
+        display_homepage: false,
+        collection_order_no: 0
     });
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState([])
@@ -50,7 +51,8 @@ const Page = () => {
                     title: editData?.title || "",
                     description: editData?.description || "",
                     image: editData?.image || {},
-                    display_homepage: editData?.display_homepage || false
+                    display_homepage: editData?.display_homepage || false,
+                    collection_order_no: editData?.collection_order_no || 0
                 });
 
                 if (editData?.image) {
@@ -132,6 +134,8 @@ const Page = () => {
 
             dataToSend.append("title", formData.title);
             dataToSend.append("description", formData.description);
+            dataToSend.append("collection_order_no", formData.collection_order_no);
+
 
             // const productIds = product.map((p) => p.product_id);
             const productIds = product.map((p, index) => ({
@@ -184,6 +188,7 @@ const Page = () => {
             }));
             dataToSend.append("product_ids", JSON.stringify(productIds));
             dataToSend.append("display_homepage", formData.display_homepage);
+            dataToSend.append("collection_order_no", formData.collection_order_no);
 
             if (productDisplayImageFile) {
                 dataToSend.append("image", productDisplayImageFile);
@@ -323,6 +328,17 @@ const Page = () => {
                                 />
                                 No
                             </label>
+                        </div>
+
+                        <div className='flex flex-col gap-2 mt-4'>
+                            <Label className="pb-1 font-medium">Collection Order No</Label>
+                            <Input
+                                type="number"
+                                name="collection_order_no"
+                                value={formData.collection_order_no}
+                                onChange={handleChange}
+                                className='rounded-md border shadow h-10 px-4'
+                            />
                         </div>
 
 

@@ -63,6 +63,7 @@ export default function Collections() {
             "Collection ID": item.collection_id || "-",
             "Title": item.title || "-",
             "Products": item.no_of_products ?? 0,
+            "Order No": item.collection_order_no ?? 0,
             "Status": item.status ? "Active" : "Inactive",
         }));
 
@@ -86,6 +87,7 @@ export default function Collections() {
     const collectionsColumns = [
         { label: "Collections", value: "title" },
         { label: "Products", value: "no_of_products" },
+        { label: "Order No", value: "collection_order_no" },
         { label: "Status", value: "status" },
     ];
 
