@@ -13,6 +13,8 @@ import { getAllCustomerOrdersService } from "@/service/cutomer-order/cutomer-ord
 import { setCutomerOrders } from "@/store/slices/cutomer-order/cutomer-order.slice";
 import { Input } from "@/components/ui/input";
 import FilterDropdown from "@/components/items/FilterDropDown";
+import * as XLSX from "xlsx";
+import { PAYMENT_STATUSES } from "@/lib/constants";
 
 export default function Orders() {
     const [items, setItems] = useState([]);
@@ -74,6 +76,61 @@ export default function Orders() {
         setSort(sort);
     }
 
+    const exportToExcelCustomerOrdersData = (ordersData = []) => {
+        if (!ordersData || ordersData.length === 0) {
+            toast.error("No orders data available to export");
+            return;
+        }
+
+        const getOrderStatusText = (statusValue) => {
+            const entry = Object.entries(PAYMENT_STATUSES).find(
+                ([_, val]) => val === statusValue
+            );
+            return entry ? entry[0] : "-";
+        };
+
+        const formatCreatedDate = (rawDate) => {
+            if (!rawDate) return "-";
+            const date = new Date(rawDate);
+
+            return date.toLocaleString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+            });
+        };
+
+        const formattedData = ordersData.map((item) => ({
+            "Order ID": item.order_id || "-",
+            "Created": formatCreatedDate(item.created_date),
+            "Customer Name": item.customer_name || "-",
+            "Final Price": item.final_price || "-",
+            "Order Status": getOrderStatusText(item.order_status),
+            "Payment Status": item.payment_status_name || "-",
+            "Payment Mode": item.payment_mode || "-",
+            "Items Count": item.order_items_count || "-",
+            "Address": item.address || "-",
+        }));
+
+        const worksheet = XLSX.utils.json_to_sheet(formattedData);
+
+        const columnWidths = Object.keys(formattedData[0]).map((key) => ({
+            wch: Math.max(
+                key.length,
+                ...formattedData.map((row) => String(row[key] || "").length)
+            ) + 2,
+        }));
+        worksheet["!cols"] = columnWidths;
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Customer Orders");
+
+        XLSX.writeFile(workbook, "Customer_Orders_Data.xlsx");
+    };
+
     return (
         <MainLayout>
             {loading && (
@@ -123,11 +180,20 @@ export default function Orders() {
                             Clear
                         </Button>
                     </div>
-                    <div className="flex justify-end">
-                        <FilterDropdown
-                            columns={customerOrderColumns}
-                            onSortChange={handleCustomerOrderSortChange}
-                        />
+                    <div className="flex justify-end gap-4">
+
+                        <div>
+                            <Button onClick={() => exportToExcelCustomerOrdersData(getCustomerOrders)}>
+                                Export
+                            </Button>
+                        </div>
+                        <div>
+
+                            <FilterDropdown
+                                columns={customerOrderColumns}
+                                onSortChange={handleCustomerOrderSortChange}
+                            />
+                        </div>
                     </div>
                 </div>
 
