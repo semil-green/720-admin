@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 import ReduxProvider from "@/store/provider";
+import FCMSetup from "@/components/fcm/components/fcm/FCMSetup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-scroll`}>
         <ReduxProvider>
+          <FCMSetup />
           {children}
         </ReduxProvider>
         <Toaster position="top-right" richColors closeButton />
