@@ -23,6 +23,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import { getAllDashboardItemService, getDashboardOrdersService } from '@/service/dashboard/dashboard.service';
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import FCMSetup from '@/components/fcm/components/fcm/FCMSetup';
 
 export default function Dashboard() {
     const [orderInterval, setOrderInterval] = useState("today");
@@ -30,7 +31,7 @@ export default function Dashboard() {
     const [itemSelected, setItemSelected] = useState("best")
     const [startDate, setStartDate] = useState(null);
     const [endDate, setEndDate] = useState(null);
-
+    const [displayNotification, setDisplayNotification] = useState(true)
     const [ordersLoading, setOrdersLoading] = useState(true)
     const [ordersData, setOrdersData] = useState([])
 
@@ -111,8 +112,12 @@ export default function Dashboard() {
         fetchItemsData(orderInterval, formattedStart, formattedEnd, itemSelected, itemsRange)
     }, [itemSelected, orderInterval, startDate, endDate, orderInterval])
 
+    useEffect(() => {
+        setTimeout(() => setDisplayNotification(true), 2000);
+    }, []);
     return (
         <MainLayout>
+            {displayNotification && <FCMSetup />}
             <div>
                 <div className="relative">
                     <div className='flex items-center justify-between pb-3'>

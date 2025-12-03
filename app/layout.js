@@ -27,7 +27,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-scroll`}>
         <ReduxProvider>
-          <FCMSetup />
+          {/* <FCMSetup /> */}
           {children}
         </ReduxProvider>
         <Toaster position="top-right" richColors closeButton />

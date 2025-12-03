@@ -11,10 +11,10 @@ export default function FCMSetup() {
 
             try {
                 const permission = await Notification.requestPermission();
-                if (permission !== "granted") {
-                    toast.error("Notification permission denied ❌");
-                    return;
-                }
+                // if (permission !== "granted") {
+                //     toast.error("Notification permission denied ❌");
+                //     return;
+                // }
 
                 const registration = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
@@ -24,15 +24,12 @@ export default function FCMSetup() {
                 });
 
                 if (token) {
-                    localStorage.setItem("fcm_token", token);
 
                     const saveToken = await sendFcmService(token);
 
-                } else {
-                    toast.error("Unable to generate notification token ⚠️");
                 }
             } catch (err) {
-                toast.error("Failed to initialize notifications 🚨");
+                toast.error("Failed to initialize notifications ");
             }
         }
 
