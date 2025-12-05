@@ -6,26 +6,26 @@ import Sidebar from "./sidebar";
 
 export default function MainLayout({ children }) {
     const router = useRouter();
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isAuthenticated, setIsAuthenticated] = useState(true);
     const [isChecking, setIsChecking] = useState(true);
 
-    useEffect(() => {
-        const role = localStorage.getItem("role");
-        if (!role) {
-            router.replace("/login"); // Redirect if not logged in
-        } else {
-            setIsAuthenticated(true);
-        }
-        setIsChecking(false);
-    }, []);
+    // useEffect(() => {
+    //     const role = localStorage.getItem("role");
+    //     if (!role) {
+    //         router.replace("/login"); // Redirect if not logged in
+    //     } else {
+    //         setIsAuthenticated(true);
+    //     }
+    //     setIsChecking(false);
+    // }, []);
 
-    if (isChecking) {
-        return null; // Optionally show a loader
-    }
+    // if (isChecking) {
+    //     return null; // Optionally show a loader
+    // }
 
-    if (!isAuthenticated) {
-        return null; // Prevent rendering protected layout
-    }
+    // if (!isAuthenticated) {
+    //     return null; // Prevent rendering protected layout
+    // }
 
     return (
         <div className="flex h-screen overflow-hidden">

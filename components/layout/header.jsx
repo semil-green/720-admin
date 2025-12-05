@@ -71,9 +71,8 @@ export default function Header() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-32">
                         <DropdownMenuItem onClick={() => {
-                            localStorage.removeItem("role");
-                            localStorage.removeItem("token");
-                            window.location.href = "/login";
+                            // window.location.href = "/login";
+                            router.push("/")
                         }}>
                             <LogOut className="mr-2 h-4 w-4" /> Logout
                         </DropdownMenuItem>

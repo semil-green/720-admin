@@ -13,30 +13,8 @@ import {
 import { useEffect, useState } from "react";
 
 export const fullMenuItems = [
-  { label: "Dashboard", href: "/dashboard", icon: Home },
-  { label: "Reports", href: "/report", icon: Proportions },
-  { label: "Customer Orders", href: "/orders", icon: ShoppingBasket },
-  { label: "Draft Orders", href: "/draft-orders", icon: PencilLine },
-  { label: "Product", href: "/items", icon: ShoppingCartIcon },
-  { label: "Collections", href: "/collections", icon: BookText },
-  { label: "Categories", href: "/categories", icon: ChartColumnStacked },
-  { label: "Inventories", href: "/inventories", icon: ArrowDownUp },
-  { label: "Inward Materials", href: "/inward-items", icon: FileDown },
-  { label: "Order Request", href: "/order-request", icon: Truck },
-  { label: "Store Orders", href: "/store-orders", icon: ClockArrowUp },
-  { label: "Discount", href: "/discount", icon: CirclePercent },
-  { label: "Customer", href: "/customer", icon: UsersRound },
-  { label: "Wallet Configuration", href: "/wallet-configuration", icon: Wallet },
-  { label: "Dark Stores", href: "/stores", icon: StoreIcon },
-  { label: "Packaging Center", href: "/packaging-stores", icon: ShoppingBagIcon },
-  { label: "Slider", href: "/slider", icon: SlidersHorizontal },
-  { label: "Vendor", href: "/vendors", icon: Users },
-  { label: "Pincode wise Slot", href: "/pincodeWiseSlot", icon: MapPin },
-  { label: "Users", href: "/users", icon: Users },
-  { label: "State", href: "/state", icon: Globe },
-  { label: "City", href: "/city", icon: Building2 },
-  { label: "Customer Feedback", href: "/feedback", icon: Building2 },
-  { label: "HSN Codes", href: "/hsn-code", icon: FileText },
+  { label: "Home", href: "/dashboard", icon: Home },
+
 ];
 
 export default function Sidebar() {
@@ -95,9 +73,9 @@ export default function Sidebar() {
       {/* Sidebar for Desktop */}
       <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 pt-4 shadow-sm overflow-y-auto">
         <div className='pt-3 pb-8 px-3'>
-          <div className="flex justify-center">
+          {/* <div className="flex justify-center">
             <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
-          </div>
+          </div> */}
         </div>
 
         <nav className="flex flex-col gap-2">
