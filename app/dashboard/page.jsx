@@ -42,8 +42,8 @@ const page = () => {
         <MainLayout>
             <div className="max-w-6xl mx-auto ">
                 {/* Header + Add Button */}
-                <div className="flex justify-between items-center mb-6 p-6">
-                    <h1 className="text-3xl font-bold">Blogs</h1>
+                <div className="flex justify-end items-center  p-6">
+                    {/* <h1 className="text-3xl font-bold">Blogs</h1> */}
                     <button
                         onClick={() => router.push("/dashboard/add")}
                         className="px-5 py-2 bg-primary text-white rounded"
