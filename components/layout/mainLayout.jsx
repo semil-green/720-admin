@@ -32,7 +32,7 @@ export default function MainLayout({ children }) {
             <Sidebar />
             <div className="flex flex-col flex-1 overflow-hidden">
                 <Header />
-                <main className="flex-1 overflow-auto bg-background p-8">{children}</main>
+                <main className="flex-1 overflow-auto bg-background px-8 py-2">{children}</main>
             </div>
         </div>
     );

@@ -33,16 +33,16 @@ function page() {
 
 
     return (
-        <div className='relative'>
+        <div className='relative bg-black'>
             <div style={styles} className="h-full w-full z-0 absolute"></div>
             <div className="flex items-center justify-center h-dvh relative">
-                <Card className='w-full max-w-[400px] py-14'>
-                    {/* <CardHeader>
+                <Card className='w-full max-w-[400px] py-8'>
+                    <CardHeader>
                         <CardTitle className='flex flex-col justify-between items-center'>
-                            <img src="/images/DGF_LOGO_NEW_VARIATION.png" alt="DGM Logo" className="lab-icon mb-2 size-16" />
-                            <h4 className="font-bold text-xl text-primary">DAM GOOD FISH</h4>
+                            <img src="logo.png" alt="club 720 Logo" className="h-24 w-40" />
+                            {/* <h4 className="font-bold text-xl text-primary">DAM GOOD FISH</h4> */}
                         </CardTitle>
-                    </CardHeader> */}
+                    </CardHeader>
                     <CardContent>
                         <form onSubmit={login}>
                             <div className="mb-3">

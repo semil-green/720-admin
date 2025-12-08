@@ -22,7 +22,7 @@ export default function Header() {
     return (
         <header className="flex h-16 items-center justify-between border-b bg-background px-6 shadow-sm">
             <div className="flex items-center gap-3">
-                <div className="text-xl font-bold text-primary">{activePage}</div>
+                <div className="text-xl font-bold text-[#00D4FF]">{activePage}</div>
             </div>
 
             <div className="flex items-center gap-3">

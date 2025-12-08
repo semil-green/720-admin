@@ -63,7 +63,7 @@ export default function Sidebar() {
     <>
       {/* Sticky Top Header */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b h-16 px-4 py-3 flex items-center justify-between lg:hidden">
-        <div className="text-xl font-bold"> <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" /></div>
+        <div className="text-xl font-bold"> <img src={'/logo.png'} alt='logo' className="w-28 h-20" /></div>
         <button onClick={() => setSidebarOpen((prev) => !prev)}>
           <Menu className="h-6 w-6 text-gray-700" />
         </button>
@@ -71,11 +71,11 @@ export default function Sidebar() {
 
 
       {/* Sidebar for Desktop */}
-      <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 pt-4 shadow-sm overflow-y-auto">
-        <div className='pt-3 pb-8 px-3'>
-          {/* <div className="flex justify-center">
-            <img src={'/images/DGF_LOGO_NEW_VARIATION.png'} alt='logo' className="size-10" />
-          </div> */}
+      <aside className="hidden lg:block w-64 h-screen border-r bg-white px-4 shadow-sm overflow-y-auto">
+        <div className=' px-3'>
+          <div className="flex justify-center">
+            <img src={'/logo.png'} alt='logo' className="w-36 h-18" />
+          </div>
         </div>
 
         <nav className="flex flex-col gap-2">
@@ -86,7 +86,7 @@ export default function Sidebar() {
                 key={href}
                 href={href}
                 className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive
-                  ? "bg-primary text-primary-foreground"
+                  ? "bg-[#00D4FF] text-white"
                   : "text-gray-700 hover:bg-gray-100"
                   }`}
               >

@@ -40,16 +40,14 @@ export default function AddBlogPage() {
 
     return (
         <MainLayout>
-            <div className="max-w-3xl mx-auto p-6">
+            <div className="mx-auto flex justify-end">
+
+            </div>
+            <div className="max-w-3xl mx-auto my-4">
                 {/* Page Title */}
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col md:flex-row  items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold">Add New Blog</h1>
-                    <button
-                        onClick={() => router.push("/admin/blog")}
-                        className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded"
-                    >
-                        Back
-                    </button>
+
                 </div>
 
                 {/* Form */}
@@ -106,12 +104,20 @@ export default function AddBlogPage() {
                     </div>
 
                     {/* Submit */}
-                    <button
-                        type="submit"
-                        className="w-full py-2 bg-green-600 hover:bg-green-700 text-white rounded text-lg"
-                    >
-                        Save Blog
-                    </button>
+                    <div className="flex gap-4 justify-center my-4">
+                        <button
+                            type="submit"
+                            className=" px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded text-lg"
+                        >
+                            Save Blog
+                        </button>
+                        <button
+                            onClick={() => router.push("/dashboard")}
+                            className="px-4 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded"
+                        >
+                            Back
+                        </button>
+                    </div>
                 </form>
             </div>
         </MainLayout>
