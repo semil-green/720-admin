@@ -39,7 +39,7 @@ function page() {
                 <Card className='w-full max-w-[400px] py-8'>
                     <CardHeader>
                         <CardTitle className='flex flex-col justify-between items-center'>
-                            <img src="logo.png" alt="club 720 Logo" className="h-24 w-40" />
+                            <img src="logo.png" alt="club 720 Logo" className="h-16 w-40" />
                             {/* <h4 className="font-bold text-xl text-primary">DAM GOOD FISH</h4> */}
                         </CardTitle>
                     </CardHeader>
