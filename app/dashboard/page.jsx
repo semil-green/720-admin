@@ -46,7 +46,7 @@ const page = () => {
                     <h1 className="text-3xl font-bold">Blogs</h1>
                     <button
                         onClick={() => router.push("/dashboard/add")}
-                        className="px-5 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                        className="px-5 py-2 bg-primary text-white rounded"
                     >
                         + Add New Blog
                     </button>

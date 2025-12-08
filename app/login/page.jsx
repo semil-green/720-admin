@@ -1,72 +1,118 @@
-'use client'
+"use client"
+import { useState } from 'react';
+import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@radix-ui/react-dropdown-menu';
+import { useRouter } from 'next/navigation';
+function App() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-import React, { useState } from 'react'
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Loader2 } from "lucide-react"
-import { useRouter } from 'next/navigation'
-import { toast } from "sonner"
-
-function page() {
-    const router = useRouter()
-
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [loading, setLoading] = useState(false)
-
-    const styles = {
-        background: "url('images/seafood-bg2.png')",
-        filter: 'brightness(0.8) blur(0px) invert(1)'
-    }
+    const router = useRouter();
     const login = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const data = { email, password }
 
-        router.replace("/dashboard");
-
-
-        setLoading(false);
+        try {
+            router.push('/dashboard');
+            // await new Promise(resolve => setTimeout(resolve, 1500));
+            // console.log('Login attempt:', { email, password });
+        } catch (error) {
+            console.error('Login error:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
+    const styles = {
+        background: 'linear-gradient(-45deg, #1a1a2e, #0f3460, #16213e, #1a1a2e)',
+        backgroundSize: '400% 400%',
+        animation: 'gradient 15s ease infinite',
+    };
 
     return (
-        <div className='relative bg-black'>
-            <div style={styles} className="h-full w-full z-0 absolute"></div>
-            <div className="flex items-center justify-center h-dvh relative">
-                <Card className='w-full max-w-[400px] py-8'>
-                    <CardHeader>
-                        <CardTitle className='flex flex-col justify-between items-center'>
-                            <img src="logo.png" alt="club 720 Logo" className="h-20 w-40" />
-                            {/* <h4 className="font-bold text-xl text-primary">DAM GOOD FISH</h4> */}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <form onSubmit={login}>
-                            <div className="mb-3">
-                                <Label className='pb-1'>Username</Label>
-                                <Input name="Username" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                            </div>
+        <>
+            <div className="relative bg-black min-h-screen overflow-hidden">
+                <div style={styles} className="absolute inset-0 w-full h-full z-0" />
 
-                            <div className="mb-3">
-                                <Label className='pb-1'>Password</Label>
-                                <Input name="Password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder='••••••••' type='password' />
-                            </div>
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute top-20 left-20 w-72 h-72 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+                    <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+                </div>
 
-                            <div className="">
-                                <Button type="submit" disabled={loading}>
-                                    {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
-                                    Login
-                                </Button>
+                <div className="flex items-center justify-center min-h-screen relative z-10 px-4 py-8">
+                    <Card className="w-full max-w-[420px] py-6 sm:py-8 float-animation">
+                        <CardHeader>
+                            <CardTitle className="flex flex-col justify-center items-center">
+
+                                <img
+                                    src='/logo.png' alt='logo'
+                                    className='w-40 h-20'
+                                />
+                            </CardTitle>
+                        </CardHeader>
+
+                        <CardContent>
+                            <form onSubmit={login} className="space-y-4">
+                                <div className='flex flex-col gap-2'>
+                                    <Label htmlFor="username">Email</Label>
+                                    <Input
+                                        id="username"
+                                        name="Username"
+                                        type="text"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                        placeholder="Enter your email"
+                                    />
+                                </div>
+
+                                <div className='flex flex-col gap-2'>
+                                    <Label htmlFor="password">Password</Label>
+                                    <Input
+                                        id="password"
+                                        name="Password"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-between text-sm">
+                                    <label className="flex items-center cursor-pointer">
+                                        <input type="checkbox" className="mr-2 rounded" />
+                                        <span className="text-gray-600">Remember me</span>
+                                    </label>
+                                    <a href="#" className="text-primary hover:text-blue-700 font-medium">
+                                        Forgot password?
+                                    </a>
+                                </div>
+
+                                <div className='flex justify-center'>
+                                    <Button type="submit" disabled={loading} className="mt-6 ">
+                                        {loading && <Loader2 className="animate-spin h-4 w-4 mr-2" />}
+                                        {loading ? 'Signing in...' : 'Sign In'}
+                                    </Button>
+                                </div>
+                            </form>
+
+                            <div className="mt-6 text-center text-sm text-gray-600">
+                                Don't have an account?{' '}
+                                <a href="#" className="text-primary hover:text-blue-700 font-medium">
+                                    Sign up
+                                </a>
                             </div>
-                        </form>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
-        </div>
-    )
+        </>
+    );
 }
 
-export default page
+export default App;
