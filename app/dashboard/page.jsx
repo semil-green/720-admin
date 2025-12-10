@@ -1,47 +1,60 @@
 "use client";
 import MainLayout from '@/components/layout/mainLayout'
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react'
-import BlogCard from '../blog/blblogCard';
-import BlogRow from '../blog/blblogCard';
-
+import React, { useState, useEffect } from 'react'
+import { fetchAllBlogsService } from '@/service/blogs/blogs.service';
+import { toast } from 'sonner';
+import { useSelector, useDispatch } from 'react-redux';
+import { setAllBlogs } from '@/store/slices/blogs/blogs.slice';
+import BlogRowSkeleton from '@/components/skeleton/blogSkeleton';
+import BlogRow from '@/components/blog/blogCard';
 const page = () => {
     const router = useRouter();
+    const [page, setPage] = useState(1);
+    const [limit, setLimit] = useState(3);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        totalPages: 1
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const dispatch = useDispatch();
 
-    const [blogs, setBlogs] = useState([
-        {
-            id: 1,
-            title: "Top 10 Travel Destinations",
-            description: "Explore the most exciting places in 2025...",
-            image: "https://source.unsplash.com/random/800x600/?travel",
-            status: "Published",
-            date: "2022-01-01"
-        },
-        {
-            id: 2,
-            title: "Learn React in 30 Days",
-            description: "Roadmap to become a React developer step by step...",
-            image: "https://source.unsplash.com/random/800x600/?coding",
-            status: "Published",
-            date: "2022-01-01"
-        },
-        {
-            id: 3,
-            title: "Why Fitness Matters",
-            description: "Fitness is not just a routine, it's a lifestyle...",
-            image: "https://source.unsplash.com/random/800x600/?fitness",
-            status: "Draft",
-            date: "2022-01-01"
-        },
-    ]);
+
+    const blogsData = async () => {
+
+        try {
+            setIsLoading(true)
+            const data = await fetchAllBlogsService(page, limit)
+
+            if (data) {
+                dispatch(setAllBlogs(data?.data?.blogs || []));
+                setPagination({
+                    page: data?.data?.pagination?.page,
+                    totalPages: data?.data?.pagination?.totalPages,
+                });
+            }
+        }
+        catch (err) {
+            toast.error(err?.response?.data?.result || "Login failed. Please try again.");
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
+
+    useEffect(() => {
+        blogsData()
+    }, [page])
+
+    const blogs = useSelector((state) => state.blogSlice.blogs);
 
     const handleDelete = (id) => {
         setBlogs(blogs.filter((blog) => blog.id !== id));
     };
+
     return (
         <MainLayout>
             <div className="max-w-6xl mx-auto ">
-                {/* Header + Add Button */}
                 <div className="flex justify-end items-center  p-6">
                     {/* <h1 className="text-3xl font-bold">Blogs</h1> */}
                     <button
@@ -52,13 +65,9 @@ const page = () => {
                     </button>
                 </div>
 
-                {/* Table Header */}
-                {/* Scroll wrapper for full table */}
                 <div className="w-full overflow-x-auto">
-                    {/* Inner width should expand to trigger scrolling */}
                     <div className="min-w-max">
 
-                        {/* Table Header */}
                         <div className="flex items-center gap-6 py-3 px-6 bg-gray-100 font-semibold text-gray-700 border-y">
                             <div className="flex-[2] min-w-0">Blog</div>
                             <div className="flex items-center gap-6 flex-[1.2] min-w-0">
@@ -68,17 +77,57 @@ const page = () => {
                             <div className="flex-[0.8] text-right shrink-0">Actions</div>
                         </div>
 
-                        {/* Blog List */}
                         <div className="border rounded-b-lg px-0">
-                            {blogs.map((blog) => (
-                                <BlogRow key={blog.id} blog={blog} onDelete={handleDelete} />
-                            ))}
+
+                            {
+                                isLoading ? (<BlogRowSkeleton />) : (
+                                    <>
+                                        {
+                                            blogs?.length > 0 ? blogs?.map((blog, index) => (
+                                                <BlogRow key={blog._id} blog={blog} onDelete={handleDelete} />
+                                            )) : (
+                                                <div className="p-4 text-center text-gray-500">
+                                                    No blog found.
+                                                </div>
+                                            )
+                                        }
+                                    </>
+                                )
+                            }
+
                         </div>
 
                     </div>
                 </div>
 
             </div>
+
+
+            <div className="flex justify-center items-center gap-4 mt-6">
+                <button
+                    disabled={page === 1}
+                    onClick={() => setPage(page - 1)}
+                    className={`px-4 py-2 rounded border bg-primary text-white transition ${page === 1 ? "opacity-40 cursor-not-allowed" : ""
+                        }`}
+                >
+                    Previous
+                </button>
+
+                <span className="font-semibold">
+                    Page {pagination.page} of {pagination.totalPages}
+                </span>
+
+                <button
+                    disabled={page === pagination.totalPages || blogs?.length === 0}
+                    onClick={() => setPage(page + 1)}
+                    className={`px-4 py-2 rounded border bg-primary text-white transition ${page === pagination.totalPages ? "opacity-40 cursor-not-allowed" : ""
+                        }`}
+                >
+                    Next
+                </button>
+            </div>
+
+
         </MainLayout>
     )
 }

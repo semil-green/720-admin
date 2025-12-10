@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import { useRouter } from 'next/navigation';
+import { loginService } from '@/service/login/login.service';
+import { toast } from 'sonner';
 function App() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -17,11 +19,15 @@ function App() {
         setLoading(true);
 
         try {
-            router.push('/dashboard');
-            // await new Promise(resolve => setTimeout(resolve, 1500));
-            // console.log('Login attempt:', { email, password });
+
+            const verifyLogin = await loginService(email, password);
+
+            if (verifyLogin.status === 200) {
+                localStorage.setItem("auth_token", verifyLogin.data.auth_token);
+                router.push('/dashboard');
+            }
         } catch (error) {
-            console.error('Login error:', error);
+            toast.error(error?.response?.data?.result || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }
