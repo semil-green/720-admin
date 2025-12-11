@@ -63,7 +63,7 @@ const AddBlog = ({ blogId }) => {
 
             if (saveBlog?.status === 200) {
                 toast.success("Blog added successfully.");
-                router.push("/dashboard");
+                router.push("/blogs");
             }
         } catch (err) {
             toast.error(err?.response?.data?.result || "Failed to add new blog.");
@@ -149,7 +149,7 @@ const AddBlog = ({ blogId }) => {
 
             if (updateBlog?.status === 200) {
                 toast.success("Blog updated successfully.");
-                router.push("/dashboard");
+                router.push("/blogs");
             }
         } catch (err) {
             toast.error(err?.response?.data?.result || "Failed to update blog.");
@@ -273,7 +273,7 @@ const AddBlog = ({ blogId }) => {
                     }
 
                     <button
-                        onClick={() => router.push("/dashboard")}
+                        onClick={() => router.push("/blogs")}
                         className="px-4 py-1.5 bg-gray-600 hover:bg-gray-700 text-white rounded"
                     >
                         Back

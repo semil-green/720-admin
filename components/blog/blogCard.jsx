@@ -120,7 +120,7 @@ export default function BlogRow({ blog, onDelete }) {
                     <DropdownMenuContent align="end">
                         {/* Edit */}
                         <DropdownMenuItem className="hover:!bg-blue-600 hover:text-white cursor-pointer"
-                            onClick={() => router.push(`/dashboard/add/?id=${blog?._id}`)}
+                            onClick={() => router.push(`/blogs/add/?id=${blog?._id}`)}
                         >
                             <Pencil className="mr-2 h-4 w-4 hover:text-white" /> Edit
                         </DropdownMenuItem>

@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 
 export const fullMenuItems = [
-  { label: "Home", href: "/dashboard", icon: Home },
+  { label: "Blogs", href: "/blogs", icon: Home },
 
 ];
 

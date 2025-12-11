@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 const page = () => {
     const router = useRouter();
     const [page, setPage] = useState(1);
-    const [limit, setLimit] = useState(3);
+    const [limit, setLimit] = useState(7);
     const [pagination, setPagination] = useState({
         page: 1,
         totalPages: 1
@@ -75,7 +75,7 @@ const page = () => {
                 <div className="flex justify-end items-center  p-6">
                     {/* <h1 className="text-3xl font-bold">Blogs</h1> */}
                     <button
-                        onClick={() => router.push("/dashboard/add")}
+                        onClick={() => router.push("/blogs/add")}
                         className="px-5 py-2 bg-primary text-white rounded"
                     >
                         + Add New Blog

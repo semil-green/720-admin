@@ -24,7 +24,7 @@ function App() {
 
             if (verifyLogin.status === 200) {
                 localStorage.setItem("auth_token", verifyLogin.data.auth_token);
-                router.push('/dashboard');
+                router.push('/blogs');
             }
         } catch (error) {
             toast.error(error?.response?.data?.result || "Login failed. Please try again.");
