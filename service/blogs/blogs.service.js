@@ -1,12 +1,12 @@
 import axios from "axios";
 
-export const fetchAllBlogsService = async (page, limit) => {
+export const fetchAllBlogsService = async (page, limit, search) => {
     try {
         const auth_token = localStorage.getItem("auth_token");
 
         const fetchBlogs = await axios.post(
             `${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/blog/all`,
-            { page, limit },
+            { page, limit, search },
             {
                 headers: {
                     authorization: auth_token,

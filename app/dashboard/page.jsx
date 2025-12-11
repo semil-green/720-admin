@@ -8,6 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setAllBlogs } from '@/store/slices/blogs/blogs.slice';
 import BlogRowSkeleton from '@/components/skeleton/blogSkeleton';
 import BlogRow from '@/components/blog/blogCard';
+import { Input } from '@/components/ui/input';
 const page = () => {
     const router = useRouter();
     const [page, setPage] = useState(1);
@@ -17,14 +18,16 @@ const page = () => {
         totalPages: 1
     });
     const [isLoading, setIsLoading] = useState(false);
-    const dispatch = useDispatch();
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
 
+    const dispatch = useDispatch();
 
     const blogsData = async () => {
 
         try {
             setIsLoading(true)
-            const data = await fetchAllBlogsService(page, limit)
+            const data = await fetchAllBlogsService(page, limit, search)
 
             if (data) {
                 dispatch(setAllBlogs(data?.data?.blogs || []));
@@ -42,9 +45,23 @@ const page = () => {
         }
     }
 
+
     useEffect(() => {
-        blogsData()
-    }, [page])
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [search]);
+
+    useEffect(() => {
+        blogsData();
+    }, [page, debouncedSearch]);
+
+
+
 
     const blogs = useSelector((state) => state.blogSlice.blogs);
 
@@ -63,6 +80,19 @@ const page = () => {
                     >
                         + Add New Blog
                     </button>
+                </div>
+
+                <div className='flex flex-col gap-2 my-4'>
+                    <Input
+                        type="text"
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPage(1);
+                        }}
+
+                        placeholder="Search Blog......"
+                    />
                 </div>
 
                 <div className="w-full overflow-x-auto">
