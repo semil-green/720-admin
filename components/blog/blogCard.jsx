@@ -69,29 +69,39 @@ export default function BlogRow({ blog, onDelete }) {
         setOpenDeleteDialog(false);
     };
 
+    const formattedDate = new Date(blog?.date).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+    });
+
+
     return (
         <div className="min-w-max flex items-center gap-6 py-4 px-6 border-b hover:bg-gray-50 transition">
             <div className="flex items-center gap-4 flex-[2] min-w-0">
                 <img
                     src={blog?.image || "default.jpg"}
-                    alt={blog.title}
+                    alt={blog?.title}
                     className="w-20 h-14 object-cover rounded"
                 />
                 <div className="min-w-0">
-                    <h3 className="font-semibold text-gray-900 truncate">{blog.title}</h3>
-                    <p className="text-sm text-gray-500 truncate">{blog.description}</p>
+                    <h3 className="font-semibold text-gray-900 truncate">{blog?.title}</h3>
+                    {/* <p className="text-sm text-gray-500 truncate">{blog.description}</p> */}
+                    <p className="text-sm text-gray-500 line-clamp-2">
+                        {blog?.description?.split(" ").slice(0, 10).join(" ") + "..."}
+                    </p>
                 </div>
             </div>
 
             {/* Status + Date */}
             <div className="flex items-center gap-6 flex-[1.2] text-sm text-gray-600 min-w-0">
                 <span
-                    className={`px-2 py-1 rounded text-md font-medium text-white shrink-0 text-center inline-block min-w-[80px] ${blog.status === "Published" ? "bg-green-600" : "bg-yellow-600"
+                    className={`px-2 py-1 rounded text-md font-medium text-white shrink-0 text-center inline-block min-w-[80px] ${blog?.status === "Published" ? "bg-green-600" : "bg-yellow-600"
                         }`}
                 >
                     {blog.status || "Draft"}
                 </span>
-                <span className="truncate">{blog.date || "N/A"}</span>
+                <span className="truncate">{formattedDate || "N/A"}</span>
             </div>
 
             {/* Actions */}
@@ -106,17 +116,17 @@ export default function BlogRow({ blog, onDelete }) {
                     <DropdownMenuContent align="end">
                         {/* Edit */}
                         <DropdownMenuItem className="hover:!bg-blue-600 hover:text-white cursor-pointer"
-                            onClick={() => router.push(`/dashboard/add/?id=${blog._id}`)}
+                            onClick={() => router.push(`/dashboard/add/?id=${blog?._id}`)}
                         >
                             <Pencil className="mr-2 h-4 w-4 hover:text-white" /> Edit
                         </DropdownMenuItem>
 
                         {/* Publish / Draft */}
                         <DropdownMenuItem
-                            onClick={() => handleOpenStatusDialog(blog._id, blog.status)}
+                            onClick={() => handleOpenStatusDialog(blog?._id, blog?.status)}
                             className="flex gap-2 items-center hover:!bg-blue-600 hover:text-white cursor-pointer"
                         >
-                            {blog.status === "Draft" ? (
+                            {blog?.status === "Draft" ? (
                                 <>
                                     <Upload size={16} className="mr-2 h-4 w-4 hover:text-white" /> Publish
                                 </>
@@ -128,12 +138,12 @@ export default function BlogRow({ blog, onDelete }) {
                         </DropdownMenuItem>
 
                         {/* Delete */}
-                        <DropdownMenuItem
+                        {/* <DropdownMenuItem
                             onClick={() => handleOpenDeleteDialog(blog._id)}
                             className="flex gap-2 items-center hover:!bg-red-600 hover:text-white cursor-pointer"
                         >
                             <Trash2 size={16} /> Delete
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                     </DropdownMenuContent>
                 </DropdownMenu>
             </div>

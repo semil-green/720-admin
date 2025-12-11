@@ -105,7 +105,9 @@ const AddBlog = ({ blogId }) => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        if (!fileInputRef.current?.files?.[0]) {
+        const file = fileInputRef.current?.files?.[0];
+
+        if (!file && !preview) {
             toast.error("Please select an image.");
             return;
         }
