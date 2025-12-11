@@ -78,20 +78,24 @@ export default function BlogRow({ blog, onDelete }) {
 
     return (
         <div className="min-w-max flex items-center gap-6 py-4 px-6 border-b hover:bg-gray-50 transition">
+
             <div className="flex items-center gap-4 flex-[2] min-w-0">
-                <img
-                    src={blog?.image || "default.jpg"}
-                    alt={blog?.title}
-                    className="w-20 h-14 object-cover rounded"
-                />
+                <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded">
+                    <img
+                        src={blog?.image || "default.jpg"}
+                        alt={blog?.title}
+                        className="w-full h-full object-cover object-center"
+                    />
+                </div>
+
                 <div className="min-w-0">
                     <h3 className="font-semibold text-gray-900 truncate">{blog?.title}</h3>
-                    {/* <p className="text-sm text-gray-500 truncate">{blog.description}</p> */}
                     <p className="text-sm text-gray-500 line-clamp-2">
                         {blog?.description?.split(" ").slice(0, 10).join(" ") + "..."}
                     </p>
                 </div>
             </div>
+
 
             {/* Status + Date */}
             <div className="flex items-center gap-6 flex-[1.2] text-sm text-gray-600 min-w-0">
