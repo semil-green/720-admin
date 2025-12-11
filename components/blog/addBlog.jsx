@@ -218,6 +218,8 @@ const AddBlog = ({ blogId }) => {
                     </div>
 
                     {/* Image Upload + Preview */}
+                    <label className="block font-medium mb-1">Blog Image</label>
+
                     <input
                         type="file"
                         accept="image/*"
