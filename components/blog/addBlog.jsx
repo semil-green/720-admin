@@ -170,15 +170,12 @@ const AddBlog = ({ blogId }) => {
 
             </div>
             <div className="max-w-3xl mx-auto my-4">
-                {/* Page Title */}
                 <div className="flex flex-col md:flex-row  items-center justify-between mb-6">
                     <h1 className="text-3xl font-bold">Add New Blog</h1>
 
                 </div>
 
-                {/* Form */}
                 <form className="space-y-6">
-                    {/* Blog Title */}
                     <div>
                         <label className="block font-medium mb-1">Blog Title</label>
                         <Input
@@ -190,7 +187,6 @@ const AddBlog = ({ blogId }) => {
                         />
                     </div>
 
-                    {/* Blog Description */}
                     <div>
                         <label className="block font-medium mb-1">Description</label>
 
@@ -207,7 +203,6 @@ const AddBlog = ({ blogId }) => {
 
                     </div>
 
-                    {/* Status */}
                     <div>
                         <label className="block font-medium mb-1">Status</label>
                         <select
@@ -220,7 +215,6 @@ const AddBlog = ({ blogId }) => {
                         </select>
                     </div>
 
-                    {/* Image Upload + Preview */}
                     <label className="block font-medium mb-1">Blog Image</label>
 
                     <input
@@ -253,6 +247,7 @@ const AddBlog = ({ blogId }) => {
                         </div>
                     )}
                 </form>
+
                 <div className="flex gap-4 justify-center my-4">
 
                     {

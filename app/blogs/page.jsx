@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { useSelector, useDispatch } from 'react-redux';
 import { setAllBlogs } from '@/store/slices/blogs/blogs.slice';
 import BlogRowSkeleton from '@/components/skeleton/blogSkeleton';
-import BlogRow from '@/components/blog/blogCard';
+import BlogRow from '@/components/blog/blogRow';
 import { Input } from '@/components/ui/input';
 import { FileX } from "lucide-react";
 

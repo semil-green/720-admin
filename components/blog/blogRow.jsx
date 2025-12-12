@@ -131,7 +131,7 @@ export default function BlogRow({ blog, onDelete }) {
                                 onClick={() => router.push(`/blogs/add/?id=${blog?._id}`)}
                                 className="cursor-pointer"
                             >
-                                <Pencil className="mr-2 h-4 w-4 text-gray-500" /> Edit Blog
+                                <Pencil className="mr-2 h-4 w-4 hover:text-gray-500" /> Edit Blog
                             </DropdownMenuItem>
 
                             <DropdownMenuItem
@@ -140,23 +140,22 @@ export default function BlogRow({ blog, onDelete }) {
                             >
                                 {isPublished ? (
                                     <>
-                                        <FileX className="mr-2 h-4 w-4 text-gray-500" /> Unpublish
+                                        <FileX className="mr-2 h-4 w-4 hover:text-gray-500 " /> Draft
                                     </>
                                 ) : (
                                     <>
-                                        <Upload className="mr-2 h-4 w-4 text-gray-500" /> Publish
+                                        <Upload className="mr-2 h-4 w-4 hover:text-gray-500" /> Publish
                                     </>
                                 )}
                             </DropdownMenuItem>
 
-                            <DropdownMenuSeparator />
 
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                                 onClick={() => handleOpenDeleteDialog(blog._id)}
                                 className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                             >
                                 <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
