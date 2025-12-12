@@ -9,6 +9,8 @@ import { setAllBlogs } from '@/store/slices/blogs/blogs.slice';
 import BlogRowSkeleton from '@/components/skeleton/blogSkeleton';
 import BlogRow from '@/components/blog/blogCard';
 import { Input } from '@/components/ui/input';
+import { FileX } from "lucide-react";
+
 const page = () => {
     const router = useRouter();
     const [page, setPage] = useState(1);
@@ -95,38 +97,43 @@ const page = () => {
                     />
                 </div>
 
-                <div className="w-full overflow-x-auto">
-                    <div className="min-w-max">
+                <div className="w-full space-y-4">
 
-                        <div className="flex items-center gap-6 py-3 px-6 bg-gray-100 font-semibold text-gray-700 border-y">
-                            <div className="flex-[2] min-w-0">Blog</div>
-                            <div className="flex items-center gap-6 flex-[1.2] min-w-0">
-                                <span className="inline-block min-w-[80px]">Status</span>
-                                <span>Date</span>
+                    <div className="border border-gray-200 rounded-lg bg-white overflow-hidden shadow-sm">
+                        <div className="w-full overflow-x-auto">
+
+                            <div className="min-w-[700px] flex items-center gap-4 px-6 py-3 bg-gray-50/50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+
+                                <div className="flex-1 min-w-[300px]">Blog Details</div>
+
+                                <div className="w-[110px] text-center">Status</div>
+
+                                <div className="w-[120px] text-center">Date</div>
+
+                                <div className="w-[40px] text-right"></div>
                             </div>
-                            <div className="flex-[0.8] text-right shrink-0">Actions</div>
+                            <div className="divide-y divide-gray-100">
+                                {isLoading ? (
+                                    <BlogRowSkeleton />
+                                ) : (
+                                    blogs?.length > 0 ? (
+                                        blogs.map((blog) => (
+                                            <BlogRow key={blog._id} blog={blog} onDelete={handleDelete} />
+                                        ))
+                                    ) : (
+                                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center min-w-[700px]">
+                                            <div className="bg-gray-100 rounded-full p-4 mb-3">
+                                                <FileX className="h-6 w-6 text-gray-400" />
+                                            </div>
+                                            <h3 className="text-sm font-medium text-gray-900">No blogs found</h3>
+                                            <p className="mt-1 text-sm text-gray-500">
+                                                Get started by creating your first blog post.
+                                            </p>
+                                        </div>
+                                    )
+                                )}
+                            </div>
                         </div>
-
-                        <div className="border rounded-b-lg px-0">
-
-                            {
-                                isLoading ? (<BlogRowSkeleton />) : (
-                                    <>
-                                        {
-                                            blogs?.length > 0 ? blogs?.map((blog, index) => (
-                                                <BlogRow key={blog._id} blog={blog} onDelete={handleDelete} />
-                                            )) : (
-                                                <div className="p-4 text-center text-gray-500">
-                                                    No blog found.
-                                                </div>
-                                            )
-                                        }
-                                    </>
-                                )
-                            }
-
-                        </div>
-
                     </div>
                 </div>
 
@@ -137,7 +144,7 @@ const page = () => {
                 <button
                     disabled={page === 1}
                     onClick={() => setPage(page - 1)}
-                    className={`px-4 py-2 rounded border bg-primary text-white transition ${page === 1 ? "opacity-40 cursor-not-allowed" : ""
+                    className={`px-2 py-1 rounded border bg-primary text-white transition ${page === 1 ? "opacity-40 cursor-not-allowed" : ""
                         }`}
                 >
                     Previous
@@ -150,7 +157,7 @@ const page = () => {
                 <button
                     disabled={page === pagination.totalPages || blogs?.length === 0}
                     onClick={() => setPage(page + 1)}
-                    className={`px-4 py-2 rounded border bg-primary text-white transition ${page === pagination.totalPages ? "opacity-40 cursor-not-allowed" : ""
+                    className={`px-4 py-1 rounded border bg-primary text-white transition ${page === pagination.totalPages ? "opacity-40 cursor-not-allowed" : ""
                         }`}
                 >
                     Next

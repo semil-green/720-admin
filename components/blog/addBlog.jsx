@@ -30,11 +30,6 @@ const AddBlog = ({ blogId }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!fileInputRef.current?.files?.[0]) {
-            toast.error("Please select an image.");
-            return;
-        }
-
         if (!title) {
             toast.error("Please enter title");
             return;
@@ -49,6 +44,12 @@ const AddBlog = ({ blogId }) => {
             toast.error("Please select status");
             return;
         }
+
+        if (!fileInputRef.current?.files?.[0]) {
+            toast.error("Please select an image.");
+            return;
+        }
+
 
         const formData = new FormData();
         formData.append("title", title);
@@ -107,11 +108,6 @@ const AddBlog = ({ blogId }) => {
 
         const file = fileInputRef.current?.files?.[0];
 
-        if (!file && !preview) {
-            toast.error("Please select an image.");
-            return;
-        }
-
         if (!title) {
             toast.error("Please enter title");
             return;
@@ -126,6 +122,13 @@ const AddBlog = ({ blogId }) => {
             toast.error("Please select status");
             return;
         }
+
+        if (!file && !preview) {
+            toast.error("Please select an image.");
+            return;
+        }
+
+
 
         try {
             setLoading(true);
