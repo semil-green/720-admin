@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Pencil, Trash2, MoreHorizontal, Upload, FileX, Calendar } from "lucide-react";
+import { Pencil, Trash2, MoreHorizontal, Upload, FileX, Calendar, Eye, Edit } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -30,7 +30,7 @@ export default function BlogRow({ blog, onDelete }) {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const [selectedBlogStatus, setSelectedBlogStatus] = useState("");
-
+    console.log("blog :", blog)
     const dispatch = useDispatch();
     const router = useRouter();
 
@@ -50,7 +50,9 @@ export default function BlogRow({ blog, onDelete }) {
                 dispatch(updateBlogStatus({ ...blog, status: selectedBlogStatus }));
                 toast.error("Failed to update blog status.");
             } else {
-                toast.success(`Blog ${newStatus === "Published" ? "published" : "moved to drafts"}.`);
+                toast.success(
+                    `Blog ${newStatus === "Published" ? "published" : "moved to drafts"}.`
+                );
             }
         } catch {
             dispatch(updateBlogStatus({ ...blog, status: selectedBlogStatus }));
@@ -82,82 +84,84 @@ export default function BlogRow({ blog, onDelete }) {
         : "bg-amber-50 text-amber-700 border-amber-200";
 
     return (
+
         <>
-            <div className="group flex items-center gap-4 py-3 px-6 border-b border-gray-100 bg-white hover:hover:bg-blue-50 transition-colors min-w-[700px]">
+            <div className="bg-white border-2 rounded-lg shadow-md hover:shadow-md transition overflow-hidden my-4 hover:border-[#00D4FF]
+    focus-within:border-[#00D4FF]">
+                <div className="flex flex-col sm:flex-row">
 
-                <div className="flex items-center gap-4 flex-1 min-w-[300px]">
-                    <div className="flex-shrink-0 relative h-12 w-16 overflow-hidden rounded-md border border-gray-200 bg-gray-100">
-                        <img
-                            src={blog?.image || "/placeholder.jpg"}
-                            alt={blog?.title}
-                            className="h-full w-full object-cover"
-                        />
+                    <div className="sm:w-64 w-full flex items-center justify-center px-4 py-4 sm:py-6">
+                        <div className="w-full aspect-[4/3] max-h-[180px] overflow-hidden bg-gray-100 rounded-lg">
+                            <img
+                                src={blog?.image || "/placeholder.jpg"}
+                                alt={blog?.title}
+                                className="w-full h-full object-cover"
+                            />
+                        </div>
                     </div>
 
-                    <div className="min-w-0 flex-1">
-                        <h3 className="font-medium text-gray-900 truncate text-sm">
-                            {blog?.title || "Untitled Blog"}
-                        </h3>
-                        <p className="text-sm text-gray-500 truncate mt-0.5">
-                            {blog?.description || "No description provided."}
-                        </p>
-                    </div>
-                </div>
+                    <div className="flex-1 p-6 sm:pl-8">
+                        <div className="flex items-start justify-between gap-4">
 
-                <div className="flex-shrink-0 w-[110px] flex justify-center">
-                    <span
-                        className={`inline-flex items-center justify-center w-[85px] px-2 py-0.5 rounded-full text-xs font-semibold border ${statusStyles}`}
-                    >
-                        <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${isPublished ? "bg-emerald-500" : "bg-amber-500"}`}></span>
-                        {blog.status || "Draft"}
-                    </span>
-                </div>
+                            <div className="flex-1 min-w-0 pr-2">
+                                <h2 className="text-xl font-semibold text-gray-900 line-clamp-2 leading-snug min-h-[3.25rem] mb-2">
+                                    {blog?.title || "Untitled Blog"}
+                                </h2>
 
-                <div className="flex-shrink-0 w-[120px] text-sm text-gray-500 flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5 text-gray-400" />
-                    <span>{formattedDate}</span>
-                </div>
+                                <p className="text-gray-600 line-clamp-2 leading-relaxed min-h-[3rem] mb-4 max-w-[100%]">
+                                    {blog?.description || "No description provided."}
+                                </p>
 
-                <div className="flex-shrink-0 w-[40px] flex justify-end">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <button className="h-8 w-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all">
-                                <MoreHorizontal className="h-4 w-4" />
-                            </button>
-                        </DropdownMenuTrigger>
+                                <div className="flex items-center text-sm text-gray-500 gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>{formattedDate}</span>
 
-                        <DropdownMenuContent align="end" className="w-48">
-                            <DropdownMenuItem
+                                    <span className="mx-1 text-gray-400">|</span>
+
+                                    <span
+                                        className={`px-3 py-1 rounded-full text-xs font-medium ${isPublished
+                                            ? "bg-emerald-100 text-emerald-800"
+                                            : "bg-amber-100 text-amber-800"
+                                            }`}
+                                    >
+                                        {blog?.status}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-wrap items-center gap-3 mt-5">
+
+                            <button
+                                className="flex items-center gap-2  py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition"
                                 onClick={() => router.push(`/blogs/add/?id=${blog?._id}`)}
-                                className="cursor-pointer"
-                            >
-                                <Pencil className="mr-2 h-4 w-4 hover:text-gray-500" /> Edit Blog
-                            </DropdownMenuItem>
 
-                            <DropdownMenuItem
+                            >
+                                <Edit size={18} />
+                                Edit
+                            </button>
+
+                            <button
                                 onClick={() => handleOpenStatusDialog(blog?._id, blog?.status)}
-                                className="cursor-pointer"
+                                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition ${isPublished
+                                    ? "text-amber-600 hover:bg-amber-50"
+                                    : "text-emerald-600 hover:bg-emerald-50"
+                                    }`}
                             >
                                 {isPublished ? (
                                     <>
-                                        <FileX className="mr-2 h-4 w-4 hover:text-gray-500 " /> Draft
+                                        <FileX size={18} />
+                                        Move to Draft
                                     </>
                                 ) : (
                                     <>
-                                        <Upload className="mr-2 h-4 w-4 hover:text-gray-500" /> Publish
+                                        <Upload size={18} />
+                                        Move to Publish
                                     </>
                                 )}
-                            </DropdownMenuItem>
-
-
-                            {/* <DropdownMenuItem
-                                onClick={() => handleOpenDeleteDialog(blog._id)}
-                                className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Delete
-                            </DropdownMenuItem> */}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -165,7 +169,9 @@ export default function BlogRow({ blog, onDelete }) {
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>
-                            {selectedBlogStatus === "Draft" ? "Publish Blog Post?" : "Revert to Draft?"}
+                            {selectedBlogStatus === "Draft"
+                                ? "Publish Blog Post?"
+                                : "Unpublish Blog Post?"}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             {selectedBlogStatus === "Draft"
@@ -176,7 +182,11 @@ export default function BlogRow({ blog, onDelete }) {
                     <AlertDialogFooter>
                         <AlertDialogCancel>Cancel</AlertDialogCancel>
                         <AlertDialogAction
-                            className={selectedBlogStatus === "Draft" ? "bg-emerald-600 hover:bg-emerald-700" : "bg-amber-600 hover:bg-amber-700"}
+                            className={
+                                selectedBlogStatus === "Draft"
+                                    ? "bg-emerald-600 hover:bg-emerald-700"
+                                    : "bg-amber-600 hover:bg-amber-700"
+                            }
                             onClick={handleConfirmStatusChange}
                         >
                             Confirm
@@ -184,26 +194,8 @@ export default function BlogRow({ blog, onDelete }) {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
-
-            <AlertDialog open={openDeleteDialog} onOpenChange={setOpenDeleteDialog}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Blog Post?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            This action cannot be undone. This will permanently remove the blog and its data from our servers.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                            className="bg-red-600 hover:bg-red-700"
-                            onClick={handleConfirmDelete}
-                        >
-                            Delete
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
+
+
     );
 }

@@ -26,12 +26,16 @@ const AddBlog = ({ blogId }) => {
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
+            setImage(file);
             setPreview(URL.createObjectURL(file));
         }
     };
 
+
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
 
         if (!title) {
             toast.error("Please enter title");
@@ -48,7 +52,7 @@ const AddBlog = ({ blogId }) => {
             return;
         }
 
-        if (!fileInputRef.current?.files?.[0]) {
+        if (!image) {
             toast.error("Please select an image.");
             return;
         }
@@ -60,7 +64,7 @@ const AddBlog = ({ blogId }) => {
         formData.append("status", status);
         formData.append("date", new Date(date).toISOString());
 
-        formData.append("image", fileInputRef.current.files[0]);
+        formData.append("image", image);
 
         try {
             setLoading(true);
@@ -88,7 +92,6 @@ const AddBlog = ({ blogId }) => {
             const fetchData = await fetchBlogsByIdService(blogId)
             const data = fetchData?.result;
 
-            console.log("data123", JSON.stringify(data, null, 2));
             setTitle(data?.title || "");
             setDescription(data?.description || "");
             setStatus(data?.status || "Published");
@@ -116,8 +119,6 @@ const AddBlog = ({ blogId }) => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
-        const file = fileInputRef.current?.files?.[0];
-
         if (!title) {
             toast.error("Please enter title");
             return;
@@ -133,12 +134,10 @@ const AddBlog = ({ blogId }) => {
             return;
         }
 
-        if (!file && !preview) {
+        if (!image && !preview) {
             toast.error("Please select an image.");
             return;
         }
-
-
 
         try {
             setLoading(true);
@@ -150,11 +149,17 @@ const AddBlog = ({ blogId }) => {
             formData.append("status", status);
             formData.append("date", new Date(date).toISOString());
 
-            const selectedFile = fileInputRef.current?.files?.[0];
-
-            if (selectedFile) {
-                formData.append("image", selectedFile);
-            } else if (preview) {
+            /**
+             * IMAGE HANDLING
+             * ----------------
+             * If user selected a new image → send File
+             * Else → send existing image URL
+             */
+            if (image) {
+                // NEW IMAGE SELECTED
+                formData.append("image", image);
+            } else {
+                // IMAGE NOT CHANGED → SEND EXISTING URL
                 formData.append("image", preview);
             }
 
@@ -171,97 +176,121 @@ const AddBlog = ({ blogId }) => {
         }
     };
 
-
     return (
-        <div>
+        <div className="min-h-screen bg-gray-50">
             {loading && <Loader />}
-
-            <div className="max-w-3xl mx-auto my-8">
-
-                <div className="flex flex-col md:flex-row items-center justify-between mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800">Add New Blog</h1>
-                </div>
-
-
-                <div className="bg-white shadow-md rounded-lg p-6 border">
+            <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+                <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 sm:p-8">
                     <form className="space-y-6">
 
-
-                        <div className="space-y-2">
-                            <label className="block font-medium text-gray-700">Blog Title</label>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Blog Title <span className="text-red-500">*</span>
+                            </label>
                             <Input
-                                type="text"
-                                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-primary"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
-                                required
+                                placeholder="Enter blog title"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block font-medium text-gray-700">Description</label>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Blog Description <span className="text-red-500">*</span>
+                            </label>
                             <Textarea
-                                className="w-full border rounded-lg px-3 py-2 resize-none overflow-hidden focus:outline-none focus:border-primary"
                                 value={description}
                                 onChange={(e) => {
                                     setDescription(e.target.value);
                                     e.target.style.height = "auto";
                                     e.target.style.height = `${e.target.scrollHeight}px`;
                                 }}
-                                placeholder="Write blog description..."
+                                rows={5}
+                                placeholder="Write your blog description here..."
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             />
                         </div>
 
-                        <div className="space-y-2">
-                            <label className="block font-medium text-gray-700">Blog Date</label>
-                            <input
-                                type="date"
-                                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-primary bg-white"
-                                value={date}
-                                onChange={(e) => setDate(e.target.value)}
-                                max={new Date().toISOString().split("T")[0]}
-                            />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Publish Date <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="date"
+                                    value={date}
+                                    onChange={(e) => setDate(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
+                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Status
+                                </label>
+                                <select
+                                    value={status}
+                                    onChange={(e) => setStatus(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
+                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option>Draft</option>
+                                    <option>Published</option>
+                                </select>
+                            </div>
                         </div>
 
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Featured Image <span className="text-red-500">*</span>
+                            </label>
 
-                        <div className="space-y-2">
-                            <label className="block font-medium text-gray-700">Status</label>
-                            <select
-                                className="w-full border rounded-lg px-3 py-2 bg-white focus:outline-none focus:border-primary"
-                                value={status}
-                                onChange={(e) => setStatus(e.target.value)}
-                            >
-                                <option>Draft</option>
-                                <option>Published</option>
-                            </select>
-                        </div>
-
-                        {/* Blog Image */}
-                        <div className="space-y-2">
-                            <label className="block font-medium text-gray-700">Blog Image</label>
-                            <input
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                ref={fileInputRef}
-                                className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:border-primary bg-white"
-                            />
-
-                            {/* Preview */}
-                            {preview && (
-                                <div className="relative mt-3 w-56 h-36 group">
+                            {!preview ? (
+                                <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition">
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                        id="image-upload"
+                                    />
+                                    <label htmlFor="image-upload" className="cursor-pointer">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="h-14 w-14 rounded-full bg-gray-100 flex items-center justify-center">
+                                                ⬆️
+                                            </div>
+                                            <p className="text-sm font-medium text-gray-700">
+                                                Click to upload image
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                                PNG, JPG up to 10MB
+                                            </p>
+                                        </div>
+                                    </label>
+                                </div>
+                            ) : (
+                                <div className="relative rounded-lg overflow-hidden border">
                                     <img
                                         src={preview}
                                         alt="Preview"
-                                        className="w-full h-full object-cover rounded-lg border shadow-sm"
+                                        className="w-full h-64 object-cover"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => {
                                             setPreview(null);
-                                            if (fileInputRef.current) fileInputRef.current.value = "";
+                                            setImage(null);
+                                            if (fileInputRef.current) {
+                                                fileInputRef.current.value = "";
+                                            }
                                         }}
-                                        className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-7 h-7 flex items-center justify-center text-sm opacity-90 hover:bg-red-700"
+                                        className="absolute top-3 right-3 h-8 w-8 bg-red-500 text-white
+                                   rounded-full flex items-center justify-center hover:bg-red-600"
                                     >
                                         ×
                                     </button>
@@ -269,41 +298,28 @@ const AddBlog = ({ blogId }) => {
                             )}
                         </div>
                     </form>
-
-                    <div className="flex gap-4 justify-center mt-6">
-                        {blogId ? (
-                            <button
-                                type="submit"
-                                className="px-4 py-1 bg-primary text-white rounded-lg text-md shadow hover:opacity-90 transition"
-                                onClick={handleUpdate}
-                            >
-                                Update Blog
-                            </button>
-                        ) : (
-                            <button
-                                type="submit"
-                                className="px-4 py-1 bg-primary text-white rounded-lg text-md shadow hover:opacity-90 transition"
-                                onClick={handleSubmit}
-                            >
-                                Save Blog
-                            </button>
-                        )}
-
-                        <button
-                            onClick={() => router.push("/blogs")}
-                            className="px-4 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-md shadow"
-                        >
-                            Back
-                        </button>
-                    </div>
                 </div>
 
-                {/* Buttons */}
+                <div className="flex flex-col-reverse sm:flex-row gap-4 justify-center mt-6">
+                    <button
+                        onClick={() => router.push("/blogs")}
+                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                    >
+                        Back
+                    </button>
+
+                    <button
+                        onClick={blogId ? handleUpdate : handleSubmit}
+                        className="px-6 py-3 bg-primary text-white rounded-lg  shadow-sm"
+                    >
+                        {blogId ? "Update Blog Post" : "Publish Blog Post"}
+                    </button>
+                </div>
 
             </div>
-
         </div>
-    )
+    );
+
 }
 
 export default AddBlog
