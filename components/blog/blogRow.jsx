@@ -171,7 +171,7 @@ export default function BlogRow({ blog, onDelete }) {
                         <AlertDialogTitle>
                             {selectedBlogStatus === "Draft"
                                 ? "Publish Blog Post?"
-                                : "Unpublish Blog Post?"}
+                                : "Draft Blog Post?"}
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                             {selectedBlogStatus === "Draft"
