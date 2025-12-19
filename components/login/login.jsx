@@ -29,7 +29,7 @@ const Login = () => {
                 router.push('/blogs');
             }
         } catch (error) {
-            toast.error(error?.response?.data?.result || "Login failed. Please try again.");
+            toast.error(error?.response?.data?.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
         }

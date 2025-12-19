@@ -11,6 +11,7 @@ const AddBlog = ({ blogId }) => {
     const router = useRouter();
 
     const [title, setTitle] = useState("");
+    const [slug, setSlug] = useState("");
     const [description, setDescription] = useState("");
     const [status, setStatus] = useState("Published");
     const [image, setImage] = useState(null);
@@ -176,6 +177,20 @@ const AddBlog = ({ blogId }) => {
         }
     };
 
+    const generateSlug = (title = "") =>
+        title
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, "")
+            .replace(/\s+/g, "-")
+            .replace(/-+/g, "-");
+
+    useEffect(() => {
+        setSlug(generateSlug(title));
+    }, [title]);
+
+
+
     return (
         <div className="min-h-screen bg-gray-50">
             {loading && <Loader />}
@@ -190,6 +205,19 @@ const AddBlog = ({ blogId }) => {
                             <Input
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
+                                placeholder="Enter blog title"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg
+                               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Slug
+                            </label>
+                            <Input
+                                value={slug}
+                                disabled
                                 placeholder="Enter blog title"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg
                                focus:ring-2 focus:ring-blue-500 focus:border-transparent"

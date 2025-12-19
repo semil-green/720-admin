@@ -3,17 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Users, StoreIcon, ShoppingBagIcon,
-  ChartColumnStacked, ShoppingCartIcon, FileDown,
-  Truck, Wallet, ArrowDownUp, ShoppingBasket,
-  UsersRound, BookText, ClockArrowUp, CirclePercent,
-  Menu, MapPin, PencilLine, SlidersHorizontal, Globe, Building2, FileText,
-  Proportions
+  Home, Users, Menu, Layers
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const fullMenuItems = [
   { label: "Blogs", href: "/blogs", icon: Home },
+  { label: "Category", href: "/category", icon: Layers },
 
 ];
 
