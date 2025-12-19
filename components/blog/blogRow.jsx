@@ -30,7 +30,7 @@ export default function BlogRow({ blog, onDelete }) {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
     const [selectedBlogId, setSelectedBlogId] = useState(null);
     const [selectedBlogStatus, setSelectedBlogStatus] = useState("");
-    console.log("blog :", blog)
+
     const dispatch = useDispatch();
     const router = useRouter();
 

@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 export const fullMenuItems = [
   { label: "Blogs", href: "/blogs", icon: Home },
   { label: "Category", href: "/category", icon: Layers },
-
+  { label: "Author", href: "/author", icon: Users },
 ];
 
 export default function Sidebar() {
