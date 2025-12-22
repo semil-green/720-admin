@@ -75,7 +75,7 @@ const page = () => {
     return (
         <MainLayout>
 
-            <div className="max-w-6xl mx-auto px-4 lg:px-0">
+            <div className="max-w-6xl mx-auto px-0 lg:px-0 my-4">
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-6">
                     <div>
