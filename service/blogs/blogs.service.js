@@ -67,13 +67,13 @@ export const updateBlogStatusService = async (blogId, newStatus) => {
     }
 }
 
-export const fetchBlogsByIdService = async (blogId) => {
+export const fetchBlogsByIdService = async (blogSlug) => {
 
     try {
 
         const auth_token = localStorage.getItem("auth_token");
 
-        const fetchBlog = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/blog/get-by-id/${blogId}`, {},
+        const fetchBlog = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/blog/get-by-slug/${blogSlug}`, {},
             {
                 headers: {
                     authorization: auth_token,

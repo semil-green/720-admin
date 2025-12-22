@@ -6,8 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { addNewBlogService, fetchBlogsByIdService, updateBlogService } from "@/service/blogs/blogs.service";
 import { toast } from "sonner";
 import Loader from "../loader/loader";
+import { Editor } from 'primereact/editor';
+import { useAllAuthors } from "@/lib/hooks/author/author.hook";
+import { useAllCategory } from "@/lib/hooks/category/category.hook";
 
-const AddBlog = ({ blogId }) => {
+
+
+const AddBlog = ({ blogSlug }) => {
     const router = useRouter();
 
     const [title, setTitle] = useState("");
@@ -16,6 +21,9 @@ const AddBlog = ({ blogId }) => {
     const [status, setStatus] = useState("Published");
     const [image, setImage] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [authors, setAuthors] = useState("");
+    const [category, setCategory] = useState("");
+    const [blogId, setBlogId] = useState("");
     const [date, setDate] = useState(() => {
         const today = new Date().toISOString().split("T")[0];
         return today;
@@ -23,6 +31,8 @@ const AddBlog = ({ blogId }) => {
     const [loading, setLoading] = useState(false);
 
     const fileInputRef = useRef(null);
+    const editorRef = useRef(null);
+    const isInitialLoad = useRef(true);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -48,6 +58,16 @@ const AddBlog = ({ blogId }) => {
             return;
         }
 
+        if (!authors) {
+            toast.error("Please select an author.");
+            return;
+        }
+
+        if (!category) {
+            toast.error("Please select a category.");
+            return;
+        }
+
         if (!status) {
             toast.error("Please select status");
             return;
@@ -59,11 +79,16 @@ const AddBlog = ({ blogId }) => {
         }
 
 
+
+
         const formData = new FormData();
         formData.append("title", title);
+        formData.append("slug", slug);
         formData.append("description", description);
         formData.append("status", status);
         formData.append("date", new Date(date).toISOString());
+        formData.append("category", category);
+        formData.append("author", authors);
 
         formData.append("image", image);
 
@@ -85,19 +110,22 @@ const AddBlog = ({ blogId }) => {
 
     const fetchBlogbyId = async () => {
 
-        if (!blogId) return;
+        if (!blogSlug) return;
         try {
 
             setLoading(true);
 
-            const fetchData = await fetchBlogsByIdService(blogId)
+            const fetchData = await fetchBlogsByIdService(blogSlug)
             const data = fetchData?.result;
 
             setTitle(data?.title || "");
             setDescription(data?.description || "");
             setStatus(data?.status || "Published");
-            setPreview(data?.image ? data.image : null);
-            setImage(data?.image || null);
+            setPreview(data?.image || null);
+            setImage(null);
+            setAuthors(data?.author?._id || "");
+            setCategory(data?.category?._id || "");
+            setBlogId(data?._id || "");
             setDate(
                 data?.date
                     ? new Date(data.date).toISOString().split("T")[0]
@@ -113,9 +141,26 @@ const AddBlog = ({ blogId }) => {
         }
     }
 
+
     useEffect(() => {
         fetchBlogbyId();
-    }, [blogId])
+    }, [blogSlug])
+
+    useEffect(() => {
+        if (
+            blogSlug &&
+            isInitialLoad.current &&
+            editorRef.current &&
+            description
+        ) {
+            editorRef.current
+                .getQuill()
+                .clipboard.dangerouslyPasteHTML(description);
+
+            isInitialLoad.current = false;
+        }
+    }, [blogSlug, description]);
+
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -127,6 +172,16 @@ const AddBlog = ({ blogId }) => {
 
         if (!description) {
             toast.error("Please enter description");
+            return;
+        }
+
+        if (!authors) {
+            toast.error("Please select an author.");
+            return;
+        }
+
+        if (!category) {
+            toast.error("Please select a category.");
             return;
         }
 
@@ -146,21 +201,17 @@ const AddBlog = ({ blogId }) => {
             const formData = new FormData();
             formData.append("id", blogId);
             formData.append("title", title);
+            formData.append("slug", slug);
             formData.append("description", description);
             formData.append("status", status);
             formData.append("date", new Date(date).toISOString());
+            formData.append("category", category);
+            formData.append("author", authors);
 
-            /**
-             * IMAGE HANDLING
-             * ----------------
-             * If user selected a new image → send File
-             * Else → send existing image URL
-             */
+
             if (image) {
-                // NEW IMAGE SELECTED
                 formData.append("image", image);
             } else {
-                // IMAGE NOT CHANGED → SEND EXISTING URL
                 formData.append("image", preview);
             }
 
@@ -189,7 +240,8 @@ const AddBlog = ({ blogId }) => {
         setSlug(generateSlug(title));
     }, [title]);
 
-
+    const allAuthors = useAllAuthors();
+    const allCategories = useAllCategory();
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -228,18 +280,52 @@ const AddBlog = ({ blogId }) => {
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Blog Description <span className="text-red-500">*</span>
                             </label>
-                            <Textarea
-                                value={description}
-                                onChange={(e) => {
-                                    setDescription(e.target.value);
-                                    e.target.style.height = "auto";
-                                    e.target.style.height = `${e.target.scrollHeight}px`;
+
+                            <Editor
+                                ref={editorRef}
+                                onTextChange={(e) => {
+                                    setDescription(e.htmlValue || "");
                                 }}
-                                rows={5}
-                                placeholder="Write your blog description here..."
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none
-                               focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                style={{ height: "300px" }}
                             />
+
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Author
+                                </label>
+                                <select
+                                    value={authors}
+                                    onChange={(e) => setAuthors(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
+                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    {
+                                        allAuthors?.map((author, index) => <option key={index} value={author?._id}>{author?.name}</option>)
+                                    }
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Category
+                                </label>
+                                <select
+                                    value={category}
+                                    onChange={(e) => setCategory(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
+                                 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    {
+                                        allCategories?.map((category, index) => <option key={index} value={category?._id}>{category?.name}</option>)
+                                    }
+                                </select>
+                            </div>
+
+
                         </div>
 
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -337,10 +423,10 @@ const AddBlog = ({ blogId }) => {
                     </button>
 
                     <button
-                        onClick={blogId ? handleUpdate : handleSubmit}
+                        onClick={blogSlug ? handleUpdate : handleSubmit}
                         className="px-6 py-3 bg-primary text-white rounded-lg  shadow-sm"
                     >
-                        {blogId ? "Update Blog Post" : "Publish Blog Post"}
+                        {blogSlug ? "Update Blog Post" : "Publish Blog Post"}
                     </button>
                 </div>
 

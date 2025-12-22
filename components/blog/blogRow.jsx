@@ -108,9 +108,9 @@ export default function BlogRow({ blog, onDelete }) {
                                     {blog?.title || "Untitled Blog"}
                                 </h2>
 
-                                <p className="text-gray-600 line-clamp-2 leading-relaxed min-h-[3rem] mb-4 max-w-[100%]">
-                                    {blog?.description || "No description provided."}
-                                </p>
+                                <p className="text-gray-600 line-clamp-2 leading-relaxed min-h-[3rem] mb-4 max-w-[100%]"
+                                    dangerouslySetInnerHTML={{ __html: blog?.description || "No description provided." }}
+                                />
 
                                 <div className="flex items-center text-sm text-gray-500 gap-2">
                                     <Calendar className="h-4 w-4" />
@@ -134,7 +134,7 @@ export default function BlogRow({ blog, onDelete }) {
 
                             <button
                                 className="flex items-center gap-2  py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition"
-                                onClick={() => router.push(`/blogs/add/?id=${blog?._id}`)}
+                                onClick={() => router.push(`/blogs/add/?slug=${blog?.slug}`)}
 
                             >
                                 <Edit size={18} />

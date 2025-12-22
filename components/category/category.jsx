@@ -78,10 +78,12 @@ const Category = () => {
                 <DialogContent className="sm:max-w-md">
                     <DialogHeader>
                         <DialogTitle>
-                            Add Category
+                            {editingCategory ? "Update Category" : "Add Category"}
                         </DialogTitle>
                         <DialogDescription>
-                            Add/Update Category from here.
+                            {editingCategory
+                                ? "Update a category"
+                                : "Add a new category"}
                         </DialogDescription>
                     </DialogHeader>
 

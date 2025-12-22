@@ -6,7 +6,7 @@ const page = async ({ searchParams }) => {
 
     return (
         <MainLayout>
-            <AddBlog blogId={blogId?.id} />
+            <AddBlog blogSlug={blogId?.slug} />
         </MainLayout>
     );
 }
