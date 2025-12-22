@@ -86,7 +86,7 @@ export default function BlogRow({ blog, onDelete }) {
     return (
 
         <>
-            <div className="bg-white border-2 rounded-lg shadow-md hover:shadow-md transition overflow-visible md:overflow-hidden my-4 hover:border-[#00D4FF]
+            <div className="bg-white border-2 rounded-lg shadow-md hover:shadow-md transition  my-4 hover:border-[#00D4FF]
     focus-within:border-[#00D4FF]">
                 <div className="flex flex-col sm:flex-row">
 
