@@ -86,7 +86,7 @@ export default function BlogRow({ blog, onDelete }) {
     return (
 
         <>
-            <div className="bg-white border-2 rounded-lg shadow-md hover:shadow-md transition overflow-hidden my-4 hover:border-[#00D4FF]
+            <div className="bg-white border-2 rounded-lg shadow-md hover:shadow-md transition overflow-visible md:overflow-hidden my-4 hover:border-[#00D4FF]
     focus-within:border-[#00D4FF]">
                 <div className="flex flex-col sm:flex-row">
 
@@ -110,6 +110,7 @@ export default function BlogRow({ blog, onDelete }) {
 
                                 <p className="text-gray-600 line-clamp-2 leading-relaxed min-h-[3rem] mb-4 max-w-[100%]"
                                     dangerouslySetInnerHTML={{ __html: blog?.description || "No description provided." }}
+
                                 />
 
                                 <div className="flex items-center text-sm text-gray-500 gap-2">
