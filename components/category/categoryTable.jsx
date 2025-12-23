@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { updateCategoryStatusService } from "@/service/category/category.service";
-import { updatedPaginatedCategoryStatus } from "@/store/slices/category/category.slice";
+import { updateAllCategoryStatus, updatedPaginatedCategoryStatus } from "@/store/slices/category/category.slice";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 const CategoryTable = ({ data, onEdit }) => {
@@ -44,7 +44,7 @@ const CategoryTable = ({ data, onEdit }) => {
             if (res?.status == 200) {
 
                 dispatch(updatedPaginatedCategoryStatus(res.data.result));
-
+                dispatch(updateAllCategoryStatus(res.data.result))
                 toast.success(
                     newStatus ? "Category activated" : "Category deactivated"
                 );

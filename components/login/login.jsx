@@ -25,7 +25,8 @@ const Login = () => {
             const verifyLogin = await loginService(email, password);
 
             if (verifyLogin.status === 200) {
-                localStorage.setItem("auth_token", verifyLogin.data.auth_token);
+                localStorage.setItem("auth_token", verifyLogin?.data?.auth_token);
+                localStorage.setItem("role", verifyLogin?.data?.role)
                 router.push('/blogs');
             }
         } catch (error) {

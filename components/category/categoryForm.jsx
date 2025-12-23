@@ -60,6 +60,10 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (!formData.name) {
+            toast.error("Please enter category name");
+            return;
+        }
         try {
             const payload = {
                 ...formData,
@@ -85,6 +89,10 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
+        if (!formData.name) {
+            toast.error("Please enter category name");
+            return;
+        }
         try {
             const payload = {
                 id: editCategoryData._id,

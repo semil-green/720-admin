@@ -243,6 +243,9 @@ const AddBlog = ({ blogSlug }) => {
     const allAuthors = useAllAuthors();
     const allCategories = useAllCategory();
 
+    const activeAuthors = allAuthors.filter((author) => author.status === true);
+
+    const activeCategories = allCategories.filter((category) => category.status === true);
     return (
         <div className="min-h-screen bg-gray-50">
             {loading && <Loader />}
@@ -304,7 +307,7 @@ const AddBlog = ({ blogSlug }) => {
                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     {
-                                        allAuthors?.map((author, index) => <option key={index} value={author?._id}>{author?.name}</option>)
+                                        activeAuthors?.map((author, index) => <option key={index} value={author?._id}>{author?.name}</option>)
                                     }
                                 </select>
                             </div>
@@ -320,7 +323,7 @@ const AddBlog = ({ blogSlug }) => {
                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 >
                                     {
-                                        allCategories?.map((category, index) => <option key={index} value={category?._id}>{category?.name}</option>)
+                                        activeCategories?.map((category, index) => <option key={index} value={category?._id}>{category?.name}</option>)
                                     }
                                 </select>
                             </div>

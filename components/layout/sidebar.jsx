@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Home, Users, Menu, Layers
+  Home, Users, Menu, Layers, UserCircle
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -11,6 +11,7 @@ export const fullMenuItems = [
   { label: "Blogs", href: "/blogs", icon: Home },
   { label: "Category", href: "/category", icon: Layers },
   { label: "Author", href: "/author", icon: Users },
+  { label: "Team Member", href: "/team-member", icon: UserCircle },
 ];
 
 export default function Sidebar() {
@@ -30,22 +31,9 @@ export default function Sidebar() {
       return;
     }
 
-    if (role === "DSManager") {
+    if (role === "writer") {
       allowedLabels = [
-        "Customer Orders",
-        "Order Request",
-        "Inventories",
-        "Customer",
-        "Dashboard"
-      ];
-    } else if (role === "PCManager") {
-      allowedLabels = [
-        "Customer Orders",
-        "Store Orders",
-        "Inventories",
-        "Customer",
-        "Dashboard",
-        "Inward Materials"
+        "Blogs",
       ];
     }
 

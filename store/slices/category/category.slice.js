@@ -33,9 +33,14 @@ const categorySlice = createSlice({
         setAllCategories: (state, action) => {
             state.allCategories = action.payload;
         },
+        updateAllCategoryStatus: (state, action) => {
+            if (state.allCategories.length > 0) {
+                state.allCategories = state.allCategories.map((category) => category._id === action.payload._id ? action.payload : category)
+            }
+        }
 
     },
 });
 
-export const { setPaginatedCategories, setAllCategories, addPaginatedCategory, updatedPaginatedCategoryStatus, updatedPaginatedCategory } = categorySlice.actions;
+export const { setPaginatedCategories, setAllCategories, addPaginatedCategory, updatedPaginatedCategoryStatus, updatedPaginatedCategory, updateAllCategoryStatus } = categorySlice.actions;
 export default categorySlice.reducer;

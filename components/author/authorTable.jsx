@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useDispatch } from "react-redux";
 import { updateAuthorStatusService } from "@/service/author/author.service";
-import { updatePaginatedAuthorStatus } from "@/store/slices/author/author.slice";
+import { updateAllAuthorsStatus, updatePaginatedAuthorStatus } from "@/store/slices/author/author.slice";
 import { toast } from "sonner";
 const AuthorTable = ({ data, onEdit }) => {
 
@@ -46,7 +46,7 @@ const AuthorTable = ({ data, onEdit }) => {
             if (res?.status == 200) {
 
                 dispatch(updatePaginatedAuthorStatus(res.data.result));
-
+                dispatch(updateAllAuthorsStatus(res.data.result))
                 toast.success(
                     newStatus ? "Author activated" : "Author deactivated"
                 );

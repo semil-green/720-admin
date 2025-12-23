@@ -23,9 +23,14 @@ const authorSlice = createSlice({
         },
         setAllAuthors: (state, action) => {
             state.allAuthors = action.payload;
+        },
+        updateAllAuthorsStatus: (state, action) => {
+            if (state.allAuthors.length > 0) {
+                state.allAuthors = state.allAuthors.map((author) => author._id === action.payload._id ? action.payload : author)
+            }
         }
     },
 });
 
-export const { setPaginatedAuthors, setAllAuthors, updatePaginatedAuthor, addNewPaginatedAuthor, updatePaginatedAuthorStatus } = authorSlice.actions;
+export const { setPaginatedAuthors, setAllAuthors, updatePaginatedAuthor, addNewPaginatedAuthor, updatePaginatedAuthorStatus, updateAllAuthorsStatus } = authorSlice.actions;
 export default authorSlice.reducer;
