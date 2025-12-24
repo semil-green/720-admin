@@ -2,14 +2,6 @@
 import { useState } from "react";
 import { Pencil, Trash2, MoreHorizontal, Upload, FileX, Calendar, Eye, Edit } from "lucide-react";
 import {
-    DropdownMenu,
-    DropdownMenuTrigger,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-
-import {
     AlertDialog,
     AlertDialogContent,
     AlertDialogHeader,
@@ -24,6 +16,7 @@ import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { updateBlogStatus } from "@/store/slices/blogs/blogs.slice";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BlogRow({ blog, onDelete }) {
     const [openStatusDialog, setOpenStatusDialog] = useState(false);
@@ -161,6 +154,15 @@ export default function BlogRow({ blog, onDelete }) {
                                     </>
                                 )}
                             </button>
+                            <Link
+                                href={`/blogs/${blog?.slug}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 py-2 text-gray-600 hover:bg-gray-50 rounded-lg transition"
+                            >
+                                <Eye size={18} />
+                                View
+                            </Link>
                         </div>
                     </div>
                 </div>

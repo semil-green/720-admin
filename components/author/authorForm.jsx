@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addNewPaginatedAuthor, setPaginatedAuthors, updatePaginatedAuthor } from "@/store/slices/author/author.slice";
 import { addNewAuthorService, updateAuthorService } from "@/service/author/author.service";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 
 
 const generateSlug = (text = "") =>
@@ -58,8 +59,20 @@ const AuthorForm = ({ editAuthorData, handleClose }) => {
             toast.error("Please enter author name");
             return;
         }
+
+        if (!formData.name.trim()) {
+            toast.error("Please enter author name");
+            return;
+        }
+
         try {
-            const res = await addNewAuthorService(formData);
+            const payload = {
+                ...formData,
+                name: formData.name.trim(),
+                slug: generateSlug(formData.name.trim()),
+            };
+
+            const res = await addNewAuthorService(payload);
 
             if (res?.status === 200) {
                 dispatch(addNewPaginatedAuthor(res?.data?.result));
@@ -67,7 +80,13 @@ const AuthorForm = ({ editAuthorData, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            toast.error("Something went wrong. Failed to add author.");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+
+                toast.error("Something went wrong. Failed to add author.");
+            }
         }
     };
 
@@ -79,10 +98,19 @@ const AuthorForm = ({ editAuthorData, handleClose }) => {
             return;
         }
 
+        if (!formData.name.trim()) {
+            toast.error("Please enter author name");
+            return;
+        }
+
         try {
+            const trimmedName = formData.name.trim();
+
             const payload = {
                 id: editAuthorData._id,
                 ...formData,
+                name: trimmedName,
+                slug: generateSlug(trimmedName),
             };
 
             const res = await updateAuthorService(payload);
@@ -93,7 +121,13 @@ const AuthorForm = ({ editAuthorData, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            toast.error("Something went wrong. Failed to update author.");
+
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Something went wrong. Failed to update author.");
+            }
         }
     };
 
@@ -134,7 +168,7 @@ const AuthorForm = ({ editAuthorData, handleClose }) => {
                         })
                     }
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                         <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

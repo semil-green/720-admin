@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { addNewCategoryService, updateCategoryService } from "@/service/category/category.service";
 import { useDispatch } from "react-redux";
 import { addPaginatedCategory, updatedPaginatedCategory } from "@/store/slices/category/category.slice";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 const generateSlug = (text = "") =>
     text
         .toLowerCase()
@@ -64,9 +65,16 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
             toast.error("Please enter category name");
             return;
         }
+
+        if (!formData.name.trim()) {
+            toast.error("Please enter category name");
+            return;
+        }
+
         try {
             const payload = {
                 ...formData,
+                name: formData.name.trim(),
                 tags: tagsInput
                     .split(",")
                     .map(tag => tag.trim())
@@ -82,7 +90,13 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
             }
 
         } catch (err) {
-            toast.error("Something went wrong. Failed to add category.");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+
+                toast.error("Something went wrong. Failed to add category.");
+            }
         }
     };
 
@@ -93,6 +107,12 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
             toast.error("Please enter category name");
             return;
         }
+
+        if (!formData.name.trim()) {
+            toast.error("Please enter category name");
+            return;
+        }
+
         try {
             const payload = {
                 id: editCategoryData._id,
@@ -110,7 +130,12 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            toast.error("Something went wrong. Failed to update category.");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+
+                toast.error("Something went wrong. Failed to update category.");
+            }
         }
     };
 
@@ -183,11 +208,12 @@ const CategoryForm = ({ editCategoryData, handleClose }) => {
                             status: value === "active",
                         })
                     }
+
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                         <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent >
                         <SelectItem value="active">Active</SelectItem>
                         <SelectItem value="inactive">Inactive</SelectItem>
                     </SelectContent>

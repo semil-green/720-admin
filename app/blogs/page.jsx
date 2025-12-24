@@ -1,16 +1,17 @@
 "use client";
-import MainLayout from '@/components/layout/mainLayout'
-import { useRouter } from 'next/navigation';
-import React, { useState, useEffect } from 'react'
-import { fetchAllBlogsService } from '@/service/blogs/blogs.service';
-import { toast } from 'sonner';
-import { useSelector, useDispatch } from 'react-redux';
-import { setAllBlogs } from '@/store/slices/blogs/blogs.slice';
-import BlogRowSkeleton from '@/components/skeleton/blogSkeleton';
-import BlogRow from '@/components/blog/blogRow';
-import { Input } from '@/components/ui/input';
+import MainLayout from "@/components/layout/mainLayout";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { fetchAllBlogsService } from "@/service/blogs/blogs.service";
+import { toast } from "sonner";
+import { useSelector, useDispatch } from "react-redux";
+import { setAllBlogs } from "@/store/slices/blogs/blogs.slice";
+import BlogRowSkeleton from "@/components/skeleton/blogSkeleton";
+import BlogRow from "@/components/blog/blogRow";
+import { Input } from "@/components/ui/input";
 import { FileX } from "lucide-react";
-import { BlogsPagination } from '@/components/pagination/blogsPagination';
+import { BlogsPagination } from "@/components/pagination/blogsPagination";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 
 const page = () => {
     const router = useRouter();
@@ -18,7 +19,7 @@ const page = () => {
     const [limit, setLimit] = useState(7);
     const [pagination, setPagination] = useState({
         page: 1,
-        totalPages: 1
+        totalPages: 1,
     });
     const [isLoading, setIsLoading] = useState(false);
     const [search, setSearch] = useState("");
@@ -27,10 +28,9 @@ const page = () => {
     const dispatch = useDispatch();
 
     const blogsData = async () => {
-
         try {
-            setIsLoading(true)
-            const data = await fetchAllBlogsService(page, limit, search)
+            setIsLoading(true);
+            const data = await fetchAllBlogsService(page, limit, search);
 
             if (data) {
                 dispatch(setAllBlogs(data?.data?.blogs || []));
@@ -39,15 +39,16 @@ const page = () => {
                     totalPages: data?.data?.pagination?.totalPages,
                 });
             }
-        }
-        catch (err) {
-            toast.error(err?.response?.data?.result || "Login failed. Please try again.");
-        }
-        finally {
-            setIsLoading(false)
-        }
-    }
+        } catch (err) {
+            const handled = handleUnauthorized(err);
 
+            if (!handled) {
+                toast.error(err?.response?.data?.result || "Failed to fetch blog data");
+            }
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
     useEffect(() => {
         const handler = setTimeout(() => {
@@ -63,9 +64,6 @@ const page = () => {
         blogsData();
     }, [page, debouncedSearch]);
 
-
-
-
     const blogs = useSelector((state) => state.blogSlice.blogs);
 
     const handleDelete = (id) => {
@@ -74,13 +72,9 @@ const page = () => {
 
     return (
         <MainLayout>
-
             <div className="max-w-6xl mx-auto px-0 lg:px-0 ">
-
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 py-6">
-                    <div>
-
-                    </div>
+                    <div></div>
 
                     <button
                         onClick={() => router.push("/blogs/add")}
@@ -104,16 +98,13 @@ const page = () => {
                 </div>
 
                 <div className="">
-
                     <div className="w-full overflow-x-auto">
                         <div className="divide-y divide-gray-100">
                             {isLoading ? (
                                 <BlogRowSkeleton />
                             ) : blogs?.length > 0 ? (
                                 blogs.map((blog) => (
-                                    <div
-                                        key={blog._id}
-                                    >
+                                    <div key={blog._id}>
                                         <BlogRow blog={blog} onDelete={handleDelete} />
                                     </div>
                                 ))
@@ -126,27 +117,19 @@ const page = () => {
                                         No blogs found
                                     </h3>
                                     <p className="mt-1 text-sm text-gray-500 max-w-sm">
-                                        We couldn’t find any blogs matching your search.
-                                        Try a different keyword or create a new blog.
+                                        We couldn’t find any blogs matching your search. Try a
+                                        different keyword or create a new blog.
                                     </p>
                                 </div>
                             )}
-
                         </div>
                     </div>
                 </div>
             </div>
 
-
-            <BlogsPagination
-                page={page}
-                setPage={setPage}
-                pagination={pagination}
-            />
-
-
+            <BlogsPagination page={page} setPage={setPage} pagination={pagination} />
         </MainLayout>
-    )
-}
+    );
+};
 
-export default page
+export default page;

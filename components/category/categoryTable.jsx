@@ -1,5 +1,5 @@
 "use client";
-
+import { useState } from "react";
 import {
     Table,
     TableHeader,
@@ -26,12 +26,15 @@ import {
     AlertDialogCancel,
     AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, CheckCircle } from "lucide-react";
 import { updateCategoryStatusService } from "@/service/category/category.service";
 import { updateAllCategoryStatus, updatedPaginatedCategoryStatus } from "@/store/slices/category/category.slice";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 const CategoryTable = ({ data, onEdit }) => {
+
+    const [openDropdown, setOpenDropdown] = useState(null);
 
     const dispatch = useDispatch();
     const onToggleStatus = async (id, newStatus) => {
@@ -48,9 +51,14 @@ const CategoryTable = ({ data, onEdit }) => {
                 toast.success(
                     newStatus ? "Category activated" : "Category deactivated"
                 );
+                setOpenDropdown(null);
             }
         } catch (err) {
-            toast.error("Failed to update category status");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to update category status");
+            }
         }
     };
 
@@ -107,17 +115,24 @@ const CategoryTable = ({ data, onEdit }) => {
 
                                 <TableCell>
                                     <span
-                                        className={`text-xs font-medium px-2 py-1 rounded-full ${category.status
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-red-100 text-red-700"
+                                        className={`inline-flex justify-center text-xs font-medium px-2 py-1 rounded-full w-[80px]
+    ${category.status
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-red-100 text-red-700"
                                             }`}
                                     >
                                         {category.status ? "Active" : "Inactive"}
                                     </span>
+
+
                                 </TableCell>
 
                                 <TableCell className="text-center">
-                                    <DropdownMenu>
+                                    <DropdownMenu
+                                        open={openDropdown === category._id}
+                                        onOpenChange={(open) =>
+                                            open ? setOpenDropdown(category._id) : setOpenDropdown(null)}
+                                    >
                                         <DropdownMenuTrigger asChild>
                                             <Button
                                                 variant="ghost"
@@ -152,7 +167,7 @@ const CategoryTable = ({ data, onEdit }) => {
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <Pencil className="mr-2 h-4 w-4" />
+                                                                <CheckCircle className="mr-2 h-4 w-4" />
                                                                 Activate
                                                             </>
                                                         )}

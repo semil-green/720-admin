@@ -8,7 +8,7 @@ import {
     TableBody,
     TableCell,
 } from "@/components/ui/table";
-import { MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { MoreVertical, Pencil, Trash2, CheckCircle } from "lucide-react";
 import {
     DropdownMenu,
     DropdownMenuTrigger,
@@ -31,6 +31,7 @@ import { useDispatch } from "react-redux";
 import { updateAuthorStatusService } from "@/service/author/author.service";
 import { updateAllAuthorsStatus, updatePaginatedAuthorStatus } from "@/store/slices/author/author.slice";
 import { toast } from "sonner";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 const AuthorTable = ({ data, onEdit }) => {
 
     const [openDropdown, setOpenDropdown] = useState(null);
@@ -53,7 +54,12 @@ const AuthorTable = ({ data, onEdit }) => {
                 setOpenDropdown(null);
             }
         } catch (err) {
-            toast.error("Failed to update author status");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to update author status");
+            }
         }
     };
     return (
@@ -132,7 +138,7 @@ const AuthorTable = ({ data, onEdit }) => {
                                                             </>
                                                         ) : (
                                                             <>
-                                                                <Pencil className="mr-2 h-4 w-4" />
+                                                                <CheckCircle className="mr-2 h-4 w-4" />
                                                                 Activate
                                                             </>
                                                         )}

@@ -16,6 +16,7 @@ import { toast } from 'sonner';
 import CategoryTable from './categoryTable';
 import { CommonPagination } from '../common-pagination/commonPagination';
 import Loader from '../loader/loader';
+import { handleUnauthorized } from '@/lib/lib/handleUnauthorized';
 
 const Category = () => {
 
@@ -52,7 +53,13 @@ const Category = () => {
                 }));
             }
         } catch (err) {
-            toast.error("Something went wrong. Failed to fetch categories.");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+
+                toast.error("Something went wrong. Failed to fetch categories.");
+            }
         }
         finally {
             setLoading(false);

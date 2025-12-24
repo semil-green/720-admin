@@ -15,6 +15,7 @@ import {
 import TeamMemberForm from './teamMemberForm';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAllTeamMembersData } from '@/store/slices/team-member/team-member.slice';
+import { handleUnauthorized } from '@/lib/lib/handleUnauthorized';
 const TeamMember = () => {
 
     const [loading, setLoading] = useState(false);
@@ -34,7 +35,11 @@ const TeamMember = () => {
                 dispatch(setAllTeamMembersData(res?.data?.result));
             }
         } catch (err) {
-            toast.error("Something went wrong. Failed to fetch team members.");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Something went wrong. Failed to fetch team members.");
+            }
         }
         finally {
             setLoading(false);

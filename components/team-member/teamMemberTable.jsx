@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { updateTeamMemberPasswordService, updateTeamMemberStatusService } from "@/service/team-member/team-member.service";
 import { updateTeamMemberStatus } from "@/store/slices/team-member/team-member.slice";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 
 const TeamMemberTable = ({ data, onEdit }) => {
 
@@ -64,7 +65,12 @@ const TeamMemberTable = ({ data, onEdit }) => {
                 setOpenDialogId(null);
             }
         } catch (err) {
-            toast.error("Failed to update team member status");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to update team member status");
+            }
         }
     };
 
@@ -101,7 +107,11 @@ const TeamMemberTable = ({ data, onEdit }) => {
                 setOpenPasswordDialogId(null);
             }
         } catch (err) {
-            toast.error("Failed to update password");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to update password");
+            }
         } finally {
             setUpdatingPassword(false);
         }

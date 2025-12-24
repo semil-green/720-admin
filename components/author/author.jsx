@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import AuthorForm from './authorForm';
 import { CommonPagination } from '../common-pagination/commonPagination';
+import { handleUnauthorized } from '@/lib/lib/handleUnauthorized';
 const Author = () => {
 
     const [loading, setLoading] = useState(false);
@@ -50,7 +51,13 @@ const Author = () => {
             }
         }
         catch (err) {
-            toast.error(err?.response?.data?.result || "Failed to fetch authors data");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+
+                toast.error(err?.response?.data?.result || "Failed to fetch authors data");
+            }
         }
         finally {
             setLoading(false);

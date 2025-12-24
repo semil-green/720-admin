@@ -22,7 +22,7 @@ const Login = () => {
 
         try {
 
-            const verifyLogin = await loginService(email, password);
+            const verifyLogin = await loginService(email.trim(), password.trim());
 
             if (verifyLogin.status === 200) {
                 localStorage.setItem("auth_token", verifyLogin?.data?.auth_token);
@@ -30,6 +30,7 @@ const Login = () => {
                 router.push('/blogs');
             }
         } catch (error) {
+            console.log("err123", error)
             toast.error(error?.response?.data?.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);
@@ -80,7 +81,7 @@ const Login = () => {
                                 />
                             </div>
 
-                            <div className="flex items-center justify-between text-sm">
+                            {/* <div className="flex items-center justify-between text-sm">
                                 <label className="flex items-center cursor-pointer">
                                     <input type="checkbox" className="mr-2 rounded" />
                                     <span className="text-gray-600">Remember me</span>
@@ -88,7 +89,7 @@ const Login = () => {
                                 <a href="#" className="text-primary hover:text-blue-700 font-medium">
                                     Forgot password?
                                 </a>
-                            </div>
+                            </div> */}
 
                             <div className="flex justify-center">
                                 <Button type="submit" disabled={loading} className="mt-6">
@@ -98,12 +99,12 @@ const Login = () => {
                             </div>
                         </form>
 
-                        <div className="mt-6 text-center text-sm text-gray-600">
+                        {/* <div className="mt-6 text-center text-sm text-gray-600">
                             Don't have an account?{' '}
                             <a href="#" className="text-primary hover:text-blue-700 font-medium">
                                 Sign up
                             </a>
-                        </div>
+                        </div> */}
                     </CardContent>
                 </Card>
             </div>

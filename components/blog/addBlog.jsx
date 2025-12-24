@@ -9,6 +9,7 @@ import Loader from "../loader/loader";
 import { Editor } from 'primereact/editor';
 import { useAllAuthors } from "@/lib/hooks/author/author.hook";
 import { useAllCategory } from "@/lib/hooks/category/category.hook";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 
 
 
@@ -78,18 +79,14 @@ const AddBlog = ({ blogSlug }) => {
             return;
         }
 
-
-
-
         const formData = new FormData();
-        formData.append("title", title);
+        formData.append("title", title.trim());
         formData.append("slug", slug);
-        formData.append("description", description);
+        formData.append("description", description.trim());
         formData.append("status", status);
         formData.append("date", new Date(date).toISOString());
         formData.append("category", category);
         formData.append("author", authors);
-
         formData.append("image", image);
 
         try {
@@ -101,7 +98,12 @@ const AddBlog = ({ blogSlug }) => {
                 router.push("/blogs");
             }
         } catch (err) {
-            toast.error(err?.response?.data?.result || "Failed to add new blog.");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error(err?.response?.data?.result || "Failed to add new blog.");
+            }
         } finally {
             setLoading(false);
         }
@@ -134,7 +136,11 @@ const AddBlog = ({ blogSlug }) => {
 
         }
         catch (err) {
-            toast.error(err?.response?.data?.result || "Failed to fetch blog data");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error(err?.response?.data?.result || "Failed to fetch blog data");
+            }
         }
         finally {
             setLoading(false);
@@ -200,9 +206,9 @@ const AddBlog = ({ blogSlug }) => {
 
             const formData = new FormData();
             formData.append("id", blogId);
-            formData.append("title", title);
+            formData.append("title", title.trim());
             formData.append("slug", slug);
-            formData.append("description", description);
+            formData.append("description", description.trim());
             formData.append("status", status);
             formData.append("date", new Date(date).toISOString());
             formData.append("category", category);
@@ -222,7 +228,11 @@ const AddBlog = ({ blogSlug }) => {
                 router.push("/blogs");
             }
         } catch (err) {
-            toast.error(err?.response?.data?.result || "Failed to update blog.");
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error(err?.response?.data?.result || "Failed to update blog.");
+            }
         } finally {
             setLoading(false);
         }

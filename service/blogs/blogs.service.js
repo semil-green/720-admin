@@ -1,5 +1,4 @@
 import axios from "axios";
-
 export const fetchAllBlogsService = async (page, limit, search) => {
     try {
         const auth_token = localStorage.getItem("auth_token");
@@ -18,6 +17,7 @@ export const fetchAllBlogsService = async (page, limit, search) => {
     } catch (err) {
         throw err;
     }
+
 };
 
 
@@ -104,6 +104,27 @@ export const updateBlogService = async (formData) => {
         )
 
         return updateBlog
+    }
+    catch (err) {
+        throw err
+    }
+}
+
+export const fetchBlogsbySlugService = async (blogSlug) => {
+
+    try {
+
+        const auth_token = localStorage.getItem("auth_token");
+
+        const fetchBlog = await axios.post(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/blog/get-by-slug/${blogSlug}`, {},
+            {
+                headers: {
+                    authorization: auth_token,
+                }
+            }
+        )
+
+        return fetchBlog?.data
     }
     catch (err) {
         throw err

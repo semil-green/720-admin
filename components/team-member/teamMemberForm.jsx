@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { addNewTeamMemberService, updateTeamMemberService } from "@/service/team-member/team-member.service";
 import { addNewTeamMember, updateTeamMember } from "@/store/slices/team-member/team-member.slice";
+import { handleUnauthorized } from "@/lib/lib/handleUnauthorized";
 
 const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
     const dispatch = useDispatch();
@@ -44,7 +45,17 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
             return;
         }
 
+        if (!formData.name.trim()) {
+            toast.error("Please enter name");
+            return;
+        }
+
         if (!formData.email) {
+            toast.error("Please enter email");
+            return;
+        }
+
+        if (!formData.email.trim()) {
             toast.error("Please enter email");
             return;
         }
@@ -64,8 +75,22 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
             return;
         }
 
+        if (!formData.password.trim()) {
+            toast.error("Please enter password");
+            return;
+        }
+
+
         try {
-            const res = await addNewTeamMemberService(formData);
+
+            const payload = {
+                ...formData,
+                name: formData.name.trim(),
+                email: formData.email.trim().toLowerCase(),
+                password: formData.password.trim(),
+            };
+
+            const res = await addNewTeamMemberService(payload);
 
             if (res?.status === 200) {
                 dispatch(addNewTeamMember(res.data.result));
@@ -73,7 +98,12 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            toast.error("Failed to add team member");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to add team member");
+            }
         }
     };
 
@@ -85,7 +115,17 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
             return;
         }
 
+        if (!formData.name.trim()) {
+            toast.error("Please enter name");
+            return;
+        }
+
         if (!formData.email) {
+            toast.error("Please enter email");
+            return;
+        }
+
+        if (!formData.email.trim()) {
             toast.error("Please enter email");
             return;
         }
@@ -111,7 +151,12 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
                 handleClose();
             }
         } catch (err) {
-            toast.error("Failed to update team member");
+
+            const handled = handleUnauthorized(err);
+
+            if (!handled) {
+                toast.error("Failed to update team member");
+            }
         }
     };
 
@@ -172,7 +217,7 @@ const TeamMemberForm = ({ editTeamMemberData, handleClose }) => {
                         setFormData({ ...formData, role: value })
                     }
                 >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
