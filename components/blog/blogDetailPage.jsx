@@ -38,36 +38,59 @@ const BlogDetailPage = ({ slug }) => {
 
     return (
         <div className="max-w-4xl mx-auto px-4 py-10">
-
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 leading-tight mb-4">
                 {blogData?.title}
             </h1>
 
             <div className="flex flex-wrap items-center gap-3 text-sm text-gray-500 mb-6">
-                <span>
-                    By <span className="font-medium text-gray-700">{blogData?.author?.name}</span>
-                </span>
-                <span>•</span>
-                <span className="inline-block  text-sm font-medium text-primary">
-                    {blogData?.category?.name}
-                </span>
-                <span>•</span>
-                <span>
-                    {new Date(blogData?.date).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                    })}
-                </span>
-                <span>•</span>
-                <span
-                    className={`font-medium ${blogData?.status === "Published"
-                        ? "text-green-600"
-                        : "text-yellow-600"
-                        }`}
-                >
-                    {blogData?.status}
-                </span>
+
+                {
+                    blogData?.author?.name &&
+                    <>
+                        <span>
+                            By <span className="font-medium text-gray-700">{blogData?.author?.name}</span>
+                        </span>
+                        <span>•</span>
+                    </>
+                }
+
+                {
+                    blogData?.category?.name &&
+                    <>
+                        <span className="inline-block  text-md font-medium ">
+                            {blogData?.category?.name}
+                        </span>
+                        <span>•</span>
+                    </>
+                }
+
+                {
+                    blogData?.date &&
+                    <>
+                        <span>
+                            {new Date(blogData?.date).toLocaleDateString("en-IN", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}
+                        </span>
+                        <span>•</span>
+                    </>
+                }
+
+                {
+                    blogData?.status &&
+
+                    <span
+                        className={`font-medium ${blogData?.status === "Published"
+                            ? "text-green-600"
+                            : "text-yellow-600"
+                            }`}
+                    >
+                        {blogData?.status}
+                    </span>
+                }
+
             </div>
 
             {blogData?.image && (

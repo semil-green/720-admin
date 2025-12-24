@@ -13,10 +13,10 @@ const Loader = () => {
                     <div className="absolute w-20 h-20 rounded-full bg-primary/20 animate-ping"></div>
                     <div className="w-14 h-14 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
                 </div>
-                <p className="text-sm font-medium text-gray-200 animate-pulse tracking-wide">
+                <p className="text-sm font-medium text-white animate-pulse tracking-wide">
                     Loading...
                 </p>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-white animate-pulse">
                     Please do not refresh the page
                 </p>
 
