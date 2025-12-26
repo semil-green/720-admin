@@ -17,6 +17,8 @@ import {
 import AuthorForm from './authorForm';
 import { CommonPagination } from '../common-pagination/commonPagination';
 import { handleUnauthorized } from '@/lib/lib/handleUnauthorized';
+import { Input } from '../ui/input';
+import TableSkeleton from '../skeleton/tableSkeleton';
 const Author = () => {
 
     const [loading, setLoading] = useState(false);
@@ -24,10 +26,12 @@ const Author = () => {
     const [editingAuthor, setEditingAuthor] = useState(null);
     const [pagination, setPagination] = useState({
         page: 1,
-        limit: 7,
+        limit: 10,
         total: 0,
         totalPages: 1,
     });
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
 
     const dispatch = useDispatch();
 
@@ -39,7 +43,8 @@ const Author = () => {
             setLoading(true);
             const getData = await getAllAuthorsService(
                 pagination.page,
-                pagination.limit
+                pagination.limit,
+                search
             );
 
             if (getData?.status == 200) {
@@ -66,8 +71,18 @@ const Author = () => {
     }
 
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [search]);
+
+    useEffect(() => {
         fetchAuthors();
-    }, [pagination.page, pagination.limit]);
+    }, [pagination.page, , debouncedSearch]);
 
     const openAuthorModal = () => {
         setIsAuthorModalOpen(true);
@@ -75,7 +90,6 @@ const Author = () => {
 
     return (
         <div>
-            {loading && <Loader />}
 
             <div className="flex justify-end mb-4">
                 <Button
@@ -113,13 +127,36 @@ const Author = () => {
                 </DialogContent>
             </Dialog>
 
-            <AuthorTable
-                data={paginatedAuthorsData}
-                onEdit={(category) => {
-                    setEditingAuthor(category);
-                    setIsAuthorModalOpen(true);
-                }}
-            />
+            <div className="mb-5">
+                <Input
+                    type="text"
+                    value={search}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setPagination((prev) => ({
+                            ...prev,
+                            page: 1,
+                        }));
+                    }}
+                    placeholder="search by author name"
+                    className="max-w-md"
+                />
+            </div>
+
+            {loading ?
+                <TableSkeleton
+                    columns={4}
+                    rows={6}
+                />
+                :
+                <AuthorTable
+                    data={paginatedAuthorsData}
+                    onEdit={(category) => {
+                        setEditingAuthor(category);
+                        setIsAuthorModalOpen(true);
+                    }}
+                />}
+
 
             <CommonPagination
                 pagination={pagination}

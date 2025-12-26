@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/pagination";
 
 export function CommonPagination({ pagination, onPageChange }) {
-    if (!pagination || pagination.totalPages <= 1) return null;
 
     const { page, totalPages } = pagination;
 

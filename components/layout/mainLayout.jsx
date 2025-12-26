@@ -20,9 +20,6 @@ export default function MainLayout({ children }) {
         setIsChecking(false);
     }, []);
 
-    if (isChecking) {
-        return <Loader />;
-    }
 
     if (!isAuthenticated) {
         return null;

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const getAllAuthorsService = async (page, limit) => {
+export const getAllAuthorsService = async (page, limit, search) => {
 
     try {
         const auth_token = localStorage.getItem("auth_token");
@@ -8,7 +8,8 @@ export const getAllAuthorsService = async (page, limit) => {
         const fetchAuthors = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/author/all`, {
             params: {
                 page,
-                limit
+                limit,
+                search
             },
             headers: {
                 authorization: auth_token,

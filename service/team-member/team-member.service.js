@@ -21,7 +21,7 @@ export const addNewTeamMemberService = async (formData) => {
     }
 }
 
-export const fetchAllTeamMemberService = async () => {
+export const fetchAllTeamMemberService = async (page, limit, search) => {
 
     try {
 
@@ -29,6 +29,11 @@ export const fetchAllTeamMemberService = async () => {
 
         const fetchTeamMembers = await axios.get(`${process.env.NEXT_PUBLIC_DB_CONNECTION_URL}/user/all`,
             {
+                params: {
+                    page,
+                    limit,
+                    search
+                },
                 headers: {
                     authorization: auth_token,
                 },

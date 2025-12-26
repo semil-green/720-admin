@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/pagination";
 
 export function BlogsPagination({ page, setPage, pagination }) {
-    if (pagination?.totalPages <= 1) return null;
 
     const totalPages = pagination.totalPages;
 

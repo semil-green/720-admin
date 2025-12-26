@@ -17,6 +17,8 @@ import CategoryTable from './categoryTable';
 import { CommonPagination } from '../common-pagination/commonPagination';
 import Loader from '../loader/loader';
 import { handleUnauthorized } from '@/lib/lib/handleUnauthorized';
+import { Input } from '../ui/input';
+import TableSkeleton from '../skeleton/tableSkeleton';
 
 const Category = () => {
 
@@ -29,6 +31,8 @@ const Category = () => {
         totalPages: 1,
     });
     const [editingCategory, setEditingCategory] = useState(null);
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState(search);
 
     const dispatch = useDispatch();
     const openCategoryModal = () => {
@@ -41,7 +45,8 @@ const Category = () => {
             setLoading(true);
             const res = await fetchAllCategoriesService(
                 pagination.page,
-                pagination.limit
+                pagination.limit,
+                search
             );
 
             if (res) {
@@ -67,16 +72,28 @@ const Category = () => {
     };
 
     useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearch(search);
+        }, 300);
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [search]);
+
+    useEffect(() => {
         fetchCategories();
-    }, [pagination.page, pagination.limit]);
+    }, [pagination.page, , debouncedSearch]);
 
 
     return (
         <div>
-            {loading && <Loader />}
+
             <div className="flex justify-end mb-4">
                 <Button onClick={openCategoryModal}>Add Category</Button>
             </div>
+
+
 
             <Dialog open={isCategoryModalOpen} onOpenChange={(open) => {
                 setIsCategoryModalOpen(open);
@@ -107,13 +124,36 @@ const Category = () => {
                 </DialogContent>
             </Dialog>
 
-            <CategoryTable
-                data={paginatedCategoriesData}
-                onEdit={(category) => {
-                    setEditingCategory(category);
-                    setIsCategoryModalOpen(true);
-                }}
-            />
+            <div className="mb-5">
+                <Input
+                    type="text"
+                    value={search}
+                    onChange={(e) => {
+                        setSearch(e.target.value);
+                        setPagination((prev) => ({
+                            ...prev,
+                            page: 1,
+                        }));
+                    }}
+                    placeholder="search by category name"
+                    className="max-w-md"
+                />
+            </div>
+
+            {loading ?
+                <TableSkeleton
+                    columns={6}
+                    rows={6}
+                /> :
+
+                <CategoryTable
+                    data={paginatedCategoriesData}
+                    onEdit={(category) => {
+                        setEditingCategory(category);
+                        setIsCategoryModalOpen(true);
+                    }}
+                />
+            }
 
             <CommonPagination
                 pagination={pagination}

@@ -30,7 +30,6 @@ const Login = () => {
                 router.push('/blogs');
             }
         } catch (error) {
-            console.log("err123", error)
             toast.error(error?.response?.data?.message || "Login failed. Please try again.");
         } finally {
             setLoading(false);

@@ -128,6 +128,7 @@ const page = () => {
             </div>
 
             <BlogsPagination page={page} setPage={setPage} pagination={pagination} />
+
         </MainLayout>
     );
 };

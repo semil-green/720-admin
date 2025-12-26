@@ -256,6 +256,13 @@ const AddBlog = ({ blogSlug }) => {
     const activeAuthors = allAuthors.filter((author) => author.status === true);
 
     const activeCategories = allCategories.filter((category) => category.status === true);
+
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split("T")[0];
+    };
+
+
     return (
         <div className="min-h-screen bg-gray-50">
             {loading && <Loader />}
@@ -308,7 +315,7 @@ const AddBlog = ({ blogSlug }) => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Author
+                                    Author <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     value={authors}
@@ -324,7 +331,7 @@ const AddBlog = ({ blogSlug }) => {
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Category
+                                    Category <span className="text-red-500">*</span>
                                 </label>
                                 <select
                                     value={category}
@@ -352,6 +359,9 @@ const AddBlog = ({ blogSlug }) => {
                                     onChange={(e) => setDate(e.target.value)}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-white
                                  focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    max={getTodayDate()}
+
+
                                 />
                             </div>
 
@@ -405,7 +415,9 @@ const AddBlog = ({ blogSlug }) => {
                                     <img
                                         src={preview}
                                         alt="Preview"
-                                        className="w-full h-64 object-cover"
+                                        // className="w-full h-64 object-cover"
+                                        className="w-full h-64 object-contain bg-gray-100"
+
                                     />
                                     <button
                                         type="button"

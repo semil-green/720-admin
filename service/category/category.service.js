@@ -20,7 +20,7 @@ export const addNewCategoryService = async (formData) => {
     }
 }
 
-export const fetchAllCategoriesService = async (page, limit) => {
+export const fetchAllCategoriesService = async (page, limit, search) => {
     try {
         const auth_token = localStorage.getItem("auth_token");
 
@@ -30,6 +30,7 @@ export const fetchAllCategoriesService = async (page, limit) => {
                 params: {
                     page,
                     limit,
+                    search
                 },
                 headers: {
                     authorization: auth_token,
